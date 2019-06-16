@@ -1,0 +1,67 @@
+body{
+  text-align: justify;
+  font-family: "Lato";
+}
+.skin-blue{
+  font-family: "Lato";
+}
+
+.main-header 
+.logo {
+  font-family: "Lato";
+  font-size: 20px;
+  font-weight:bold;
+  background-color: #497abd !important;
+  line-height:20px;
+  height:60px;
+  padding-top:10px;
+  padding-bottom:10px;
+  
+}
+.sidebar-toggle{
+  height:60px;
+}
+
+.col-md-9 {
+    float: right;
+}
+
+.col-sm-9 {
+    float: right;
+}
+.navbar{background-color: #763d7a !important;
+        
+}
+
+.main-sidebar 
+.sidebar-menu {
+  font-family: "Lato";
+  font-size:15px;
+  color: #E8E018;
+  padding-top:20px;
+  
+}
+
+
+
+h1.title {
+  font-size: 60em;
+  color: #497abd;
+  margin-right: 20px;
+  margin-left: 20px;
+  text-align: center;
+  font-weight: bold;
+  font-family:"Lato";
+}
+
+
+p {
+  font-size: 20px;
+  margin-right: 20px;
+  margin-left: 20px;
+  font-family:"Lato";
+ }
+
+
+
+                              

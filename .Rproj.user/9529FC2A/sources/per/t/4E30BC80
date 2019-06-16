@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1560659033882.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1982660272",
+    "id" : "4E30BC80",
+    "lastKnownWriteTime" : 1560659161,
+    "last_content_update" : 1560659161088,
+    "path" : "C:/Users/JC/Dropbox/shinyapp/OCS_Iturra/LAPOP_Iturra-observatorio_cohesion/global.R",
+    "project_path" : "global.R",
+    "properties" : {
+        "cursorPosition" : "3,28",
+        "docOutlineVisible" : "0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

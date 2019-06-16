@@ -1,0 +1,40 @@
+---
+title: "Observatorio de Cohesión Social"
+output: 
+  html_document: 
+    toc: TRUE
+    toc_float: TRUE
+    
+---
+
+***
+
+
+```{r echo=FALSE, fig.align='center',out.width='700px'}
+knitr::include_graphics("images/coes2.png")
+```
+
+***
+
+## Introducción
+
+
+Bienvenido al <font color="#497abd">**O**</font>bservatorio de <font color="#763d7a">**C**</font>ohesión <font color="green">**S**</font>ocial  **(OCS)**.
+Somos un proyecto del **Centro de Estudios de Conflicto y Cohesión Social (COES)** dedicado a la visualización de datos y a la promoción del uso de indicadores empíricos para el estudio de la cohesión social, con foco en Chile y América Latina.
+
+Desde el Observatorio de Cohesión Social se plantea que la disponibilidad pública de los datos es una condición necesaria para generar conocimiento sobre los fenómenos sociales. En la actualidad existen una serie de dificultades técnicas para el público general pueda acceder a estos datos, por lo que nuestro objetivo es contribuir a la divulgación de esta información en formatos amigables, específicamente mediante gráficos interactivos y descargables que quedan a disposición de individuos y organizaciones interesadas en el estudio de la convivencia social.
+
+En nuestro visualizador encontrarás una serie de indicadores comparativos para América Latina provenientes de prestigiosas encuestas internacionales que han levantado datos durante los últimos 20 años, como el Proyecto de Opinión Pública Latinoamericana (Lapop). Los indicadores seleccionados buscan sintetizar la cohesión social desde dos grandes dimensiones: la vertical, que corresponde a la relación entre la sociedad civil y el Estado, y desde su dimensión horizontal, que refiere a las relaciones entre diferentes grupos e individuos dentro de una sociedad.
+
+En esta primera versión piloto se presentan 24 indicadores para la encuesta Lapop (2004-2014). Para más información sobre el proyecto, sugerencias o reporte de errores, favor de comunicarse con el investigador encargado del Observatorio de Cohesión Social: [julioiturrasanhueza@gmail.com](julioiturrasanhueza@gmail.com) 
+
+## Fuente de datos
+
+Solicitamos a todos los usuarios de los datos que los citen de la siguiente manera:
+
+Fuente: El Barómetro de las Américas por el Proyecto de Opinión Pública de América Latina (LAPOP), www.LapopSurveys.org.
+
+
+Agradecemos al proyecto de Opinión Pública de América Latina (LAPOP) y a sus principales donantes (la Agencia de los Estados Unidos para el Desarrollo Internacional, el Programa de las Naciones Unidas para el Desarrollo, el Banco Interamericano de Desarrollo y Vanderbilt University) por poner a disposición los datos.
+
+

@@ -1,0 +1,8 @@
+# Actualizar según la cantidad fija
+
+- Colores barras y eje Y %
+- Agregar leyenda de la variable promedio de AL
+- Pie de página con COES, coes.cl/OCS
+- Crear un repo en Github donde subir la app
+- bye LB
+- Agregar un Float Table of contents al home

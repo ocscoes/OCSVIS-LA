@@ -1,0 +1,96 @@
+{
+    "debugBreakpointsState" : {
+        "breakpoints" : [
+            {
+                "editor_line_number" : 28,
+                "editor_state" : 1,
+                "function_name" : "toplevel",
+                "function_steps" : "",
+                "id" : 1,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 28,
+                "needs_updated_steps" : true,
+                "package_name" : "",
+                "path" : "C:/Users/JC/Dropbox/shinyapp/OCS_Iturra/LAPOP_Iturra-observatorio_cohesion/recod_vars.R",
+                "state" : 1,
+                "type" : 1
+            },
+            {
+                "editor_line_number" : 50,
+                "editor_state" : 1,
+                "function_name" : "toplevel",
+                "function_steps" : "",
+                "id" : 2,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 50,
+                "needs_updated_steps" : true,
+                "package_name" : "",
+                "path" : "C:/Users/JC/Dropbox/shinyapp/OCS_Iturra/LAPOP_Iturra-observatorio_cohesion/recod_vars.R",
+                "state" : 1,
+                "type" : 1
+            },
+            {
+                "editor_line_number" : 111,
+                "editor_state" : 1,
+                "function_name" : "toplevel",
+                "function_steps" : "",
+                "id" : 3,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 111,
+                "needs_updated_steps" : true,
+                "package_name" : "",
+                "path" : "C:/Users/JC/Dropbox/shinyapp/OCS_Iturra/LAPOP_Iturra-observatorio_cohesion/recod_vars.R",
+                "state" : 1,
+                "type" : 1
+            },
+            {
+                "editor_line_number" : 109,
+                "editor_state" : 1,
+                "function_name" : "toplevel",
+                "function_steps" : "",
+                "id" : 9,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 109,
+                "needs_updated_steps" : true,
+                "package_name" : "",
+                "path" : "C:/Users/JC/Dropbox/shinyapp/OCS_Iturra/LAPOP_Iturra-observatorio_cohesion/server.R",
+                "state" : 1,
+                "type" : 1
+            },
+            {
+                "editor_line_number" : 126,
+                "editor_state" : 1,
+                "function_name" : "toplevel",
+                "function_steps" : "",
+                "id" : 10,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 126,
+                "needs_updated_steps" : true,
+                "package_name" : "",
+                "path" : "C:/Users/JC/Dropbox/shinyapp/OCS_Iturra/LAPOP_Iturra-observatorio_cohesion/server.R",
+                "state" : 1,
+                "type" : 1
+            },
+            {
+                "editor_line_number" : 12,
+                "editor_state" : 1,
+                "function_name" : "toplevel",
+                "function_steps" : "",
+                "id" : 11,
+                "is_package_breakpoint" : false,
+                "is_pending_debug_completion" : false,
+                "line_number" : 12,
+                "needs_updated_steps" : true,
+                "package_name" : "",
+                "path" : "C:/Users/JC/Dropbox/shinyapp/OCS_Iturra/LAPOP_Iturra-observatorio_cohesion/global.R",
+                "state" : 1,
+                "type" : 1
+            }
+        ]
+    }
+}
