@@ -3,8 +3,15 @@
 
 # INTERFAZ ----------------------------------------------------------------
 
-dashboardPage(dashboardHeader(title = 'Observatorio de Cohesión',
-                              titleWidth =260, disable = FALSE),
+tagList(
+dashboardPagePlus(
+              dashboardHeaderPlus(title = tagList(
+                span(class = "logo-lg", "Observatorio de Cohesión"),
+                img(src = "OCS_1_1.svg")),
+                                  titleWidth =260,
+                                  disable = FALSE,
+                                  fixed = FALSE, 
+                                  enable_rightsidebar = FALSE),
               # Barra Lateral: tabs--------------------------------------------------------
               dashboardSidebar(width = 150,
                                tags$head(
@@ -18,6 +25,9 @@ dashboardPage(dashboardHeader(title = 'Observatorio de Cohesión',
                                )),
               # Cuerpo del UI ------------------------------------------------------------
               dashboardBody(
+                tags$footer(title="Your footer here", 
+                align = "right"
+                ),
                 tabItems(
                   tabItem(tabName = "home",
                           htmlOutput(outputId="home1")
@@ -28,9 +38,13 @@ dashboardPage(dashboardHeader(title = 'Observatorio de Cohesión',
                   tabItem(tabName = "transversal",
                           fluidPage(
                             box(title = NULL,width = 10, height = 1000, status = "success",
-                                plotOutput(outputId = "hist1",
-                                           width = "100%",
-                                           height = 930)),
+                                # plotOutput(outputId = "hist1",
+                                #            width = "100%",
+                                #            height = 930)
+                                plotlyOutput(outputId = "plotly2",
+                                             width = "100%",
+                                             height = 930)
+                                ),
                             box(title = "Opciones",width = 2,height = 500,
                                 selectInput(inputId = "items2",
                                             label = "Selecionar Indicador",
@@ -121,8 +135,10 @@ dashboardPage(dashboardHeader(title = 'Observatorio de Cohesión',
                   ) #termino tabItem(2)
 
                 )# Termino de tabItems() -- Entorno principal de pestañas en sidebar
-              ) #Termino de dashboardBody() -- Entorno principal para elementos, inputs, tables & plots
-) #Termino de dashboardPage()
+              ), #Termino de dashboardBody() -- Entorno principal para elementos, inputs, tables & plots
+              dashboardFooter(left_text = "Observatorio de Cohesión -  Centro de Estudios de Conflicto y Cohesión Social",
+                              right_text = "@juitsa")) #Termino de dashboardPage()
+) #Termino de tagList()
 
 
 

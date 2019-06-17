@@ -37,15 +37,26 @@ h1.title {
   text-align: center;
 }
 
+div.container-fluid {
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
 
 div.main-container {
-    margin-left: 10px;
-    margin-right: 10px;
+    max-width: auto;
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
-.col-md-9 {
-    float: right;
+div.tocify {
+    width: 20%;
+    max-width: 150px;
+    max-height: 85%;
 }
 
-
-
+div.toc-content {
+    padding-left: 0px;
+    padding-right: 0px;
+}

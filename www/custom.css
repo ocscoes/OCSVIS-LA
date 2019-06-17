@@ -2,44 +2,45 @@ body{
   text-align: justify;
   font-family: "Lato";
 }
-.skin-blue{
-  font-family: "Lato";
-}
 
-.main-header 
-.logo {
-  font-family: "Lato";
-  font-size: 20px;
-  font-weight:bold;
-  background-color: #497abd !important;
-  line-height:20px;
-  height:60px;
-  padding-top:10px;
-  padding-bottom:10px;
-  
-}
-.sidebar-toggle{
-  height:60px;
-}
 
-.col-md-9 {
-    float: right;
-}
 
-.col-sm-9 {
-    float: right;
-}
-.navbar{background-color: #763d7a !important;
+
+.navbar{background-color: #763d7a !important; /* Esto es para la barra morada horizontal del top  */
         
 }
 
-.main-sidebar 
-.sidebar-menu {
+
+
+.main-header .logo .logo-lg { /* Esto es para el header con "Observatorio de Cohesion*/
+    font-size: 22px;
+    font-weight: bold;
+    background-color: #497abd !important;
+    line-height: 20px;
+    height: 60px;
+    padding-top: 5px;
+    padding-bottom: 1px;
+    padding-right: 1px;
+    padding-left: 1px;
+}
+
+
+.main-header .logo { /* Esto es para el header la imagen cuando es colapsado */
+    padding: 0px 0px;
+}
+
+.skin-blue .main-header .logo { /* Esto es para color del fondo de la imagen */
+    background-color: #ecf0f5;
+    color: #fff;
+    border-bottom: 0 solid transparent;
+}
+
+
+.main-sidebar .sidebar-menu { /* Esta es la barra del top vertical - donde estan los tabs */
   font-family: "Lato";
   font-size:15px;
   color: #E8E018;
   padding-top:20px;
-  
 }
 
 
@@ -62,6 +63,12 @@ p {
   font-family:"Lato";
  }
 
-
-
+.content {  /* Controlar el espacio en torno al table of contents del home */
+    min-height: 250px;
+    padding: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
                               

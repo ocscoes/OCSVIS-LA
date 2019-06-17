@@ -6,69 +6,50 @@
 function(input, output){
   lapop_subset <- eventReactive(
     eventExpr = input$boton1,
-    {lapop_ind1 %>% select(input$items2,pais,year) %>% filter(pais %in% input$country) # Actualiza el subset variable / pais / año  - reacciona a boton1
-  })
+    {lapop_ind1 %>% select(input$items2,pais,year) %>% filter(pais %in% input$country) %>% na.omit() # Actualiza el subset variable / pais / año  - reacciona a boton1
+                                                                                                     # Para usar plotly tuve que agregar un na.omit(), de lo contrario siempre aparecía una barra "null"
+  })                                                                                                 # - Problema: al agregar na.omit() pierdo los attr labels de sjlabelled    
+  
+  lapop_labels <- eventReactive(
+    eventExpr = input$boton1,
+    {lapop_ind1 %>% select(input$items2,pais,year) %>% filter(pais %in% input$country) # UPDATE: Crearé un data solamente para las etiquetas de variables
+      
+    })                                                                                  
   
   # Gráfico de Barras  ---------------------------------------------------------
   etiq1 <- reactive({
-    data.table::data.table("lab1"=sjlabelled::get_label(lapop_subset()))  # Crear data con los labels para gráficos
+    data.table::data.table("lab1"=sjlabelled::get_label(lapop_labels()))  # Crear data con los labels para gráficos
+                                                                          # UPDATE: agrege un lapop_labels porque usando el na.omit() se borraban las estiquetas
   })
-  
   eje_x1    <-  eventReactive(eventExpr = input$boton1,{input$items2})    # Actualiza la variable para el barplot - reacciona a boton1
+  
+  etiq1a <- reactive({sjlabelled::get_label(lapop_labels())})  # Crear data con los labels para gráficos
   
 # Usando ggplot2 barras -------------------------------------------------------
 
-  output$hist1 <-  renderPlot({
+  output$plotly2 <-  renderPlotly({
     # req({input$items2})
     req({input$boton1})
-  p1 <-ggplot(lapop_subset(), aes_string(x = eje_x1(),group = "pais")) +
-      geom_bar(aes(group = "pais", y = ..prop..),
+  p1 <-ggplot(lapop_subset(), aes_string(x = input$items2,group = "pais")) +
+      geom_bar(aes(group = "pais", 
+                   y = stat(prop), 
+                   text= paste0(round(stat(prop)*100,1),"%")),
                color     = "black",
-               fill =  "#497abd",
-               position  = "dodge")+
-      geom_label(aes(y = (..prop..),
-                    position="dodge",
-                    label = paste0(round((..prop..)* 100,1), '%')), 
-              stat    = 'count',
-              vjust   = 1.2, 
-              nudge_x = 0,
-              nudge_y = 0,
-              color   = "black",
-              size    = 3,
-              fontface = "plain", 
-              alpha=0.9) +
-      scale_x_discrete(na.translate = FALSE) + 
-      scale_y_continuous(labels = scales::percent) +
-      expand_limits(y=c(0, max()))+
-      facet_wrap(facets = "pais", 
-                 ncol   = 5) +
-      theme_classic() + 
-      theme(strip.text.x     = element_text(size   = 18,face = "bold"),
-            strip.text.y     = element_text(size   = 15,
-                                            family = "Lato", 
-                                            face   = "bold",),
-            strip.background = element_rect(colour = "grey", 
-                                            fill   = "white"),
-            panel.spacing    = unit(1, "lines",),
-            axis.title       = element_text(size  = 13, 
-                                            face  = "bold"),
-            axis.text.x      = element_text(size  = 10,
-                                            face = "bold"),
-            plot.title       = element_text(size  = 30,
-                                            face  = "plain",
-                                            hjust = 0.5,
-                                            family = "Lato"),
-            plot.caption     = element_text(size  = 13)) + 
-      ylab(label    = "Porcentaje (%)") + 
-      xlab(label    = paste("\n",etiq1()$lab1)) +
-      labs(title    = paste(etiq1()$lab1,"\n"),
-           subtitle = NULL,
-           caption  = "Fuente: Encuesta LAPOP (2008 - 2014)") +
-      guides(fill   = FALSE, 
-             colour = FALSE) +
-    scale_fill_grey()
+               fill =  "#497abd") +
+      scale_y_continuous(name=" ",labels = scales::percent) +
+      scale_x_discrete(name=" ")+
+      facet_wrap("pais~.") +
+    theme_classic() + theme(strip.text.x = element_text(size = 12,face = "bold"))
   
-  print(p1) 
+  
+  
+  p1a <- ggplotly(p1,tooltip = c("text"))   # 1. crear objeto plotly     
+  t1 <- etiq1a()[[1]]                       # 2. guardar character vector con titulo
+  
+  p1a %>% layout(title = t1,
+                 margin=list(t = 75) # Esto es para mantener el titulo sobre el gráfico. Sin overlap.
+                 ) 
+
   })
 
 # Guardar ggplot2 barras ----------------------------------------------------------------------
@@ -138,7 +119,7 @@ function(input, output){
       ylab(etiq2()$lab1) +
       ggtitle(etiq2()$lab1)
       guides(color=FALSE) +
-        theme(panel.background = element_rect(fill='green', colour='red'))
+      theme_classic()
       
     p <- ggplotly(ply1,tooltip = c("text")) #  1. crear objeto plotly     
     x <- list(title = "Año")                #  2. guardar list con nombre axis x          
@@ -148,8 +129,7 @@ function(input, output){
     p %>% layout(title = t, # Layout del objeto plotly
                  xaxis = x, #   - Requiere de atributos especiales
                  yaxis = y  #   - no usa los de ggplot
-                 ) %>% config(displayModeBar = F)  %>%
-        rangeslider()
+                 ) %>% config(displayModeBar = F)
     
   })
   # Homepage del sitio web (archivo fuente en .rmd)------------------------------------------------------------
