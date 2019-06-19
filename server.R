@@ -42,12 +42,13 @@ function(input, output){
       geom_label(aes(y = stat(prop),
                      label = paste0(round(stat(prop)* 100,1), '%')),
                  stat    = 'count',
-                 vjust   = 1.2,
+                 vjust   = 1,
                  nudge_x = 0,
                  nudge_y = 0,
                  color   = "black",
-                 size    = 5,
+                 size    = 4,
                  fontface = "plain",
+                 label.padding = unit(0.1, "lines"), 
                  alpha=0.9)+
       theme_hc()+
       theme(strip.text.x     = element_text(size   = 18,face = "bold"),
@@ -56,7 +57,7 @@ function(input, output){
                                             face   = "bold"),
             strip.background = element_rect(colour = "grey", 
                                             fill   = "white"),
-            panel.spacing    = unit(1, "lines"),
+            panel.spacing    = unit(2, "lines"),
             axis.title       = element_text(size  = 13, 
                                             face  = "bold"),
             axis.text.x      = element_text(size  = 12,
@@ -73,7 +74,6 @@ function(input, output){
       labs(title    = paste(etiq1()$lab1,"\n"),
            subtitle = NULL,
            caption  = "Fuente: Encuesta LAPOP (2004 - 2014) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social ")
-
 
   print(p1)
 
@@ -131,7 +131,7 @@ function(input, output){
 
   lapop_subset_long <- eventReactive(
     eventExpr = input$boton2,
-    {lapop %>% dplyr::select(input$items_long,pais,year,pais_year) %>% dplyr::filter(pais %in% input$country_long) # Actualiza el subset variable / pais / año  - reacciona a boton1
+    {lapop %>% dplyr::select(input$items_long,pais,year,pais_year) %>% dplyr::filter(pais %in% input$country_long) # Actualiza el subset variable / pais / año  - reacciona a boton2
     })
 
   # Etiquetas para Gráfico longitudinal  ---------------------------------------------------------
@@ -153,6 +153,7 @@ function(input, output){
       stat_summary(data = lapop, aes_string(y = eje_x2(),x = "year",group = 1, shape="promedio"), fun.y=mean, colour='cornflowerblue',size=4, geom="point") +
       xlab("") +
       ylab("") +
+      scale_x_discrete(name=" ",na.translate = FALSE)+
       guides(shape=guide_legend(title = NULL),
              color=guide_legend(title = NULL))+
       theme_classic() + 

@@ -17,9 +17,9 @@ dashboardPagePlus(
   dashboardHeaderPlus(title = tagList(
     span(class = "logo-lg", "Observatorio de Cohesión"),
     img(src = "OCS_1_1.svg")),
-    titleWidth =300,
     disable = FALSE,
-    enable_rightsidebar = FALSE),
+    titleWidth = 300,
+    enable_rightsidebar = TRUE),
               # Barra Lateral: tabs--------------------------------------------------------
               dashboardSidebar(width = 150,
                                sidebarMenu(
@@ -41,15 +41,15 @@ dashboardPagePlus(
                   # tab1: Análisis transversal --------------------------------------------------------------------
                   tabItem(tabName = "transversal",
                           fluidPage(
-                            box(title = NULL,width = 10, height = 1000, status = "success",
+                            box(title = NULL,width = 11, height = 1000, status = "success",
                                 plotOutput(outputId = "hist1",
-                                           width = "100%",
-                                           height = 930)
+                                           width = "101%",
+                                           height = 940)
                                 # plotlyOutput(outputId = "plotly2",
                                 #              width = "100%",
                                 #              height = 930)
                                 ),
-                            box(title = "Opciones",width = 2,height = 500,
+                            box(title = "Opciones",width = 1,height = 500,
                                 selectInput(inputId = "items2",
                                             label = "Selecionar Indicador",
                                             choices = var_label,
@@ -66,7 +66,7 @@ dashboardPagePlus(
                                 actionButton(inputId = "boton1",
                                              label = "Graficar", icon = icon(name = "chart-bar",lib = "font-awesome")),
                                 collapsible = TRUE),
-                            box(title = "Exportar gráfico",width = 2,height = 250,
+                            box(title = "Exportar gráfico",width = 1,height = 250,
                                 numericInput(inputId="ancho1","Ancho de gráfico (cm)", min = 10, max = 30,value = 20),
                                 selectInput(inputId="format1",
                                             label = "Formato exportación",
@@ -95,7 +95,7 @@ dashboardPagePlus(
                                                          lib = "font-awesome"),)),
                             box(title = NULL,width = 5,height = 150,
                                 selectInput(inputId = "country_long",
-                                            label = "Seleciona el País - Longitudinal",
+                                            label = "Seleciona el País",
                                             choices = levels(lapop$pais),
                                             multiple = TRUE,
                                             selected = c("Chile","Venezuela","Argentina","Mexico"),
@@ -108,7 +108,7 @@ dashboardPagePlus(
                             #                 multiple = TRUE,
                             #                 selected = c(2004,2006,2007,2008,2009,2010,2012,2014),
                             #                 width = 500))
-                            box(title = "Evolución temporal de las Medidas de Cohesión Social",width = 12, height = 1100, # ggplot2 
+                            box(title = "Evolución temporal de las Medidas de Cohesión Social",width = 12, height = 900, # ggplot2 
                                 plotOutput(outputId = "plotlong1",
                                            width = "100%",
                                            height = 800)
@@ -140,7 +140,21 @@ dashboardPagePlus(
                           ) #termino fluidPage(2)
                   ) #termino tabItem(2)
                 )# Termino de tabItems() -- Entorno principal de pestañas en sidebar
-              ) #Termino de dashboardBody() -- Entorno principal para elementos, inputs, tables & plots
+              ), #Termino de dashboardBody() -- Entorno principal para elementos, inputs, tables & plots
+  rightSidebar(
+    background = "dark",
+    rightSidebarTabContent(
+      id = 1,
+      title = "Tab 1",
+      icon = "desktop",
+      active = TRUE),
+    rightSidebarTabContent(
+      id = 3,
+      icon = "paint-brush",
+      title = "Tab 3")
+    ),
+  dashboardFooter(left_text  = "Observatorio de Cohesión Social -  COES",
+                  right_text = "@jciturras")
           ) #Termino de dashboardPage()
 
 

@@ -44,3 +44,16 @@ p1 <-ggplot(lapop_subset(), aes_string(x = eje_x1(),group = "pais")) +
   guides(fill   = FALSE, 
          colour = FALSE) +
   scale_fill_grey()
+
+
+geom_label(aes(y = stat(prop),
+               label = paste0(round(stat(prop)* 100,1), '%')),
+           stat    = 'count',
+           vjust   = 1.2,
+           nudge_x = 0,
+           nudge_y = 0,
+           color   = "black",
+           size    = 5,
+           fontface = "plain",
+           alpha=0.9)+
+
