@@ -220,11 +220,15 @@ sjt.xtab(var.row = lapop$pais,
  
 # Ver base de datos -------------------------------------------------------
 
+lapop <- lapop %>% mutate(pais_year=paste(pais,year))
+
+lapop <- lapop %>% mutate(promedio=paste("Promedio anual"))
+
 sjPlot::view_df(lapop, 
                 show.type = TRUE,
                 show.frq = TRUE,
                 show.labels = TRUE,
-                show.prc = T, max.len = 100,show.values = FALSE)
+                show.prc = T, max.len = 1000,show.values = FALSE)
 
 sjPlot::view_df(lapop_ind1, 
                 show.type = TRUE,
@@ -232,15 +236,15 @@ sjPlot::view_df(lapop_ind1,
                 show.labels = TRUE,
                 show.prc = T, max.len = 100,show.values = FALSE)
 
-lapop <- lapop %>% mutate(pais_year=paste(pais,year))
 
 
-# save(lapop,file = "data/lapop_aggr_v2.RData")# Guardar bases con labels
-# load("data/lapop_aggr_v2.RData")             
-# 
-# 
-# 
-# 
+
+save(lapop,file = "data/lapop_aggr_v2.RData")# Guardar bases con labels
+load("data/lapop_aggr_v2.RData")
+
+
+
+
 # save(lapop_ind1,file = "data/lapop_ind_v2.RData")
 # load(file = "data/lapop_ind_v2.RData")
 

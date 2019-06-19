@@ -14,9 +14,9 @@ rsconnect::setAccountInfo(name='juitsa',
                           secret='lVM2gyMtbp/0pMKlsQ77FiCbXFy/gXzlGUq60apt')
 
 
+tictoc::tic()
+rsconnect::deployApp()
+Y
+tictoc::toc()
 
-
-
-
-
-
+rsconnect::terminateApp(appName = "lapop_iturra-observatorio_cohesion")

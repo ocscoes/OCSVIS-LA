@@ -1,18 +1,4 @@
-{
-  library(shiny)
-  library(shinydashboard)
-  library(shinydashboardPlus)
-  library(dplyr)
-  library(sjPlot)
-  library(sjlabelled)
-  library(ggplot2)
-  library(knitr)
-  library(plotly)
-  library(stringr)
-  library(ggthemes)
-  library(ggrepel)
-  library(extrafont)
-  }
+
 
 rm(list=ls())
 
@@ -52,6 +38,8 @@ var_label <- c(
 )
 
 
+# Adding image or logo along with the title in the header
+
 
 
 # view_df(lapop, file = "lapop.xls")
@@ -77,23 +65,5 @@ var_label <- c(
 #   geom_line(data  = lapop,aes(x = year,y = it1,color=pais,group=pais)) + 
 #   stat_summary(data = lapop,aes(y = it1,x = year,group = 1), fun.y=mean, colour="red", geom="line", size = 3)+
 #   stat_summary(data = lapop,aes(y = it1,x = year,group = 1), fun.y=mean, colour="blue", geom="point", size = 3)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

@@ -1,49 +1,53 @@
 # INTERFAZO LAPOP_Iturra-observatorio-cohesion -----------------------------
 
+library(shiny)
+library(shinydashboard)
+library(shinydashboardPlus)
+library(ggplot2)
+library(ggthemes)
+library(dplyr)
+library(extrafont)
+library(Cairo)
+options(shiny.usecairo=T)
 
 # INTERFAZ ----------------------------------------------------------------
 
-tagList(
+
 dashboardPagePlus(
-              dashboardHeaderPlus(title = tagList(
-                span(class = "logo-lg", "Observatorio de Cohesión"),
-                img(src = "OCS_1_1.svg")),
-                                  titleWidth =260,
-                                  disable = FALSE,
-                                  fixed = FALSE, 
-                                  enable_rightsidebar = FALSE),
+  dashboardHeaderPlus(title = tagList(
+    span(class = "logo-lg", "Observatorio de Cohesión"),
+    img(src = "OCS_1_1.svg")),
+    titleWidth =300,
+    disable = FALSE,
+    enable_rightsidebar = FALSE),
               # Barra Lateral: tabs--------------------------------------------------------
               dashboardSidebar(width = 150,
-                               tags$head(
-                                 tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
-                               ),
                                sidebarMenu(
-                                 menuItem("Inicio            ",tabName = "home" ),
+                                 menuItem("Inicio           ",tabName = "home" ),
                                  menuItem("Corte Transversal",tabName = "transversal" ),
                                  menuItem("Longitudinal"     ,tabName = "longitudinal"),
                                  menuItem("Correlacionar"    ,tabName = "correlacionar")
                                )),
               # Cuerpo del UI ------------------------------------------------------------
               dashboardBody(
-                tags$footer(title="Your footer here", 
-                align = "right"
+                tags$head(
+                  tags$link(rel = "stylesheet", type = "text/css", href = "custom_respaldo.css")
                 ),
                 tabItems(
+                  # tab0: Home-------------------------------------------------------------------------------------
                   tabItem(tabName = "home",
                           htmlOutput(outputId="home1")
-                    
-                  ), #Termino tabItem (0)
-                  # tab0: Home-------------------------------------------------------------------------------------
+                          ), #Termino tabItem (0)
                   # tab1: Análisis transversal --------------------------------------------------------------------
                   tabItem(tabName = "transversal",
                           fluidPage(
                             box(title = NULL,width = 10, height = 1000, status = "success",
-                                # plotOutput(outputId = "hist1",
-                                #            width = "100%",
-                                #            height = 930)
-                                plotlyOutput(outputId = "plotly2",
-                                             width = "100%",
-                                             height = 930)
+                                plotOutput(outputId = "hist1",
+                                           width = "100%",
+                                           height = 930)
+                                # plotlyOutput(outputId = "plotly2",
+                                #              width = "100%",
+                                #              height = 930)
                                 ),
                             box(title = "Opciones",width = 2,height = 500,
                                 selectInput(inputId = "items2",
@@ -95,21 +99,23 @@ dashboardPagePlus(
                                             choices = levels(lapop$pais),
                                             multiple = TRUE,
                                             selected = c("Chile","Venezuela","Argentina","Mexico"),
-                                            width = 500)),
+                                            width = 500))
+                            ,
                             # box(title = "Variable de Cohesion  - Longitudinal",width = 3,height = 200,
                             #     selectInput(inputId = "year_long",
                             #                 label = "Seleciona el año",
                             #                 choices = levels(lapop$year),
                             #                 multiple = TRUE,
                             #                 selected = c(2004,2006,2007,2008,2009,2010,2012,2014),
-                            #                 width = 500)),
+                            #                 width = 500))
                             box(title = "Evolución temporal de las Medidas de Cohesión Social",width = 12, height = 1100, # ggplot2 
-                                # plotOutput(outputId = "plotlong1",
-                                #            width = "100%",
-                                #            height = 1000),
-                                plotlyOutput(outputId = "plotly1",
-                                             width = "100%",
-                                             height = 800))
+                                plotOutput(outputId = "plotlong1",
+                                           width = "100%",
+                                           height = 800)
+                                # plotlyOutput(outputId = "plotly1",
+                                #              width = "100%",
+                                #              height = 800)
+                                )
                           ) #termino fluidPage(2)
                   ), #termino tabItem(2)
                   # tab2 : Analisis de Correlación  --------------------------------------------------------------------
@@ -133,12 +139,10 @@ dashboardPagePlus(
                                 )
                           ) #termino fluidPage(2)
                   ) #termino tabItem(2)
-
                 )# Termino de tabItems() -- Entorno principal de pestañas en sidebar
-              ), #Termino de dashboardBody() -- Entorno principal para elementos, inputs, tables & plots
-              dashboardFooter(left_text = "Observatorio de Cohesión -  Centro de Estudios de Conflicto y Cohesión Social",
-                              right_text = "@juitsa")) #Termino de dashboardPage()
-) #Termino de tagList()
+              ) #Termino de dashboardBody() -- Entorno principal para elementos, inputs, tables & plots
+          ) #Termino de dashboardPage()
+
 
 
 

@@ -8,7 +8,7 @@ bibliography: C:/Users/JC/Dropbox/Bibtex/zlibrary.bib
 ---
 
 ```{r echo=FALSE, fig.align='center',out.width='900px'}
-knitr::include_graphics("www/OCS_juitsa2.png")
+knitr::include_graphics("www/OCS_juitsa-sdot.png")
 ```
 
 ## Presentación
