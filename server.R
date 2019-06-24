@@ -42,7 +42,7 @@ function(input, output){
       geom_label(aes(y = stat(prop),
                      label = paste0(round(stat(prop)* 100,1), '%')),
                  stat    = 'count',
-                 vjust   = 1,
+                 vjust   = 0.7,
                  nudge_x = 0,
                  nudge_y = 0,
                  color   = "black",

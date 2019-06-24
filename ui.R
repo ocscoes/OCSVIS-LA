@@ -7,8 +7,7 @@ library(ggplot2)
 library(ggthemes)
 library(dplyr)
 library(extrafont)
-library(Cairo)
-options(shiny.usecairo=T)
+
 
 # INTERFAZ ----------------------------------------------------------------
 
@@ -41,41 +40,40 @@ dashboardPagePlus(
                   # tab1: Análisis transversal --------------------------------------------------------------------
                   tabItem(tabName = "transversal",
                           fluidPage(
-                            box(title = NULL,width = 11, height = 1000, status = "success",
-                                plotOutput(outputId = "hist1",
-                                           width = "101%",
-                                           height = 940)
-                                # plotlyOutput(outputId = "plotly2",
-                                #              width = "100%",
-                                #              height = 930)
-                                ),
-                            box(title = "Opciones",width = 1,height = 500,
+                            box(title = NULL,width = 5,height = 250,
                                 selectInput(inputId = "items2",
                                             label = "Selecionar Indicador",
                                             choices = var_label,
                                             selected = FALSE,
                                             selectize = FALSE,
                                             multiple = FALSE,
-                                            width = 500),
+                                            width = 700),
                                 selectInput(inputId = "country",
                                             label = "Seleciona País",
                                             choices = levels(lapop$pais),
                                             multiple = TRUE,
-                                            selected = "Chile",
-                                            width = 500),
+                                            selected = c("Chile","Venezuela","Argentina","Mexico"),
+                                            width = 700),
                                 actionButton(inputId = "boton1",
                                              label = "Graficar", icon = icon(name = "chart-bar",lib = "font-awesome")),
-                                collapsible = TRUE),
-                            box(title = "Exportar gráfico",width = 1,height = 250,
-                                numericInput(inputId="ancho1","Ancho de gráfico (cm)", min = 10, max = 30,value = 20),
+                                collapsible = FALSE),
+                            box(title = NULL,width = 2,height = 250,
+                                numericInput(inputId="ancho1","Ancho de gráfico (cm)", min = 10, max = 30,value = 20,width = "100%"),
                                 selectInput(inputId="format1",
-                                            label = "Formato exportación",
+                                            label = "Exportar gráfico",
                                             choices = c("pdf" = "pdf",
                                                         "png" = "png"),
                                             multiple = FALSE,
-                                            selected = "png"),
-                                downloadButton("saveplot1",label =  "Guardar"))
-                            
+                                            selected = "png",width = "100%"),
+                                downloadButton("saveplot1",label =  "Guardar")),
+                            box(title = NULL,width = 12, height = 1100, status = "success",
+                                plotOutput(outputId = "hist1",
+                                           width = "100%",
+                                           height = 1050)
+                                # plotlyOutput(outputId = "plotly2",
+                                #              width = "100%",
+                                #              height = 930)
+                            )
                            ) #termino fluidPage(1)
                   ), #termino tabItem(1)
                   # tab2 : Analisis Longitudinal --------------------------------------------------------------------
@@ -88,7 +86,7 @@ dashboardPagePlus(
                                             selected = FALSE,
                                             selectize = FALSE,
                                             multiple = FALSE,
-                                            width = 500),
+                                            width = "100%"),
                                 actionButton(inputId = "boton2",
                                              label = "Graficar", 
                                              icon = icon(name = "chart-bar",
@@ -99,7 +97,7 @@ dashboardPagePlus(
                                             choices = levels(lapop$pais),
                                             multiple = TRUE,
                                             selected = c("Chile","Venezuela","Argentina","Mexico"),
-                                            width = 500))
+                                            width = "100%"))
                             ,
                             # box(title = "Variable de Cohesion  - Longitudinal",width = 3,height = 200,
                             #     selectInput(inputId = "year_long",
@@ -145,7 +143,7 @@ dashboardPagePlus(
     background = "dark",
     rightSidebarTabContent(
       id = 1,
-      title = "Tab 1",
+      title = "Tab 1 (en desarrollo)",
       icon = "desktop",
       active = TRUE),
     rightSidebarTabContent(
