@@ -6,7 +6,7 @@ library(shinydashboardPlus)
 library(ggplot2)
 library(ggthemes)
 library(dplyr)
-library(extrafont)
+library(Cairo);options(shiny.usecairo=TRUE) # Para la calidad de los plots
 
 
 # INTERFAZ ----------------------------------------------------------------

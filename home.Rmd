@@ -4,7 +4,7 @@ output:
     toc: TRUE
     toc_float: TRUE
     css: "juitsa-theme.css"
-bibliography: C:/Users/JC/Dropbox/Bibtex/zlibrary.bib
+bibliography: "www//zlibrary.bib"
 ---
 
 ```{r echo=FALSE, fig.align='center',out.width='900px'}
