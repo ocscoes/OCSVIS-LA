@@ -6,24 +6,19 @@
 function(input, output){
   lapop_subset <- eventReactive(
     eventExpr = input$boton1,
-    {lapop_ind1 %>% select(input$items2,pais,year) %>% dplyr::filter(pais %in% input$country)        # Actualiza el subset variable / pais / año  - reacciona a boton1
-                                                                                                     # Para usar plotly tuve que agregar un na.omit(), de lo contrario siempre aparecía una barra "null"
-  })                                                                                                 # - Problema: al agregar na.omit() pierdo los attr labels de sjlabelled
-
-  lapop_labels <- eventReactive(
-    eventExpr = input$boton1,
-    {lapop_ind1 %>% select(input$items2,pais,year) %>% dplyr::filter(pais %in% input$country) # UPDATE: Crearé un data solamente para las etiquetas de variables
-
-    })
-
+    {lapop_ind1 %>% dplyr::select(input$items2,pais,year) %>% dplyr::filter(pais %in% input$country) %>% copy_labels(lapop_ind1) # Actualiza el subset variable / pais / año  - reacciona a boton1
+                                                                                                                                 # Para usar plotly tuve que agregar un na.omit(), de lo contrario siempre aparecía una barra "null"
+  })                                                                                                                             # - Problema: al agregar na.omit() pierdo los attr labels de sjlabelled
+                            
+  
   # Gráfico de Barras  ---------------------------------------------------------
   etiq1 <- reactive({
-    data.table::data.table("lab1"=sjlabelled::get_label(lapop_labels()))  # Crear data con los labels para gráficos
-                                                                          # UPDATE: agrege un lapop_labels porque usando el na.omit() se borraban las estiquetas
+    data.table::data.table("lab1"=sjlabelled::get_label(lapop_subset())) # Crear data con los labels para gráficos
   })
+ 
   eje_x1    <-  eventReactive(eventExpr = input$boton1,{input$items2})    # Actualiza la variable para el barplot - reacciona a boton1
 
-  etiq1a <- reactive({sjlabelled::get_label(lapop_labels())})  # Crear data con los labels para gráficos
+  etiq1a <- reactive({sjlabelled::get_label(lapop_subset())})  # Crear data con los labels para gráficos
 
 # Usando ggplot2 barras -------------------------------------------------------
 
@@ -36,8 +31,10 @@ function(input, output){
                    y = stat(prop)),
                color     = "black",
                fill =  "#497abd") +
-      scale_y_continuous(name=" ",labels = scales::percent) +
-      scale_x_discrete(name=" ",na.translate = FALSE)+
+      scale_y_continuous(labels = scales::percent) +
+      scale_x_discrete(na.translate = FALSE)+
+      xlab(label = etiq1()$lab1) +
+      ylab("") +
       facet_wrap("pais~.") +
       geom_label(aes(y = stat(prop),
                      label = paste0(round(stat(prop)* 100,1), '%')),
@@ -68,12 +65,11 @@ function(input, output){
                                             face  = "plain",
                                             hjust = 0.5,
                                             family = "Lato"),
-            plot.caption     = element_text(size  = 13,family = "Lato",hjust = 0,face = "italic"))  +
-      ylab(label    = "Porcentaje (%)") + 
-      xlab(label    = paste("\n",etiq1()$lab1)) +
+            plot.caption     = element_text(size  = 13,family = "Lato",hjust = 0,face = "italic"))+
       labs(title    = paste(etiq1()$lab1,"\n"),
            subtitle = NULL,
            caption  = "Fuente: Encuesta LAPOP (2004 - 2014) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social ")
+    
 
   print(p1)
 
@@ -131,7 +127,7 @@ function(input, output){
 
   lapop_subset_long <- eventReactive(
     eventExpr = input$boton2,
-    {lapop %>% dplyr::select(input$items_long,pais,year,pais_year) %>% dplyr::filter(pais %in% input$country_long) # Actualiza el subset variable / pais / año  - reacciona a boton2
+    {lapop %>% dplyr::select(input$items_long,pais,year,pais_year) %>% dplyr::filter(pais %in% input$country_long) %>% copy_labels(lapop) # Actualiza el subset variable / pais / año  - reacciona a boton2
     })
 
   # Etiquetas para Gráfico longitudinal  ---------------------------------------------------------
@@ -151,8 +147,8 @@ function(input, output){
       geom_point(shape=21,size=3, color ="black",fill="white") +
       stat_summary(data = lapop, aes_string(y = eje_x2(),x = "year",group = 1), fun.y=mean, colour="navyblue", size=1,alpha =0.3, linetype= "dotted", geom="line") +
       stat_summary(data = lapop, aes_string(y = eje_x2(),x = "year",group = 1, shape="promedio"), fun.y=mean, colour='cornflowerblue',size=4, geom="point") +
-      xlab("") +
-      ylab("") +
+      xlab(label = NULL) +
+      ylab(label = NULL) +
       scale_x_discrete(name=" ",na.translate = FALSE)+
       guides(shape=guide_legend(title = NULL),
              color=guide_legend(title = NULL))+
@@ -165,7 +161,6 @@ function(input, output){
           plot.title   = element_text(size   = 18,family = "Lato",face = "bold",hjust = 0.5),
           plot.caption = element_text(size   = 12,family = "Lato",hjust = 0,face = "italic")) +
       labs(title    = paste(etiq2()$lab1,"\n"),
-           subtitle = NULL,
            caption  = "Fuente: Encuesta LAPOP (2004 - 2014) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social ")
     
   })

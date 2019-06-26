@@ -10,11 +10,9 @@ library(sjPlot)
 library(knitr)
 library(sjlabelled)
 library(here)
-library(ggiraph)
-  library(ggiraphExtra)
   }
 
-
+rm(list=ls())
 
 # Cargar bases LAPOP ------------------------------------------------------
 
@@ -131,7 +129,7 @@ table(lapop_ind1$pais)
 
 # Nivel agregado ----------------------------------------------------------
 
-length(table(lapop1$year))
+length(table(lapop$year))
 table(lapop$year)
 
 lapop$year <- factor(lapop$year,ordered = TRUE)
@@ -160,58 +158,62 @@ lapop$vb2   <- (1-(lapop$vb2-1))
 
 # Agregar variable label -------------------------------------------
 
-set_label(lapop$year  )<- "Año"
-set_label(lapop$pais  )<- "Pais"
-set_label(lapop$it1   )<- "Confianza Interpersonal"
-set_label(lapop$prot3 )<- "Participar en Protesta"
-set_label(lapop$aoj12 )<- "Confianza en Eficacia Sistema Judicial"
-set_label(lapop$b2    )<- "Respeto por las Instituciones"
-set_label(lapop$b3    )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
-set_label(lapop$b4    )<- "Orgullo con el Sistema Político"
-set_label(lapop$b10a  )<- "Confianza en Sistema Judicial"
-set_label(lapop$b12   )<- "Confianza en Fuerzas Armadas"
-set_label(lapop$b20   )<- "Confianza en Iglesia Católica"
-set_label(lapop$b20a  )<- "Confianza en Iglesias Evangélicas/Protestantes"
-set_label(lapop$b21   )<- "Confianza en Partidos Políticos"
-set_label(lapop$b21a  )<- "Confianza en Ejecutivo"
-set_label(lapop$n9    )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
-set_label(lapop$n11   )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
-set_label(lapop$n15   )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
-set_label(lapop$pr4   )<- "Respeto por la Propiedad Privada"
-set_label(lapop$ros4  )<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
-set_label(lapop$ing4  )<- "Democracia es Mejor que otras Formas de Gobierno"
-set_label(lapop$eff1  )<- "Gobernantes están Interesados en lo que la Gente Piensa"
-set_label(lapop$pn4   )<- "Satisfacción con la Democracia"
-set_label(lapop$exc7  )<- "Percepción de Corrupción Pública"
-set_label(lapop$pol1  )<- "Interés en Política"
-set_label(lapop$vb2   )<- "Voto en Últimas Elecciones Presidenciales"
+set_label(lapop$year)<- "Año"
+set_label(lapop$pais)<- "Pais"
+set_label(lapop$it1 )<- "Confianza Interpersonal"
+set_label(lapop$prot3)<- "Participar en Protesta"
+set_label(lapop$aoj12)<- "Confianza en Eficacia Sistema Judicial"
+set_label(lapop$b2  )<- "Respeto por las Instituciones"
+set_label(lapop$b3  )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
+set_label(lapop$b4  )<- "Orgullo con el Sistema Político"
+set_label(lapop$b10a)<- "Confianza en Sistema Judicial"
+set_label(lapop$b12 )<- "Confianza en Fuerzas Armadas"
+set_label(lapop$b20 )<- "Confianza en Iglesia Católica"
+set_label(lapop$b20a)<- "Confianza en Iglesias Evangélicas/Protestantes"
+set_label(lapop$b21 )<- "Confianza en Partidos Políticos"
+set_label(lapop$b21a)<- "Confianza en Ejecutivo"
+set_label(lapop$n9  )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
+set_label(lapop$n11 )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
+set_label(lapop$n15 )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
+set_label(lapop$pr4 )<- "Respeto por la Propiedad Privada"
+set_label(lapop$ros4)<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
+set_label(lapop$ing4)<- "Democracia es Mejor que otras Formas de Gobierno"
+set_label(lapop$eff1)<- "Gobernantes están Interesados en lo que la Gente Piensa"
+set_label(lapop$pn4 )<- "Satisfacción con la Democracia"
+set_label(lapop$exc7)<- "Percepción de Corrupción Pública"
+set_label(lapop$pol1)<- "Interés en Política"
+set_label(lapop$vb2 )<- "Voto en Últimas Elecciones Presidenciales"
+
+get_label(lapop)
+
+sjlabelled::set_label(lapop_ind1$year  )<- "Año"
+sjlabelled::set_label(lapop_ind1$pais  )<- "Pais"
+sjlabelled::set_label(lapop_ind1$it1   )<- "Confianza Interpersonal"
+sjlabelled::set_label(lapop_ind1$prot3 )<- "Participar en Protesta"
+sjlabelled::set_label(lapop_ind1$aoj12 )<- "Confianza en Eficacia Sistema Judicial"
+sjlabelled::set_label(lapop_ind1$b2    )<- "Respeto por las Instituciones"
+sjlabelled::set_label(lapop_ind1$b3    )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
+sjlabelled::set_label(lapop_ind1$b4    )<- "Orgullo con el Sistema Político"
+sjlabelled::set_label(lapop_ind1$b10a  )<- "Confianza en Sistema Judicial"
+sjlabelled::set_label(lapop_ind1$b12   )<- "Confianza en Fuerzas Armadas"
+sjlabelled::set_label(lapop_ind1$b20   )<- "Confianza en Iglesia Católica"
+sjlabelled::set_label(lapop_ind1$b20a  )<- "Confianza en Iglesias Evangélicas/Protestantes"
+sjlabelled::set_label(lapop_ind1$b21   )<- "Confianza en Partidos Políticos"
+sjlabelled::set_label(lapop_ind1$b21a  )<- "Confianza en Ejecutivo"
+sjlabelled::set_label(lapop_ind1$n9    )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
+sjlabelled::set_label(lapop_ind1$n11   )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
+sjlabelled::set_label(lapop_ind1$n15   )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
+sjlabelled::set_label(lapop_ind1$pr4   )<- "Respeto por la Propiedad Privada"
+sjlabelled::set_label(lapop_ind1$ros4  )<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
+sjlabelled::set_label(lapop_ind1$ing4  )<- "Democracia es Mejor que otras Formas de Gobierno"
+sjlabelled::set_label(lapop_ind1$eff1  )<- "Gobernantes están Interesados en lo que la Gente Piensa"
+sjlabelled::set_label(lapop_ind1$pn4   )<- "Satisfacción con la Democracia"
+sjlabelled::set_label(lapop_ind1$exc7  )<- "Percepción de Corrupción Pública"
+sjlabelled::set_label(lapop_ind1$pol1  )<- "Interés en Política"
+sjlabelled::set_label(lapop_ind1$vb2   )<- "Voto en Últimas Elecciones Presidenciales"
 
 
-set_label(lapop_ind1$year  )<- "Año"
-set_label(lapop_ind1$pais  )<- "Pais"
-set_label(lapop_ind1$it1   )<- "Confianza Interpersonal"
-set_label(lapop_ind1$prot3 )<- "Participar en Protesta"
-set_label(lapop_ind1$aoj12 )<- "Confianza en Eficacia Sistema Judicial"
-set_label(lapop_ind1$b2    )<- "Respeto por las Instituciones"
-set_label(lapop_ind1$b3    )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
-set_label(lapop_ind1$b4    )<- "Orgullo con el Sistema Político"
-set_label(lapop_ind1$b10a  )<- "Confianza en Sistema Judicial"
-set_label(lapop_ind1$b12   )<- "Confianza en Fuerzas Armadas"
-set_label(lapop_ind1$b20   )<- "Confianza en Iglesia Católica"
-set_label(lapop_ind1$b20a  )<- "Confianza en Iglesias Evangélicas/Protestantes"
-set_label(lapop_ind1$b21   )<- "Confianza en Partidos Políticos"
-set_label(lapop_ind1$b21a  )<- "Confianza en Ejecutivo"
-set_label(lapop_ind1$n9    )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
-set_label(lapop_ind1$n11   )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
-set_label(lapop_ind1$n15   )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
-set_label(lapop_ind1$pr4   )<- "Respeto por la Propiedad Privada"
-set_label(lapop_ind1$ros4  )<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
-set_label(lapop_ind1$ing4  )<- "Democracia es Mejor que otras Formas de Gobierno"
-set_label(lapop_ind1$eff1  )<- "Gobernantes están Interesados en lo que la Gente Piensa"
-set_label(lapop_ind1$pn4   )<- "Satisfacción con la Democracia"
-set_label(lapop_ind1$exc7  )<- "Percepción de Corrupción Pública"
-set_label(lapop_ind1$pol1  )<- "Interés en Política"
-set_label(lapop_ind1$vb2   )<- "Voto en Últimas Elecciones Presidenciales"
+get_label(lapop_ind1)
 
 # N paises segun año ------------------------------------------------------
 
@@ -239,17 +241,18 @@ sjPlot::view_df(lapop_ind1,
 
 
 
-save(lapop,file = "data/lapop_aggr_v2.RData")# Guardar bases con labels
+# save(lapop,file = "data/lapop_aggr_v2.RData")# Guardar bases con labels
 load("data/lapop_aggr_v2.RData")
 
 
 
 
 # save(lapop_ind1,file = "data/lapop_ind_v2.RData")
-# load(file = "data/lapop_ind_v2.RData")
+load(file = "data/lapop_ind_v2.RData")
 
 str(lapop_ind1)
 data.table::data.table("lab1"=Hmisc::label(lapop_ind1))
+data.table::data.table("lab1"=Hmisc::label(lapop))
 
 
 
