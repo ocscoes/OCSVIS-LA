@@ -5,6 +5,7 @@ library(shinydashboard)
 library(shinydashboardPlus)
 library(ggplot2)
 library(ggthemes)
+library(sjlabelled)
 library(dplyr)
 library(Cairo);options(shiny.usecairo=TRUE) # Para la calidad de los plots
 
