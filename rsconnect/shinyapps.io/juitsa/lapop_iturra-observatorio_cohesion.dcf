@@ -5,6 +5,6 @@ account: juitsa
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 985131
-bundleId: 2175778
+bundleId: 2178877
 url: https://juitsa.shinyapps.io/lapop_iturra-observatorio_cohesion/
-when: 1561419415.67819
+when: 1561515796.31703
