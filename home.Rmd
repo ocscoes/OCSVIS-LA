@@ -10,20 +10,34 @@ bibliography: "www//zlibrary.bib"
 ```{r echo=FALSE, fig.align='center',out.width='900px'}
 knitr::include_graphics("www/OCS_juitsa-sdot.png")
 ```
+<div style="text-align:center">
+## Indicadores Comparativos de Cohesión Social para América Latina
+</div>
 
-## Presentación
+### ¿Para qué?
 
+- Este sitio permite realizar análisis comparativos de distintos indicadores asociados a cohesión social en América Latina, como confianza interpersonal, valoración de la democracia, participación en protestas, entre otros. Para ello se utiliza la base de la encuesta **LAPOP** (Latin American Public Opinion Project), olas  2004, 2006, 2008, 2010, 2012 y 2014. 
 
-Bienvenido al <font color="#497abd">**O**</font>bservatorio de <font color="#763d7a">**C**</font>ohesión <font color="green">**S**</font>ocial  **(OCS)**.
-Somos un proyecto del **Centro de Estudios de Conflicto y Cohesión Social (COES)** dedicado a la visualización de datos y a la promoción del uso de indicadores empíricos para el estudio de la cohesión social, con foco en Chile y América Latina.
+### Cómo funciona
 
-Desde el Observatorio de Cohesión Social se plantea que la disponibilidad pública de los datos es una condición necesaria para generar conocimiento sobre los fenómenos sociales. En la actualidad existen una serie de dificultades técnicas para el público general pueda acceder a estos datos, por lo que nuestro objetivo es contribuir a la divulgación de esta información en formatos amigables, específicamente mediante gráficos interactivos y descargables que quedan a disposición de individuos y organizaciones interesadas en el estudio de la convivencia social.
+- En breve: se selecciona un indicador, países, y se grafica.
 
-En nuestro visualizador encontrarás una serie de indicadores comparativos para América Latina provenientes de prestigiosas encuestas internacionales que han levantado datos durante los últimos 20 años, como el [**Proyecto de Opinión Pública Latinoamericana**](https://www.vanderbilt.edu/lapop-espanol/) [@LAPOP2015]. Los indicadores seleccionados buscan sintetizar la cohesión social desde dos grandes dimensiones: la vertical, que corresponde a la relación entre la sociedad civil y el Estado, y desde su dimensión horizontal, que refiere a las relaciones entre diferentes grupos e individuos dentro de una sociedad.
+- Es posible realizar dos tipos de análisis (por ahora):
+  
+   - *Transversal*: compara a los países en distintos indicadores usando todas las olas de la encuesta (es decir, es un promedio para cada país)
+   
+   - *Longitudinal*: se compara a los países considerando los distintos momentos en el tiempo del indicador seleccionado.
 
-En esta primera versión piloto se presentan 24 indicadores para la encuesta Lapop (2004-2014). Para más información sobre el proyecto, sugerencias o reporte de errores, favor de comunicarse con el investigador encargado del Observatorio de Cohesión Social: [julioiturrasanhueza@gmail.com](julioiturrasanhueza@gmail.com) 
+### Desarrollo
 
-## Fuente de datos
+En esta primera versión piloto se presentan 24 indicadores para la encuesta Lapop (2004-2014), con posibilidades de graficos por país (transversal) y en el tiempo (longitudinal). 
+
+Sugerencias y comentarios:
+
+- por email a Juan Carlos Castillo, [juancastillov@uchile.cl](juancastillov@uchile.cl) o Julio Iturra,  [julioiturrasanhueza@gmail.com](julioiturrasanhueza@gmail.com) 
+
+- directamente en el repositorio de Github donde se encuentra alojado el observatorio, mediante fork y pull-request: [https://github.com/jciturras/LAPOP_Iturra-observatorio_cohesion](https://github.com/jciturras/LAPOP_Iturra-observatorio_cohesion)
+
 
 
 
