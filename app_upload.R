@@ -23,8 +23,8 @@ rsconnect::setAccountInfo(name='juitsa', #account
 
 
 tictoc::tic() #inicio...
-rsconnect::deployApp() #Subir App al server de shinyapps
-Y # Dar el YES
+rsconnect::deployApp(forceUpdate = TRUE) #Subir App al server de shinyapps
+Y 
 tictoc::toc() #término...
 
-rsconnect::terminateApp(appName = "lapop_iturra-observatorio_cohesion")
+rsconnect::terminateApp(appName = "ocs-coes")
