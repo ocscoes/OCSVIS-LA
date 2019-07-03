@@ -20,57 +20,41 @@ function(input, output){
 
   etiq1a <- reactive({sjlabelled::get_label(lapop_subset())})  # Crear data con los labels para gráficos
 
-# Usando ggplot2 barras -------------------------------------------------------
+  # Gráfico de barras (estático) -------------------------------------------------------
 
-  
-  output$hist1 <-  renderPlot({
-    
+output$hist1 <-  renderPlot({
     req({input$boton1})
-    p1 <-ggplot(lapop_subset(), aes_string(x = eje_x1(),group = "pais")) +
-      geom_bar(aes(group = "pais",
-                   y = stat(prop)),
-               color     = "black",
-               fill =  "#497abd") +
+    p1 <- ggplot(lapop_subset(), aes_string(x = eje_x1(), group = "pais")) + 
+      geom_bar(aes(group = "pais",y = stat(prop)),color= "black",fill =  "#497abd") +
       scale_y_continuous(labels = scales::percent) +
-      scale_x_discrete(na.translate = FALSE)+
-      xlab(label = etiq1()$lab1) +
-      ylab("") +
+      scale_x_discrete(na.translate = FALSE) +
+      xlab(label = NULL) +
+      ylab(label = NULL) +
       facet_wrap("pais~.") +
-      geom_label(aes(y = stat(prop),
-                     label = paste0(round(stat(prop)* 100,1), '%')),
-                 stat    = 'count',
-                 vjust   = 0.7,
-                 nudge_x = 0,
-                 nudge_y = 0,
-                 color   = "black",
-                 size    = 4,
+      geom_label(aes(y     = stat(prop),
+                     label = paste0(round(stat(prop) * 100, 1), '%')),
+                 stat     = 'count',
+                 vjust    = 0.7,
+                 nudge_x  = 0,
+                 nudge_y  = 0,
+                 color    = "black",
+                 size     = 4,
                  fontface = "plain",
-                 label.padding = unit(0.1, "lines"), 
-                 alpha=0.9)+
-      theme_hc()+
-      theme(strip.text.x     = element_text(size   = 18,face = "bold"),
-            strip.text.y     = element_text(size   = 15,
-                                            family = "Lato", 
-                                            face   = "bold"),
-            strip.background = element_rect(colour = "grey", 
-                                            fill   = "white"),
-            panel.spacing    = unit(2, "lines"),
-            axis.title       = element_text(size  = 13, 
-                                            face  = "bold"),
-            axis.text.x      = element_text(size  = 12,
-                                            face = "bold"),
-            axis.text.y      = element_text(size  = 12,
-                                            face = "bold"),
-            plot.title       = element_text(size  = 20,
-                                            face  = "plain",
-                                            hjust = 0.5,
-                                            family = "Lato"),
-            plot.caption     = element_text(size  = 13,family = "Lato",hjust = 0,face = "italic"))+
-      labs(title    = paste(etiq1()$lab1,"\n"),
+                 label.padding = unit(0.1, "lines"),
+                 alpha = 0.9) +
+      theme_hc() +
+      theme(strip.text.x     = element_text(size   = 18, face = "bold"),
+            strip.text.y     = element_text(size   = 15, family = "Lato",face   = "bold"),
+            strip.background = element_rect(colour = "grey",fill   = "white"),panel.spacing= unit(2, "lines"),
+            axis.title       = element_text(size  = 13,face   = "bold"),
+            axis.text.x      = element_text(size  = 12,face   = "bold"),
+            axis.text.y      = element_text(size  = 12,face   = "bold"),
+            plot.title       = element_text(size  = 20,face   = "plain",hjust = 0.5,family = "Lato"),
+            plot.caption     = element_text(size  = 13,family = "Lato", hjust = 0   ,face = "italic")) +
+      labs(title    = paste(etiq1()$lab1, "\n"),
            subtitle = NULL,
-           caption  = "Fuente: Encuesta LAPOP (2004 - 2014) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social ")
-    
-
+           caption  = "Fuente: Encuesta LAPOP (2004 - 2014) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social")
+  
   print(p1)
 
   })

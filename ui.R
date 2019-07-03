@@ -1,9 +1,21 @@
-# INTERFAZO LAPOP_Iturra-observatorio-cohesion -----------------------------
+# INTERFAZO OCS-COES -----------------------------
+
+# install.packages("shiny")
+# install.packages("shinydashboard")
+# install.packages("shinydashboardPlus")
+# install.packages("ggplot2")
+# install.packages("scales")
+# install.packages("ggthemes")
+# install.packages("sjlabelled")
+# install.packages("dplyr")
+# install.packages("Cairo")
+
 
 library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(ggplot2)
+library(scales)
 library(ggthemes)
 library(sjlabelled)
 library(dplyr)
