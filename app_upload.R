@@ -24,7 +24,7 @@ rsconnect::setAccountInfo(name='juitsa', #account
 
 tictoc::tic() #inicio...
 rsconnect::deployApp(forceUpdate = TRUE) #Subir App al server de shinyapps
-Y 
+ 
 tictoc::toc() #término...
 
 rsconnect::terminateApp(appName = "ocs-coes")
