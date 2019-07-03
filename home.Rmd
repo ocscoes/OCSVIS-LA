@@ -7,6 +7,7 @@ output:
 bibliography: "www//zlibrary.bib"
 ---
 
+
 ```{r echo=FALSE, fig.align='center',out.width='900px'}
 knitr::include_graphics("www/OCS_juitsa-sdot.png")
 ```
@@ -37,12 +38,7 @@ Sugerencias y comentarios:
 
 - por email a Juan Carlos Castillo, [juancastillov@uchile.cl](juancastillov@uchile.cl) o Julio Iturra,  [julioiturrasanhueza@gmail.com](julioiturrasanhueza@gmail.com) 
 
-- directamente en el repositorio de Github donde se encuentra alojado el observatorio, mediante fork y pull-request: [https://github.com/jciturras/LAPOP_Iturra-observatorio_cohesion](https://github.com/jciturras/LAPOP_Iturra-observatorio_cohesion)
+- directamente en el repositorio de Github donde se encuentra alojado el observatorio, mediante fork y pull-request: [https://github.com/jciturras/OCS-COES](https://github.com/jciturras/OCS-COES)
 
-
-
-```{r eval=FALSE, include=FALSE}
-rmarkdown::render(input = here::here("home.rmd"),encoding = "UTF-8")
-```
 
 
