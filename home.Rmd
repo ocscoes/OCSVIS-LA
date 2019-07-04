@@ -1,7 +1,7 @@
 ---
 output: 
   html_document: 
-    toc: TRUE
+    toc: FALSE
     toc_float: FALSE
     css: "juitsa-theme.css"
 bibliography: "www//zlibrary.bib"
