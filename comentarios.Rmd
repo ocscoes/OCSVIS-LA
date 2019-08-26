@@ -1,0 +1,17 @@
+---
+title: "Comentarios"
+output: 
+  html_document:
+    includes:
+      after_body: disqus.html
+---
+
+# Comentarios
+
+- Aquí
+- Van
+- Los
+- comentarios
+
+
+

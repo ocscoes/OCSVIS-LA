@@ -5,6 +5,6 @@ account: juitsa
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1010433
-bundleId: 2197596
+bundleId: 2200375
 url: https://juitsa.shinyapps.io/ocs-coes/
-when: 1562172460.23004
+when: 1562258384.24277
