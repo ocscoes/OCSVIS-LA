@@ -1,0 +1,10 @@
+name: ocs-coes
+title:
+username:
+account: juitsa
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1010433
+bundleId: 2357929
+url: https://juitsa.shinyapps.io/ocs-coes/
+when: 1566857000.74936
