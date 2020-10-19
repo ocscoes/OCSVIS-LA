@@ -31,7 +31,7 @@ Este sitio permite realizar análisis comparativos de distintos indicadores asoc
 │       └── proc
 │          ├── lapop_agrr_v2.RData
 |          └── lapop_agrr_v2.RData
-├── output
+├── production
 │   ├── backup_barplot.R
 |   ├── recode_vars.R
 ├── README.md
