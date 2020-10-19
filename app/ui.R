@@ -27,7 +27,7 @@ library(Cairo);options(shiny.usecairo=TRUE) # Para la calidad de los plots
 dashboardPagePlus(
   dashboardHeaderPlus(title = tagList(
     span(class = "logo-lg", "Observatorio de Cohesión"),
-    img(src = "OCS_1_1.svg")),
+    img(src = "images/OCS_1_1.svg")),
     disable = FALSE,
     titleWidth = 300,
     enable_rightsidebar = TRUE),
@@ -42,7 +42,7 @@ dashboardPagePlus(
               # Cuerpo del UI ------------------------------------------------------------
               dashboardBody(
                 tags$head(
-                  tags$link(rel = "stylesheet", type = "text/css", href = "custom-a.css")
+                  tags$link(rel = "stylesheet", type = "text/css", href = "css/custom-a.css")
                 ),
                 tabItems(
                   # tab0: Home-------------------------------------------------------------------------------------

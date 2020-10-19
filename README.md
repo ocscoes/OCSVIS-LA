@@ -10,21 +10,29 @@ Este sitio permite realizar análisis comparativos de distintos indicadores asoc
 
 ```
 ├── app
-│   ├── css
-│   │   ├── **/*.css
-│   ├── favicon.ico
-│   ├── images
-│   ├── index.html
-│   ├── js
-│   │   ├── **/*.js
-│   └── partials/template
-├── dist (or build)
-├── node_modules
-├── bower_components (if using bower)
-├── test
-├── Gruntfile.js/gulpfile.js
+│   ├── rsconnect
+│   │   ├── shinyapps.io
+│   ├── www
+│       ├── bib
+|       |   └── ocs-library.bib
+│       ├── css
+|       |   ├── docs-theme.css  
+|       |   └── custom-a.css
+|       ├── html
+|       |   └── disqus.html
+|       └── images
+|           ├── OCS_1_1.svg
+|           └── OCS_sfonts.svg
+├── input
+│   ├── data
+│       ├── original
+│       |   ├── lapop_agrr.RData
+|       |   └── lapop_agrr.RData
+│       └── proc
+│          ├── lapop_agrr_v2.RData
+|          └── lapop_agrr_v2.RData
+├── output
+│   ├── backup_barplot.R
+|   ├── recode_vars.R
 ├── README.md
-├── package.json
-├── bower.json (if using bower)
-└── .gitignore
 ```

@@ -1,17 +1,21 @@
 ---
+title: " "
 output: 
   html_document: 
     toc: FALSE
     toc_float: FALSE
-    css: "www/docs-theme.css"
+    css: "www/css/docs-theme.css"
     includes:
-      after_body: "www/disqus.html"
-bibliography: "www/ocs-library.bib" 
+      after_body: "www/html/disqus.html"
+bibliography: "www/bib/ocs-library.bib" 
 ---
 
+```{r eval=FALSE, include=FALSE}
+rmarkdown::render(input = "home.Rmd")
+```
 
 ```{r echo=FALSE, fig.align='center',out.width='900px'}
-knitr::include_graphics("www/OCS_juitsa-sdot.png")
+knitr::include_graphics("www/images/OCS_juitsa-sdot.png")
 ```
 <div style="text-align:center">
 ## Indicadores Comparativos de Cohesión Social para América Latina
