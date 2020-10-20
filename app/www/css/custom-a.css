@@ -66,7 +66,7 @@ p {
 .content {  /* Controlar el espacio en torno al table of contents del home */
     min-height: 250px;
     padding: 0px;
-    padding-top:10px;
+    padding-top:0px !important;
     margin-right: 0px;
     margin-left: 0px;
     padding-left: 0px;
@@ -74,10 +74,11 @@ p {
 }
 
 div.container-fluid {
-    padding-top:10px;
+    padding-top:0px !important; 
     padding-right: 0px;
     padding-left: 0px;
     margin-right: auto;
     margin-left: auto;
 }
-                              
+
+

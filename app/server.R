@@ -6,9 +6,11 @@
 function(input, output){
   lapop_subset <- eventReactive(
     eventExpr = input$boton1,
-    {lapop_ind1 %>% dplyr::select(input$items2,pais,year) %>% dplyr::filter(pais %in% input$country) %>% copy_labels(lapop_ind1) # Actualiza el subset variable / pais / año  - reacciona a boton1
-                                                                                                                                 # Para usar plotly tuve que agregar un na.omit(), de lo contrario siempre aparecía una barra "null"
-  })                                                                                                                             # - Problema: al agregar na.omit() pierdo los attr labels de sjlabelled
+    {lapop_ind1 %>% dplyr::select(input$items2,pais,year) %>% 
+        dplyr::filter(pais %in% input$country & year %in% input$year) %>%
+        copy_labels(lapop_ind1) # Actualiza el subset variable / pais / año  - reacciona a boton1
+                                # Para usar plotly tuve que agregar un na.omit(), de lo contrario siempre aparecía una barra "null"
+  })                            # - Problema: al agregar na.omit() pierdo los attr labels de sjlabelled
                             
   
   # Gráfico de Barras  ---------------------------------------------------------
@@ -85,6 +87,16 @@ output$hist1 <-  renderPlot({
   # 
   # })
 
+  # Usando HIGHCHART barras (INTERACTIVO) -------------------------------------------------------
+  output$hcplot1 <- renderHighchart({
+    hchart(
+      lapop_subset(),
+      "column",
+      hcaes(y = eje_x1(), group = "pais"))
+    
+  }) # end hc2
+  
+
 # GUARDAR ggplot2 barras ----------------------------------------------------------------------
 
   output$saveplot1 <- downloadHandler(
@@ -109,16 +121,30 @@ output$hist1 <-  renderPlot({
 
 # Subset longtudinal -------------------------------------------------------------------------
 
+  # Subset 1: sirve para calcular la linea para cada pais y agno -------------
+  
   lapop_subset_long <- eventReactive(
     eventExpr = input$boton2,
-    {lapop %>% dplyr::select(input$items_long,pais,year,pais_year) %>% dplyr::filter(pais %in% input$country_long) %>% copy_labels(lapop) # Actualiza el subset variable / pais / año  - reacciona a boton2
+    {lapop %>% dplyr::select(input$items_long,pais,year,pais_year) %>% 
+        dplyr::filter(pais %in% input$country_long) %>%
+        dplyr::filter(year %in% c(min(input$year_long):max(input$year_long))) %>% # seleciona el min y max de year
+        copy_labels(lapop) # Actualiza el subset variable / pais / año  - reacciona a boton2
+    })
+
+  # Subset 2: sirve para calcular la linea promedio general | no se filtra por pais -------------
+
+  lapop_subset_all <- eventReactive(
+    eventExpr = input$boton2,
+    {lapop %>% dplyr::select(input$items_long,pais,year,pais_year,promedio) %>% 
+        dplyr::filter(year %in% c(min(input$year_long):max(input$year_long))) %>%
+        copy_labels(lapop) # Actualiza el subset variable / pais / año  - reacciona a boton2
     })
 
   # Etiquetas para Gráfico longitudinal  ---------------------------------------------------------
   etiq2 <- reactive({
     data.table::data.table("lab1"=sjlabelled::get_label(lapop_subset_long())) # Crear data con los labels para gráficos
   })
-  eje_x2   <-  eventReactive(eventExpr = input$boton2,{input$items_long})     # Actualiza la variable para el plot  - reacciona a boton2
+  eje_x2    <-  eventReactive(eventExpr = input$boton2,{input$items_long})     # Actualiza la variable para el plot  - reacciona a boton2
 
   # Grafico longitudinal (estatico) ------------------------------------------------------------------------
 
@@ -129,8 +155,8 @@ output$hist1 <-  renderPlot({
     ggplot(data = lapop_subset_long(),aes_string(x = "year", y = eje_x2(),group ="pais", color = "pais")) +
       geom_line(size=1.5) +
       geom_point(shape=21,size=3, color ="black",fill="white") +
-      stat_summary(data = lapop, aes_string(y = eje_x2(),x = "year",group = 1), fun.y=mean, colour="navyblue", size=1,alpha =0.3, linetype= "dotted", geom="line") +
-      stat_summary(data = lapop, aes_string(y = eje_x2(),x = "year",group = 1, shape="promedio"), fun.y=mean, colour='cornflowerblue',size=4, geom="point") +
+      stat_summary(data = lapop_subset_all(), aes_string(y = eje_x2(),x = "year",group = 1), fun.y=mean, colour="navyblue", size=1,alpha =0.3, linetype= "dotted", geom="line") +
+      stat_summary(data = lapop_subset_all(), aes_string(y = eje_x2(),x = "year",group = 1, shape="promedio"), fun.y=mean, colour='cornflowerblue',size=4, geom="point") +
       xlab(label = NULL) +
       ylab(label = NULL) +
       scale_x_discrete(name=" ",na.translate = FALSE)+
@@ -180,6 +206,14 @@ output$hist1 <-  renderPlot({
   # })
   # Homepage del sitio web (archivo fuente en .rmd)------------------------------------------------------------
   output$home1 <- renderUI(includeHTML(path = "home.html"))
+  
+  # Funcion para mensaje de carga------------------------------------------------------------
+  # Simulate work being done for 1 second
+  Sys.sleep(2)
+  
+  # Hide the loading message when the rest of the server function has executed
+  hide(id = "loading-content", anim = TRUE, animType = "fade")    
+  show("app-content")
 }
 
 

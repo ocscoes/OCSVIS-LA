@@ -3,8 +3,8 @@ rm(list=ls())
 
 # Cargar bases LAPOP ------------------------------------------------------
 
-load("../input/data/proc/lapop_aggr_v2.RData") # Cargar bases con labels
-load("../input/data/proc/lapop_ind_v2.RData")  # Cargar bases con labels
+load(url("https://ocscoes.github.io/OCS-COES/input/data/proc/lapop_aggr_v2.RData")) # Cargar bases con labels
+load(url("https://ocscoes.github.io/OCS-COES/input/data/proc/lapop_ind_v2.RData"))  # Cargar bases con labels
 
 # Determinar etiquetas para variable input --------------------------------
 
