@@ -11,9 +11,21 @@ body{
 }
 
 
+.button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+
 
 .main-header .logo .logo-lg { /* Esto es para el header con "Observatorio de Cohesion*/
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
     background-color: #497abd !important;
     line-height: 20px;
@@ -42,7 +54,6 @@ body{
   color: #E8E018;
   padding-top:20px;
 }
-
 
 
 h1.title {

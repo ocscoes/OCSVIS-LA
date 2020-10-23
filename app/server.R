@@ -4,6 +4,14 @@
 # SERVER ------------------------------------------------------------------
 
 function(input, output){
+
+# Efecto collapse en sidebar ------------------------------------------------------------------
+  # onevent("mouseenter", "sidebarCollapsed", shinyjs::removeCssClass(selector = "body", class = "sidebar-collapse"))
+  # onevent("mouseleave", "sidebarCollapsed", shinyjs::addCssClass(selector = "body", class = "sidebar-collapse"))
+
+
+# Subset para barplot -------------------------------------------------------------------------
+
   lapop_subset <- eventReactive(
     eventExpr = input$boton1,
     {lapop_ind1 %>% dplyr::select(input$items2,pais,year) %>% 
@@ -52,7 +60,7 @@ output$hist1 <-  renderPlot({
             axis.text.x      = element_text(size  = 12,face   = "bold"),
             axis.text.y      = element_text(size  = 12,face   = "bold"),
             plot.title       = element_text(size  = 20,face   = "plain",hjust = 0.5,family = "Lato"),
-            plot.caption     = element_text(size  = 13,family = "Lato", hjust = 0   ,face = "italic")) +
+            plot.caption     = element_text(size  = 13,family = "Lato", hjust = 0   ,face = "italic") ) +
       labs(title    = paste(etiq1()$lab1, "\n"),
            subtitle = NULL,
            caption  = "Fuente: Encuesta LAPOP (2004 - 2014) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social")
@@ -86,16 +94,6 @@ output$hist1 <-  renderPlot({
   #                )
   # 
   # })
-
-  # Usando HIGHCHART barras (INTERACTIVO) -------------------------------------------------------
-  output$hcplot1 <- renderHighchart({
-    hchart(
-      lapop_subset(),
-      "column",
-      hcaes(y = eje_x1(), group = "pais"))
-    
-  }) # end hc2
-  
 
 # GUARDAR ggplot2 barras ----------------------------------------------------------------------
 
@@ -204,6 +202,54 @@ output$hist1 <-  renderPlot({
   # 
   # 
   # })
+  # subset scatterplot  (estatico) ------------------------------------------------------------------------
+ 
+  # Subset 1: sirve para calcular la linea para cada pais y agno -------------
+  
+  lapop_scatter <- eventReactive(
+    eventExpr = input$boton3,
+    {lapop %>% dplyr::select(input$items_x,input$items_y,year,pais) %>% 
+        dplyr::filter(year == input$year_scatter) %>% # seleciona el year
+        copy_labels(lapop) # Actualiza el subset variable / pais / año  - reacciona a boton3
+    })
+
+  # Etiquetas para scatterplot  ---------------------------------------------------------
+  etiq3 <- reactive({
+    data.table::data.table("lab1"=sjlabelled::get_label(lapop_scatter())) # Crear data con los labels para gráficos
+  })
+  
+  eje_x_scat    <-  eventReactive(eventExpr = input$boton3,{input$items_x})    # Actualiza la variable X para el scatterplot - reacciona a boton1
+  eje_y_scat    <-  eventReactive(eventExpr = input$boton3,{input$items_y})    # Actualiza la variable X para el scatterplot - reacciona a boton1
+
+  # Grafico scatterplot (estatico) ------------------------------------------------------------------------
+
+  output$plotscat1 <-  renderPlot({
+
+    # req({input$items_long})
+    req({input$boton3})
+    ggplot(lapop_scatter(),
+           aes_string(x=eje_x_scat(),
+                      y=eje_y_scat(), 
+                      label ="pais")) +
+      geom_point() +
+      geom_smooth(method = "lm") + 
+      geom_label_repel(family="Lato",size=5,label.r = 0)+
+      xlab(label = etiq3()$lab1[1])+
+      ylab(label = etiq3()$lab1[2]) +
+      theme_classic()+
+      theme(axis.text.x  = element_text(size   = 18,family = "Lato",face = "bold"),
+            axis.text.y  = element_text(size   = 15,family = "Lato",face = "bold"),
+            axis.title.x = element_text(size   = 18,family = "Lato",face = "bold"),
+            axis.title.y = element_text(size   = 18,family = "Lato",face = "bold"),
+            legend.text  = element_text(size   = 12,family = "Lato"),
+            plot.title   = element_text(size   = 18,family = "Lato",face = "bold",hjust = 0.5),
+            plot.caption = element_text(size   = 12,family = "Lato",hjust = 0,face = "italic")) +
+      labs(title    = paste("Relación entre", etiq3()$lab1[1], "y", etiq3()$lab1[2]),
+           caption  = "Fuente: Encuesta LAPOP (2004 - 2014) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social ")
+
+  })
+
+  
   # Homepage del sitio web (archivo fuente en .rmd)------------------------------------------------------------
   output$home1 <- renderUI(includeHTML(path = "home.html"))
   

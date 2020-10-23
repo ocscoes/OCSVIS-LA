@@ -18,6 +18,7 @@ library(shinyEffects)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(ggplot2)
+library(ggrepel)
 library(highcharter)
 library(scales)
 library(ggthemes)
@@ -26,6 +27,20 @@ library(dplyr)
 library(Cairo);options(shiny.usecairo=TRUE) # Para la calidad de los plots
 
 
+# fullscreen buton ----------------------------------------------------------------------------
+
+jsToggleFS <- 'shinyjs.toggleFullScreen = function() {
+    var element = document.documentElement,
+      enterFS = element.requestFullscreen || element.msRequestFullscreen || element.mozRequestFullScreen || element.webkitRequestFullscreen,
+      exitFS = document.exitFullscreen || document.msExitFullscreen || document.mozCancelFullScreen || document.webkitExitFullscreen;
+    if (!document.fullscreenElement && !document.msFullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
+      enterFS.call(element);
+    } else {
+      exitFS.call(document);
+    }
+  }'
+
+# fade in loading screen ----------------------------------------------------------------------
 appCSS <- "
 #loading-content {
   position: absolute;
@@ -48,7 +63,7 @@ setShadow <- shinyEffects::setShadow
 
 dashboardPagePlus(
   dashboardHeaderPlus(title = tagList(
-    span(class = "logo-lg", "Observatorio de Cohesión"),
+    span(class = "logo-lg", "OCS-COES"),
     img(src = "images/OCS_1_1.svg")),
     disable = FALSE,
     titleWidth = 300,
@@ -56,17 +71,21 @@ dashboardPagePlus(
   # Barra Lateral: tabs--------------------------------------------------------
               dashboardSidebar(width = 150,
                                sidebarMenu(
-                                 menuItem("Inicio           ",tabName = "home" ),
-                                 menuItem("Corte Transversal",tabName = "transversal" ),
-                                 menuItem("Longitudinal"     ,tabName = "longitudinal"),
-                                 menuItem("Correlacionar"    ,tabName = "correlacionar")
+                                 menuItem("Inicio           ",tabName = "home", icon = icon("globe-americas")),
+                                 menuItem("Transversal"  ,tabName = "transversal", icon = icon("chart-bar")),
+                                 menuItem("Longitudinal" ,tabName = "longitudinal", icon = icon("chart-line")),
+                                 menuItem("Correlacionar",tabName = "correlacionar",icon=icon("project-diagram"))
+#                                 div(HTML("<button type='button'>Toggle Fullscreen </button>"),onclick = "shinyjs.toggleFullScreen();") #full screen button
                                )),
               # Cuerpo del UI ------------------------------------------------------------
               dashboardBody(
                 setShadow(class = "box"),
+                setShadow(class= "main-header"), 
+                setShadow(class= "sidebar-collapse"),
                 #-------------------------------------------------------------------------
                 inlineCSS(appCSS), # 1. Cubre de negro toda la app
-                useShinyjs(),      # 2. Carga funciones JS a la app
+                useShinyjs(),      # 2. Carga funciones JS a la app 
+                extendShinyjs(text = jsToggleFS), #3. Full screen app
                 div(id = "loading-content",
                     tags$img(src = "https://i.pinimg.com/originals/a4/f2/cb/a4f2cb80ff2ae2772e80bf30e9d78d4c.gif")
                     ), # Loading image 
@@ -113,9 +132,14 @@ dashboardPagePlus(
                                             selected = c("Chile","Venezuela","Argentina","Mexico"),
                                             width = 700),
                                 actionButton(inputId = "boton1",
-                                             label = "Graficar", icon = icon(name = "chart-bar",lib = "font-awesome")),
+                                             label = "Graficar", 
+                                             width = "100%",
+                                             icon = icon(name = "chart-bar",lib = "font-awesome")),
                                 collapsible = TRUE),
-                            box(title = NULL,width = 2,
+                            box(title = NULL,
+                                width = 2,
+                                collapsible = TRUE,
+                                status = "warning",
                                 numericInput(inputId="ancho1","Ancho de gráfico (cm)", min = 10, max = 30,value = 20,width = "100%"),
                                 selectInput(inputId="format1",
                                             label = "Exportar gráfico",
@@ -123,9 +147,8 @@ dashboardPagePlus(
                                                         "png" = "png"),
                                             multiple = FALSE,
                                             selected = "png",width = "100%"),
-                                downloadButton("saveplot1",label =  "Guardar"),
-                                collapsible = TRUE,
-                                status = "warning"),
+                                downloadButton("saveplot1",label =  "Guardar")
+                                ),
 
                            ) #termino fluidPage(1)
                   ), #termino tabItem(1)
@@ -153,22 +176,27 @@ dashboardPagePlus(
                                             width = "100%"),
                                 sliderInput(inputId = "year_long", 
                                             label = "Rango de Año",
+                                            width = "100%",
                                             sep = "",step = 1,
                                             min = 2004,
                                             max = 2014, 
                                             value = c(2004,2014)),
-                                actionButton(inputId = "boton2",
-                                             label = "Graficar", 
-                                             icon = icon(name = "chart-bar",
-                                                         lib = "font-awesome"),)),
-                            box(title = NULL,width = 6,
+                                ),
+                            box(title = NULL,
+                                width = 6,
+                                height = "218px",
                                 collapsible = TRUE,
                                 selectInput(inputId = "country_long",
                                             label = "Seleciona el País",
                                             choices = levels(lapop$pais),
                                             multiple = TRUE,
                                             selected = c("Chile","Venezuela","Argentina","Mexico"),
-                                            width = "100%")
+                                            width = "100%"),
+                                actionButton(inputId = "boton2",
+                                             width = "100%",height="100%",
+                                             label = "Graficar", 
+                                             icon = icon(name = "chart-bar",
+                                                         lib = "font-awesome"))
                                 )
                           
                             # box(title = "Variable de Cohesion  - Longitudinal",width = 3,height = 200,
@@ -184,21 +212,42 @@ dashboardPagePlus(
                   # tab2 : Analisis de Correlación  --------------------------------------------------------------------
                   tabItem(tabName = "correlacionar", 
                           fluidPage(
-                            box(title = "Variable de Cohesion  - Correlacion (EN DESARROLLO)",width = 5,height = 500,
+                            box(title = "Correlación variables de cohesión social",
+                                width = 10,
+                                collapsible = TRUE,
+                                plotOutput(outputId = "plotscat1",
+                                           width = "100%",
+                                           height = 900)),
+                            box(title = "Variable de Cohesion",
+                                width = 2,
+                                collapsible = TRUE,
                                 selectInput(inputId = "items_x",
                                             label = "Seleciona Indicador (Eje X)",
                                             choices = var_label,
-                                            selected = FALSE,
+                                            selected = "it1",
                                             selectize = FALSE,
                                             multiple = FALSE,
-                                            width = 500),
+                                            width = "100%"),
                                 selectInput(inputId = "items_y",
                                             label = "Seleciona Indicador (Eje Y)",
                                             choices = var_label,
-                                            selected = FALSE,
+                                            selected = "pn4",
                                             selectize = FALSE,
                                             multiple = FALSE,
-                                            width = 500)
+                                            width = "100%"),
+                                selectInput(inputId = "year_scatter",
+                                            label = "Seleciona año",
+                                            choices = levels(lapop$year),
+                                            multiple = FALSE,
+                                            selected = c("2014"),
+                                            width = "100%"),
+                                actionButton(inputId = "boton3",
+                                             width = "100%",
+                                             height="100%",
+                                             label = "Graficar", 
+                                             icon = icon(name = "chart-bar",
+                                                         lib = "font-awesome"))
+                                
                                 )
                           ) #termino fluidPage(2)
                   ) #termino tabItem(2)
