@@ -12,12 +12,12 @@ pacman::p_load(tidyverse,sjlabelled,countrycode,haven,questionr,wbstats,zoo,sjPl
 # save(datos,file = "input/data/original/4_LAPOP_2004_2018.RData")
 
 # Cargar base de datos ------------------------------------------------------------------------
-load(file = "input/data/original/GrandMerge.RData") #2004 - 2014
-load(file = "input/data/original/4_LAPOP_2004_2018.RData") #2004 - 2018
-lapop18<- read_dta(file = "input/data/original/5_LAPOP_2018.dta")
-
+load(file = "input/data/original/GrandMerge.RData") #Lapop: 2004 - 2014
+lapop18<- read_dta(file = "input/data/original/5_LAPOP_2018.dta")# Lapop: 2018
 
 names(datos)#para saber el orden de las variables
+
+# A 2018: seleccionar variables y pegarla a 2004-2014
 
 #reducir base
 datos <-datos %>% select(year, pais, idnum, upm, strata, wt, weight1500, estratopri,
@@ -28,18 +28,11 @@ datos <-datos %>% select(year, pais, idnum, upm, strata, wt, weight1500, estrato
                          eff1, pn4, exc7, pol1, vb2) #subset de variables.
 names(datos)
 
+# variables ausentes en LAPOP 2018: n9,n11,n15,pr4
 
-data18 <- datos %>% select(year=wave, pais, idnum, upm, strata, wt, weight1500, estratopri,
-                           estratosec, ur, tamano, prov, cluster,
-                           it1, prot3, aoj12, b2, b3, b4,
-                           b10a, b12, b20, b20a, b21, b21a,
-                           ros4, ing4,
-                           eff1, pn4, exc7, pol1, vb2)
+# Merge 2004-2014 + 2018 ----------------------------------------------------------------------
 
-
-
-view_df(datos %>% select(n9,n11,n15,pr4))
-
+save() #guardar base a nivel individual para periodo 2004 - 2018
 
 
 # Promedio pais | year ------------------------------------------------------------------------
@@ -97,6 +90,10 @@ lapop_country$isocode   <- countrycode(lapop_country$pais.name,
                                        destination = 'iso3c')
 lapop_country[,c("pais","pais.name","isocode")]
 
+# Variables a Nivel Macro ---------------------------------------------------------------------####
+
+
+
 # country level variables -------------------------------------------------------------------------
 paises<- unique(lapop_country$isocode)
 
@@ -117,7 +114,7 @@ gini<- gini %>% select(country,year=date,iso3c,gini=value)
 for (i in 1:length(paises)) {
   name<-paste0("gdp_", paises[i])
   pais<- paste0(paises[i])
-  assign(name, wb(indicator = "NY.GDP.PCAP.KD", country = pais, startdate = 2005, enddate = 2019))
+  assign(name, wb(indicator = "NY.GDP.PCAP.KD", country = pais, startdate = 2004, enddate = 2019))
 }
 
 gdp<- rbind(gdp_ARG, gdp_BOL, gdp_CAN, gdp_COL, gdp_DOM, gdp_GTM, gdp_HND, gdp_JAM, gdp_NIC, gdp_PER, gdp_SLV,
@@ -162,7 +159,7 @@ table(lapop_country$pais.name,lapop_country$year)
 # Canada                0    1    0    1    0    1    1    1
 
 
-# PENDIENTES: Chequear datos faltantes por pais y agno [ver country_variables-original.R]
+# PENDIENTES: Chequear datos faltantes por pais y agno [ver country_variables-original.R para procedimiento de imputacion]
 
 
 ## 5. Guardar base de datos
