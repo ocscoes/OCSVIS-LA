@@ -1,5 +1,9 @@
+
 options(scipen=999)
 rm(list=ls())
+
+```{r}
+
 
 if (!require("pacman")) install.packages("pacman")
 # remotes::install_github("nset-ornl/wbstats")
@@ -9,7 +13,7 @@ pacman::p_load(tidyverse,sjlabelled,countrycode,haven,questionr,wbstats,zoo,sjPl
 # save(datos,file = "input/data/original/GrandMerge.RData")
 
 # datos <- read_dta(file = "input/data/original/4_LAPOP_2004_2018.dta")
-datos<- read_dta("input/data/original/2004-2018 LAPOP AmericasBarometer Merge (v1.0FREE).dta")
+datos<- read_dta("../input/data/original/2004-2018 LAPOP AmericasBarometer Merge (v1.0FREE).dta")
 
 # save(datos,file = "input/data/original/4_LAPOP_2004_2018.RData")
 
@@ -30,11 +34,19 @@ datos <-datos %>% select(wave, year, pais, idnum, upm, strata, wt, weight1500, e
                          eff1, pn4, exc7, pol1, vb2) #subset de variables. pr4 
 names(datos)
 
+```
+ incluir pr4 desde 2004 -2014 desde la otra base de datos.  Se borra en la base longitudinal. 
+
+
+
 # variables ausentes en LAPOP 2018: n9,n11,n15,pr4
 
 # Merge 2004-2014 + 2018 ----------------------------------------------------------------------
 
-save() #guardar base a nivel individual para periodo 2004 - 2018
+
+```{r}
+
+#save() #guardar base a nivel individual para periodo 2004 - 2018
 
 
 # Promedio pais | year ------------------------------------------------------------------------
@@ -57,7 +69,12 @@ colnames(promedio_ola) <- c("wave","year","it1_promr","prot3_promr","aoj12_promr
                             "ing4_promr", "eff1_promr", "pn4_promr", "exc7_promr","pol1_promr", "vb2_promr") #"pr4_promr"
 
 # unir en una base de datos
-lapop_country <- merge(datos2, promedio_ola, by = "wave")
+lapop_country <- left_join(datos2, promedio_ola)
+
+
+```
+
+
 
 # ordenar los datos
 ### Comentario: no usar.
@@ -86,6 +103,7 @@ lapop_country <- arrange(lapop_country,
                          pol1, pol1_promr,
                          vb2, vb2_promr) # pr4, pr4_promr,
 
+```{r}
 # crear variable country name como character y nombre en iso3c (p.e. United States = USA)
 lapop_country$pais.name <- as_label(as_factor(lapop_country$pais))
 lapop_country$isocode   <- countrycode(lapop_country$pais.name, 
@@ -93,14 +111,20 @@ lapop_country$isocode   <- countrycode(lapop_country$pais.name,
                                        destination = 'iso3c')
 lapop_country[,c("pais","pais.name","isocode")]
 
+```
+
+
+
+
 # Variables a Nivel Macro ---------------------------------------------------------------------####
-
-
-
 # country level variables -------------------------------------------------------------------------
+
+## Gini Index (Gini) -------------------------------------------------------------------------------
+
+
+```{r}
 paises<- unique(lapop_country$isocode)
 
-# Gini Index (Gini) -------------------------------------------------------------------------------
 for (i in 1:length(paises)) {
   name<-paste0("gini_", paises[i])
   pais<- paste0(paises[i])
@@ -113,7 +137,14 @@ gini<- rbind(gini_ARG, gini_BOL, gini_CAN, gini_COL, gini_DOM, gini_GTM, gini_HN
 
 gini<- gini %>% select(country,year=date,iso3c,gini=value)
 
-# Gross Domestic Product (GDP) --------------------------------------------------------------------
+```
+
+
+
+
+## Gross Domestic Product (GDP) --------------------------------------------------------------------
+
+```{r}
 for (i in 1:length(paises)) {
   name<-paste0("gdp_", paises[i])
   pais<- paste0(paises[i])
@@ -128,59 +159,73 @@ gdp<- gdp %>%
   select(country,year=date,iso3c,gdp=value) %>% 
   mutate(gdp=(gdp/1000)) #gpd in thounsand dolars
 
+```
+
+```{r}
 # Merge datasets ------------------------------------------------------------------------------
 country_vars <- full_join(x = gini,y = gdp)
 country_vars <- country_vars %>% arrange(country,year)
 
-# Country x wave ------------------------------------------------------------------------------
+```
+
+
+```{r}
 table(lapop_country$pais.name,lapop_country$wave)
-#                    2004 2006 2007 2008 2009 2010 2012 2014
-# Mexico                1    1    0    1    0    1    1    1
-# Guatemala             1    1    0    1    0    1    1    1
-# El Salvador           1    1    0    1    0    1    1    1
-# Honduras              1    1    0    1    0    1    1    1
-# Nicaragua             1    1    0    1    0    1    1    1
-# Costa Rica            1    1    0    1    0    1    1    1
-# Panama                1    1    0    1    0    1    1    1
-# Colombia              1    1    0    1    0    1    1    1
-# Ecuador               1    1    0    1    0    1    1    1
-# Bolivia               1    1    0    1    0    1    1    1
-# Peru                  0    1    0    1    0    1    1    1
-# Paraguay              0    1    0    1    0    1    1    1
-# Chile                 0    1    0    1    0    1    1    1
-# Uruguay               0    0    1    1    0    1    1    1
-# Brazil                0    0    1    1    0    1    1    1
-# Venezuela             0    0    1    1    0    1    1    1
-# Argentina             0    0    0    1    0    1    1    1
-# Dominican Republic    1    1    0    1    0    1    1    1
-# Haiti                 0    1    0    1    0    1    1    1
-# Jamaica               0    1    0    1    0    1    1    1
-# Guyana                0    1    0    0    1    1    1    1
-# Trinidad & Tobago     0    0    0    0    0    1    1    1
-# Belize                0    0    0    1    0    1    1    1
-# United States         0    1    0    1    0    1    1    1
-# Canada                0    1    0    1    0    1    1    1
+```
+
+
+
+# Country x wave ------------------------------------------------------------------------------
+                    2004 2006 2007 2008 2009 2010 2012 2014
+ Mexico                1    1    0    1    0    1    1    1
+ Guatemala             1    1    0    1    0    1    1    1
+ El Salvador           1    1    0    1    0    1    1    1
+ Honduras              1    1    0    1    0    1    1    1
+ Nicaragua             1    1    0    1    0    1    1    1
+ Costa Rica            1    1    0    1    0    1    1    1
+ Panama                1    1    0    1    0    1    1    1
+ Colombia              1    1    0    1    0    1    1    1
+ Ecuador               1    1    0    1    0    1    1    1
+ Bolivia               1    1    0    1    0    1    1    1
+ Peru                  0    1    0    1    0    1    1    1
+ Paraguay              0    1    0    1    0    1    1    1
+ Chile                 0    1    0    1    0    1    1    1
+ Uruguay               0    0    1    1    0    1    1    1
+ Brazil                0    0    1    1    0    1    1    1
+ Venezuela             0    0    1    1    0    1    1    1
+ Argentina             0    0    0    1    0    1    1    1
+ Dominican Republic    1    1    0    1    0    1    1    1
+ Haiti                 0    1    0    1    0    1    1    1
+ Jamaica               0    1    0    1    0    1    1    1
+ Guyana                0    1    0    0    1    1    1    1
+ Trinidad & Tobago     0    0    0    0    0    1    1    1
+ Belize                0    0    0    1    0    1    1    1
+ United States         0    1    0    1    0    1    1    1
+ Canada                0    1    0    1    0    1    1    1
 
 
 # PENDIENTES: Chequear datos faltantes por pais y agno [ver country_variables-original.R para procedimiento de imputacion]
 
 
+```{r}
 #Juntar Gini, GDP y Lapop
 
-table(lapop_country$wave)
-table(country_vars$year)
-table(lapop_country$isocode)
-table(country_vars$iso3c)
 
-country_vars$isocode <- country_vars$iso3c
+lapop_country$idwc <- paste(lapop_country$wave, lapop_country$isocode)
+country_vars$idwc <- paste(country_vars$year, country_vars$iso3c)
+
+
+lapop_country3 <- merge(lapop_country, country_vars, by= "idwc")
+
 country_vars$year <- as.numeric(country_vars$year)
-country_vars$idwc <- paste(country_vars$wave, country_vars$isocode)
-lapop_country$idwc <- paste(lapop_country$year.x, lapop_country$isocode)
+lapop_country2 <- left_join(lapop_country , country_vars, by =c("wave"="year", "isocode"="iso3c"))
 
-lapop_country2 <- left_join(lapop_country , country_vars, by = c("year.x"="year", "isocode"="iso3c"))
+save(lapop_country, file ="lapop_country.RData")
+```
 
-#lapop_country <- merge(lapop_country, country_vars, by= "idwc")
 
+
+#
 # Esta correlacion muestra la consistencia entre el año de campo y el gini.
 cor(lapop_country$year.x, lapop_country$year) 
 
