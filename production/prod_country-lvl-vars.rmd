@@ -1,0 +1,288 @@
+---
+title: "Untitled"
+author: ""
+date: "31-10-2020"
+output: html_document
+---
+
+
+```{r}
+# Descargar paquetes. 
+
+if (!require("pacman")) install.packages("pacman")
+# remotes::install_github("nset-ornl/wbstats")
+pacman::p_load(tidyverse,sjlabelled,countrycode,haven,questionr,wbstats,zoo,sjPlot,sjmisc,dplyr)
+
+
+#options(scipen=999)
+#rm(list=ls())
+
+```
+
+
+```{r}
+# Cambio de formato de bases de datos: de dta a RData
+
+#datos<-read_dta("input/data/original/GrandMerge.dta") # importante poner extensión .dta
+#save(datos,file = "input/data/original/GrandMerge.RData")
+
+#datos0418 <- read_dta("../input/data/original/2004-2018 LAPOP AmericasBarometer Merge (v1.0FREE).dta") # base longitudinal que no incluye la pr4
+#save(datos0418, file="../input/data/original/LAPOP_2004-2008.RData" ) 
+
+
+# Cargar base de datos ------------------------------------------------------------------------
+
+load(file = "../input/data/original/GrandMerge.RData") #  "datos"  Lapop: 2004 - 2014
+
+load(file="../input/data/original/LAPOP_2004-2008.RData") # datos0418
+
+# save(datos,file = "input/data/original/4_LAPOP_2004_2018.RData")
+```
+
+
+# Generar base de datos individual longitudinal. Recuperar la variable pr4 ausente. 
+
+A continuacion se presenta el codigo para crear una base de datos con los valores promedio por pais y una base de datos a nivel individual con las varibales nacionales agregadas. La base de datos longitudinal LAPOP, no introduce una pregunta que no se realiza todos los años [pr4], por ello, y para aumentar la cantidad de datos disponibles, agregamos a esta base de datos longitudinal dichas variables desde un merge de las bases por año. 
+
+```{r}
+
+datos0418 <-  datos0418  %>%  
+                        select(wave, year, pais, idnum, upm, 
+                              strata, wt, weight1500, estratopri,
+                              estratosec, ur, tamano, prov, cluster,
+                              it1, prot3, aoj12, b2, b3, b4,
+                              b10a, b12, b20, b20a, b21, b21a,
+                              n9, n11, n15, ros4, ing4,
+                              eff1, pn4, exc7, pol1, vb2) # Selección variables de interes
+
+datos1618 <-  datos0418  %>% filter(wave==2016 | wave==2018)
+
+
+datos1618$pr4 <- NA # Crear variable pr4 para juntar las bases
+datos1618$wave <- as.numeric(datos1618$wave)
+
+
+names(datos) # para saber el orden de las variables
+ 
+datos$wave <- NA
+
+datosselc <-  datos  %>% select(wave, year, pais, idnum, upm, strata, wt, weight1500, estratopri,
+                         estratosec, ur, tamano, prov, cluster,
+                         it1, prot3, aoj12, b2, b3, b4,
+                         b10a, b12, b20, b20a, b21, b21a,
+                         n9, n11, n15, ros4, ing4,
+                         eff1, pn4, exc7, pol1, vb2, pr4) # wave
+
+# Evaluar la relación entre olas y agnos
+
+table(datosselc$year) 
+table(datos0418$wave)
+# Los casos se ordenan de tal modo wave(olas): 
+# 2004(2014), 2006(2006 y 2007),  2008(2008 y 2009), 2010(2010), 2012(2012), 2014(2014), 2016(16,17), 2018(18,19)
+
+datosselc$wave <- ifelse(datosselc$year==2006 | datosselc$year==2007, 2006, NA)
+datosselc$wave <- ifelse(datosselc$year==2004 , 2004, datosselc$wave)
+datosselc$wave <- ifelse(datosselc$year==2008 | datosselc$year==2009, 2008, datosselc$wave)
+datosselc$wave <- ifelse(datosselc$year==2010, 2010, datosselc$wave)
+datosselc$wave <- ifelse(datosselc$year==2012, 2012, datosselc$wave)
+datosselc$wave <- ifelse(datosselc$year==2014, 2014, datosselc$wave)
+
+datosselc <- remove_all_labels (datosselc) # Las etiquetas no son compatibles
+
+# Merge 2004-2014 + 2018 
+datos <- rbind(datosselc,datos1618) # logra una base longitudinal con la pr4 incluida. 
+datos <- copy_labels(datos, datos0418)
+
+names(datos)
+```
+
+
+
+```{r}
+
+#save() #guardar base a nivel individual para periodo 2004 - 2018
+
+# Promedio pais | year ------------------------------------------------------------------------
+datos2 <- datos %>% group_by(pais,wave)%>%summarise_all(funs(mean(., na.rm=TRUE))) 
+
+# Promedio wave para cada variable ------------------------------------------------------------
+
+## promedio de variables para cada ola (p.e. el nivel de confianza interpersonal en año 2006)
+promedio_ola <- datos %>% group_by(wave)%>%summarise_all(funs(mean(., na.rm=TRUE))) 
+
+#promedios regionales
+promedio_ola <- select(promedio_ola, wave, year, it1, prot3, aoj12, b2, b3, b4, b10a, b12, b20,
+                       b20a, b21, b21a,n9, n11, n15, ros4, ing4, 
+                       eff1, pn4, exc7, pol1, vb2 , pr4) 
+
+# renombro varibles que incluyen promedio de ola
+colnames(promedio_ola) <- c("wave","year","it1_promr","prot3_promr","aoj12_promr","b2_promr","b3_promr",
+                            "b4_promr","b10a_promr","b12_promr","b20_promr","b20a_promr","b21_promr",
+                            "b21a_promr","n9_promr","n11_promr", "n15_promr", "ros4_promr",
+                            "ing4_promr", "eff1_promr", "pn4_promr", "exc7_promr","pol1_promr", "vb2_promr", "pr4_promr") 
+
+# unir en una base de datos
+lapop_country <- left_join(datos2, promedio_ola)
+
+# ordenar los datos
+lapop_country <- arrange(lapop_country,
+                         pais,wave,year,
+                         it1, it1_promr,
+                         prot3, prot3_promr,
+                         aoj12, aoj12_promr,
+                         b2, b2_promr,
+                         b3, b3_promr,
+                         b4, b4_promr,
+                         b10a, b10a_promr,
+                         b12, b12_promr,
+                         b20, b20_promr,
+                         b20a, b20a_promr,
+                         b21, b21_promr,
+                         b21a, b21a_promr,
+                         n9,n9_promr,
+                         n11, n11_promr,
+                         n15, n15_promr,
+                         ros4,ros4_promr,
+                         ing4, ing4_promr,
+                         eff1,eff1_promr,
+                         pn4, pn4_promr,
+                         exc7, exc7_promr,
+                         pol1, pol1_promr,
+                         vb2, vb2_promr,
+                         pr4, pr4_promr)
+
+```
+
+
+```{r}
+# crear variable country name como character y nombre en iso3c (p.e. United States = USA)
+lapop_country$pais.name <- as_label(lapop_country$pais)
+
+
+lapop_country$isocode   <- countrycode(lapop_country$pais.name, 
+                                       origin = 'country.name', 
+                                       destination = 'iso3c')
+lapop_country[,c("pais","pais.name","isocode")]
+
+```
+
+
+
+
+# Variables a Nivel Macro ---------------------------------------------------------------------####
+# country level variables -------------------------------------------------------------------------
+
+## Gini Index (Gini) -------------------------------------------------------------------------------
+
+
+```{r}
+paises<- unique(lapop_country$isocode)
+
+for (i in 1:length(paises)) {
+  name<-paste0("gini_", paises[i])
+  pais<- paste0(paises[i])
+  assign(name, wb(indicator = "SI.POV.GINI", country = pais, startdate = 2004, enddate = 2019))
+}
+
+gini<- rbind(gini_ARG, gini_BOL, gini_CAN, gini_COL, gini_DOM, gini_GTM, gini_HND, gini_JAM, gini_NIC, gini_PER, gini_SLV,
+             gini_URY, gini_VEN, gini_BLZ, gini_BRA, gini_CHL, gini_CRI, gini_ECU, gini_GUY, gini_HTI, gini_MEX, gini_PAN,
+             gini_PRY, gini_TTO, gini_USA)
+
+gini<- gini %>% select(country,year=date,iso3c,gini=value)
+
+```
+
+
+
+
+## Gross Domestic Product (GDP) --------------------------------------------------------------------
+
+```{r}
+for (i in 1:length(paises)) {
+  name<-paste0("gdp_", paises[i])
+  pais<- paste0(paises[i])
+  assign(name, wb(indicator = "NY.GDP.PCAP.KD", country = pais, startdate = 2004, enddate = 2019))
+}
+
+gdp<- rbind(gdp_ARG, gdp_BOL, gdp_CAN, gdp_COL, gdp_DOM, gdp_GTM, gdp_HND, gdp_JAM, gdp_NIC, gdp_PER, gdp_SLV,
+            gdp_URY, gdp_VEN, gdp_BLZ, gdp_BRA, gdp_CHL, gdp_CRI, gdp_ECU, gdp_GUY, gdp_HTI, gdp_MEX, gdp_PAN,
+            gdp_PRY, gdp_TTO, gdp_USA)
+
+gdp<- gdp %>% 
+  select(country,year=date,iso3c,gdp=value) %>% 
+  mutate(gdp=(gdp/1000)) #gpd in thounsand dolars
+
+```
+
+```{r}
+# Merge datasets ------------------------------------------------------------------------------
+country_vars <- full_join(x = gini,y = gdp)
+country_vars <- country_vars %>% arrange(country,year)
+
+```
+
+
+
+# Country x wave ------------------------------------------------------------------------------
+
+```{r}
+table(lapop_country$pais.name,lapop_country$wave)
+```
+
+
+```{r}
+#Juntar Gini, GDP y Lapop
+
+
+lapop_country$idwc <- paste0(lapop_country$wave,lapop_country$isocode)
+country_vars$idwc <- paste0(country_vars$year, country_vars$iso3c)
+lapop_country3 <- left_join(lapop_country, country_vars,by="idwc")
+
+```
+
+
+
+# Para rellenar los datos faltantes de los gini se recurrio a la base SWIID.
+
+```{r}
+
+load("../input/data/original/swiid8_3.rda")
+
+
+lapop_country3$idwc2 <- paste0(lapop_country3$wave,lapop_country3$pais.name) # Id para paises en años.
+swiid_summary$idwc2 <- paste0(swiid_summary$year, swiid_summary$country) # Id para paises en años. 
+swiid_summary2 <- swiid_summary %>% select(idwc2,gini_disp) # Se filtra la variable gini
+
+lapop_country4 <- left_join(lapop_country3, swiid_summary2, by="idwc2") # Se junta lapop con swiid
+
+lapop_country4$ginina <- as.logical(is.na(lapop_country4$gini)) # Se identifican los casos con na en gini
+
+basecor <- lapop_country4 %>% select(gini, gini_disp) %>% na.omit() # Se evalua si los valores son coherentes
+cor(basecor$gini, basecor$gini_disp) # 0.80 los valores son relativamente distintos.
+
+lapop_country4$gini <- ifelse(lapop_country4$ginina == TRUE , lapop_country4$gini_disp,lapop_country4$gini) # Los NA de gini del databank son remplazados por los datos de Swiid. 
+
+view_df(lapop_country4)
+lapop_country <- lapop_country4
+
+
+```
+
+
+## Agregar variables promedio pais a la base individual. 
+
+```{r}
+datos$idwc2 <- paste0(datos$wave, as_label(datos$pais))
+
+Lapop_2004_2008_indAgr <- merge(datos, lapop_country, by ="idwc2")
+```
+
+
+
+## 5. Guardar base de datos
+
+```{r}
+save(lapop_country, file ="../input/data/proc/lapop_country.RData")
+save(Lapop_2004_2008_indAgr, file ="../input/data/proc/Lapop_2004_2008_indAgr.RData")
+```
+
