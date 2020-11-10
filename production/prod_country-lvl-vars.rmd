@@ -572,8 +572,8 @@ med1$year <- set_label(x = med1$year,label = get_label(lapop_country_2004to2018$
 prom_wave <- med1 %>% group_by(wave)%>%summarise_all(funs(mean(., na.rm=TRUE))) 
 prom_wave$year <- "Todos"
 prom_wave$year <- factor(prom_wave$year,ordered = T)
-prom_wave$pais <- "Promedio ola" # 100="Promedio ola"
-prom_wave$pais.name <- "Promedio ola"
+prom_wave$pais <- "Promedio Región" # 100="Promedio ola"
+prom_wave$pais.name <- "Promedio Región"
 prom_wave$iso3c <- "WAVG"
 prom_wave$idwc <- "2004_2018LA"
 prom_wave<-prom_wave %>%  select(names(med1))

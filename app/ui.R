@@ -29,6 +29,7 @@ library(RColorBrewer)
 library(hrbrthemes)
 library(sjlabelled)
 library(dplyr)
+library(V8)
 library(Cairo);options(shiny.usecairo=TRUE) # Para la calidad de los plots
 
 
@@ -76,7 +77,7 @@ dashboardPagePlus(
   # Barra Lateral: tabs--------------------------------------------------------
               dashboardSidebar(width = 200,
                                sidebarMenu(
-                                 menuItem("Instrucciones" ,tabName = "home",        icon = icon("globe-americas")),
+                                 menuItem("Instrucciones",tabName = "home",        icon = icon("globe-americas")),
                                  menuItem("Transversal"  ,tabName = "transversal", icon = icon("chart-bar")),
                                  menuItem("Longitudinal" ,tabName = "longitudinal",icon = icon("chart-line")),
                                  menuItem("Bivariado"    ,tabName = "bivariado",   icon=icon("project-diagram"))
@@ -95,8 +96,8 @@ dashboardPagePlus(
                     tags$img(src = "https://i.pinimg.com/originals/a4/f2/cb/a4f2cb80ff2ae2772e80bf30e9d78d4c.gif")
                     ), # Loading image 
                 #------------------------------------------------------------------------#
-                # tags$head(
-                #   tags$link(rel = "stylesheet", type = "text/css", href = "css/custom-a.css")),
+                tags$head(
+                  tags$link(rel = "stylesheet", type = "text/css", href = "css/custom-a.css")),
                 tabItems(
                   # tab0: Home-------------------------------------------------------------------------------------
                   tabItem(tabName = "home",
@@ -111,7 +112,7 @@ dashboardPagePlus(
                                 collapsible = TRUE,
                                 plotOutput(outputId = "hist1",
                                            width = "100%",
-                                           height = 1100)
+                                           height = 1000)
                                 # plotlyOutput(outputId = "plotly2",
                                 #              width = "100%",
                                 #              height = 930)
@@ -128,13 +129,13 @@ dashboardPagePlus(
                                             label = "Seleciona ola",
                                             choices = levels(lapop_ind_2004to2018$wave),
                                             multiple = FALSE,
-                                            selected = c("2014"),
+                                            selected = c("2018"),
                                             width = 700),
                                 selectInput(inputId = "country",
                                             label = "Seleciona País",
                                             choices = levels(lapop_ind_2004to2018$pais),
                                             multiple = TRUE,
-                                            selected = c("Chile","Estados Unidos","Venezuela","Mexico"),
+                                            selected = c("Chile","Estados Unidos","Mexico","Ecuador"),
                                             width = 700),
                                 actionButton(inputId = "boton1",
                                              label = "Graficar", 
@@ -183,7 +184,7 @@ dashboardPagePlus(
                                             sep = "",step = 1,
                                             min = 2004,
                                             max = 2018, 
-                                            value = c(2004,2014)),
+                                            value = c(2004,2018)),
                                 ),
                             box(title = NULL,
                                 width = 6,
@@ -207,7 +208,7 @@ dashboardPagePlus(
                                 collapsible = TRUE,
                                 plotOutput(outputId = "plotlong1",
                                            width = "100%",
-                                           height = 950)
+                                           height = 850)
                             )
                           ) #termino fluidPage(2)
                   ), #termino tabItem(2)
@@ -219,7 +220,7 @@ dashboardPagePlus(
                                 collapsible = TRUE,
                                 plotOutput(outputId = "plotscat1",
                                            width = "100%",
-                                           height = 1100)),
+                                           height = 1000)),
                             box(title = NULL,
                                 width = 2,
                                 collapsible = TRUE,
@@ -249,7 +250,7 @@ dashboardPagePlus(
                                             sep = "",step = 2,
                                             min = 2004,
                                             max = 2018, 
-                                            value = c(2016,2018)),
+                                            value = c(2018,2018)),
                                 actionButton(inputId = "boton3",
                                              width = "100%",
                                              height="100%",
@@ -276,7 +277,7 @@ dashboardPagePlus(
                            title = "Tab 3")
     ), 
   dashboardFooter(left_text  = tags$a(href="https://ocs-coes.netlify.app/","Observatorio de Cohesión Social -  COES"),
-                  right_text = tags$a(href="https://github.com/ocscoes/OCS-COES",fa("github", fill = "black",height = "25"))),
+                  right_text = tags$a(href="https://github.com/ocscoes/OCS-COES",fa("github", fill = "black",height = "1.5em"))),
   
           ) #Termino de dashboardPage()
 
