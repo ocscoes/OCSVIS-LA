@@ -1,0 +1,33 @@
+---
+title: "Instrucciones de uso"
+output: 
+  html_document: 
+    toc: FALSE
+    toc_float: FALSE
+    css: "www/css/docs-theme.css"
+bibliography: "www/bib/ocs-library.bib"
+---
+
+```{r eval=FALSE, include=FALSE}
+rmarkdown::render(input = "instrucciones.Rmd")
+```
+
+```{r echo=FALSE, fig.align='center',out.width='75%'}
+knitr::include_graphics("www/images/ocs-logo.png")
+```
+
+
+
+1.  Elegir una de las pestañas disponibles para realizar el análisis
+
+    -   Transversal
+    -   Longitudinal
+    -   Bivariado
+
+2.  Seleccionar características del gráfico:
+
+    a.  Seleccione el indicador\
+    b.  Identifica Ola o rango: Cada una de las Olas representa un periodo en que se realizó la medición.
+    c.  Presiona el botón ![](www/images/graficar.png){width="15%"}
+    d.  Si seas generar un nuevo gráfico, repite los pasos anteriores.
+    e.  Para **guardar** el gráfico puedes hacer **click derecho** sobre el gráfico y poner *"Guardar imagen cómo...*"

@@ -1,4 +1,4 @@
-# INTERFAZO OCS-COES -----------------------------
+# INTERFAZ OCS-COES -----------------------------
 
 # install.packages("shiny")
 # install.packages("shinydashboard")
@@ -19,9 +19,14 @@ library(shinydashboard)
 library(shinydashboardPlus)
 library(ggplot2)
 library(ggrepel)
+library(cowplot)
+library(magick)
 library(highcharter)
+library(fontawesome)
 library(scales)
 library(ggthemes)
+library(RColorBrewer)
+library(hrbrthemes)
 library(sjlabelled)
 library(dplyr)
 library(Cairo);options(shiny.usecairo=TRUE) # Para la calidad de los plots
@@ -65,16 +70,16 @@ dashboardPagePlus(
   dashboardHeaderPlus(title = tagList(
     span(class = "logo-lg", "OCS-COES"),
     img(src = "images/OCS_1_1.svg")),
-    disable = FALSE,
+    disable = TRUE,
     titleWidth = 300,
-    enable_rightsidebar = TRUE),
+    enable_rightsidebar = FALSE),
   # Barra Lateral: tabs--------------------------------------------------------
-              dashboardSidebar(width = 150,
+              dashboardSidebar(width = 200,
                                sidebarMenu(
-                                 menuItem("Inicio           ",tabName = "home", icon = icon("globe-americas")),
+                                 menuItem("Instrucciones" ,tabName = "home",        icon = icon("globe-americas")),
                                  menuItem("Transversal"  ,tabName = "transversal", icon = icon("chart-bar")),
-                                 menuItem("Longitudinal" ,tabName = "longitudinal", icon = icon("chart-line")),
-                                 menuItem("Correlacionar",tabName = "correlacionar",icon=icon("project-diagram"))
+                                 menuItem("Longitudinal" ,tabName = "longitudinal",icon = icon("chart-line")),
+                                 menuItem("Bivariado"    ,tabName = "bivariado",   icon=icon("project-diagram"))
 #                                 div(HTML("<button type='button'>Toggle Fullscreen </button>"),onclick = "shinyjs.toggleFullScreen();") #full screen button
                                )),
               # Cuerpo del UI ------------------------------------------------------------
@@ -90,8 +95,8 @@ dashboardPagePlus(
                     tags$img(src = "https://i.pinimg.com/originals/a4/f2/cb/a4f2cb80ff2ae2772e80bf30e9d78d4c.gif")
                     ), # Loading image 
                 #------------------------------------------------------------------------#
-                tags$head(
-                  tags$link(rel = "stylesheet", type = "text/css", href = "css/custom-a.css")),
+                # tags$head(
+                #   tags$link(rel = "stylesheet", type = "text/css", href = "css/custom-a.css")),
                 tabItems(
                   # tab0: Home-------------------------------------------------------------------------------------
                   tabItem(tabName = "home",
@@ -106,7 +111,7 @@ dashboardPagePlus(
                                 collapsible = TRUE,
                                 plotOutput(outputId = "hist1",
                                            width = "100%",
-                                           height = 900)
+                                           height = 1100)
                                 # plotlyOutput(outputId = "plotly2",
                                 #              width = "100%",
                                 #              height = 930)
@@ -120,51 +125,49 @@ dashboardPagePlus(
                                             multiple = FALSE,
                                             width = 700),
                                 selectInput(inputId = "year",
-                                            label = "Seleciona año",
-                                            choices = levels(lapop$year),
+                                            label = "Seleciona ola",
+                                            choices = levels(lapop_ind_2004to2018$wave),
                                             multiple = FALSE,
                                             selected = c("2014"),
                                             width = 700),
                                 selectInput(inputId = "country",
                                             label = "Seleciona País",
-                                            choices = levels(lapop$pais),
+                                            choices = levels(lapop_ind_2004to2018$pais),
                                             multiple = TRUE,
-                                            selected = c("Chile","Venezuela","Argentina","Mexico"),
+                                            selected = c("Chile","Estados Unidos","Venezuela","Mexico"),
                                             width = 700),
                                 actionButton(inputId = "boton1",
                                              label = "Graficar", 
                                              width = "100%",
-                                             icon = icon(name = "chart-bar",lib = "font-awesome")),
-                                collapsible = TRUE),
-                            box(title = NULL,
-                                width = 2,
-                                collapsible = TRUE,
-                                status = "warning",
-                                numericInput(inputId="ancho1","Ancho de gráfico (cm)", min = 10, max = 30,value = 20,width = "100%"),
-                                selectInput(inputId="format1",
-                                            label = "Exportar gráfico",
-                                            choices = c("pdf" = "pdf",
-                                                        "png" = "png"),
-                                            multiple = FALSE,
-                                            selected = "png",width = "100%"),
-                                downloadButton("saveplot1",label =  "Guardar")
-                                ),
+                                             icon = icon(name = "chart-bar",lib = "font-awesome"),
+                                             style="color: #fff; background-color: #FF8787; border-color: #2e6da4"),
+                                collapsible = TRUE)
+                            # box(title = NULL,
+                            #     width = 2,
+                            #     collapsible = TRUE,
+                            #     status = "warning",
+                            #     numericInput(inputId="ancho1","Ancho de gráfico (cm)", min = 10, max = 30,value = 20,width = "100%"),
+                            #     selectInput(inputId="format1",
+                            #                 label = "Exportar gráfico",
+                            #                 choices = c("pdf" = "pdf",
+                            #                             "png" = "png"),
+                            #                 multiple = FALSE,
+                            #                 selected = "png",width = "100%"),
+                            #     downloadButton("saveplot1",label =  "Guardar")
+                            #     )
 
                            ) #termino fluidPage(1)
                   ), #termino tabItem(1)
                   # tab2 : Analisis Longitudinal --------------------------------------------------------------------
                   tabItem(tabName = "longitudinal", 
                           fluidPage(
-                            box(title = "Evolución temporal de las Medidas de Cohesión Social",
-                                width = 13, 
-                                collapsible = TRUE,
-                                plotOutput(outputId = "plotlong1",
-                                           width = "100%",
-                                           height = 620)
-                                # plotlyOutput(outputId = "plotly1",
-                                #              width = "100%",
-                                #              height = 800)
-                            ),
+                            # box(title = NULL,
+                            #     width = 13, 
+                            #     collapsible = TRUE,
+                            #     plotOutput(outputId = "plotlong1",
+                            #                width = "100%",
+                            #                height = 620)
+                            # ),
                             box(title = NULL,width = 6,
                                 collapsible = TRUE,
                                 selectInput(inputId = "items_long",
@@ -175,11 +178,11 @@ dashboardPagePlus(
                                             multiple = FALSE,
                                             width = "100%"),
                                 sliderInput(inputId = "year_long", 
-                                            label = "Rango de Año",
+                                            label = "Rango de ola",
                                             width = "100%",
                                             sep = "",step = 1,
                                             min = 2004,
-                                            max = 2014, 
+                                            max = 2018, 
                                             value = c(2004,2014)),
                                 ),
                             box(title = NULL,
@@ -188,65 +191,72 @@ dashboardPagePlus(
                                 collapsible = TRUE,
                                 selectInput(inputId = "country_long",
                                             label = "Seleciona el País",
-                                            choices = levels(lapop$pais),
+                                            choices = levels(lapop_country_2004to2018$pais),
                                             multiple = TRUE,
-                                            selected = c("Chile","Venezuela","Argentina","Mexico"),
+                                            selected = c("Chile","Estados Unidos","Venezuela"),
                                             width = "100%"),
                                 actionButton(inputId = "boton2",
                                              width = "100%",height="100%",
                                              label = "Graficar", 
                                              icon = icon(name = "chart-bar",
-                                                         lib = "font-awesome"))
-                                )
-                          
-                            # box(title = "Variable de Cohesion  - Longitudinal",width = 3,height = 200,
-                            #     selectInput(inputId = "year_long",
-                            #                 label = "Seleciona el año",
-                            #                 choices = levels(lapop$year),
-                            #                 multiple = TRUE,
-                            #                 selected = c(2004,2006,2007,2008,2009,2010,2012,2014),
-                            #                 width = 500))
-
+                                                         lib = "font-awesome"),
+                                             style="color: #fff; background-color: #FF8787; border-color: #2e6da4")
+                                ),
+                            box(title = NULL,
+                                width = 12,
+                                collapsible = TRUE,
+                                plotOutput(outputId = "plotlong1",
+                                           width = "100%",
+                                           height = 950)
+                            )
                           ) #termino fluidPage(2)
                   ), #termino tabItem(2)
                   # tab2 : Analisis de Correlación  --------------------------------------------------------------------
-                  tabItem(tabName = "correlacionar", 
+                  tabItem(tabName = "bivariado", 
                           fluidPage(
-                            box(title = "Correlación variables de cohesión social",
+                            box(title = NULL,
                                 width = 10,
                                 collapsible = TRUE,
                                 plotOutput(outputId = "plotscat1",
                                            width = "100%",
-                                           height = 900)),
-                            box(title = "Variable de Cohesion",
+                                           height = 1100)),
+                            box(title = NULL,
                                 width = 2,
                                 collapsible = TRUE,
                                 selectInput(inputId = "items_x",
-                                            label = "Seleciona Indicador (Eje X)",
-                                            choices = var_label,
-                                            selected = "it1",
+                                            label = "Seleciona Indicador (Horizontal)",
+                                            choices = var_labelcor,
+                                            selected = "gini",
                                             selectize = FALSE,
                                             multiple = FALSE,
                                             width = "100%"),
                                 selectInput(inputId = "items_y",
-                                            label = "Seleciona Indicador (Eje Y)",
-                                            choices = var_label,
+                                            label = "Seleciona Indicador (Vertical)",
+                                            choices = var_labelcor,
                                             selected = "pn4",
                                             selectize = FALSE,
                                             multiple = FALSE,
                                             width = "100%"),
-                                selectInput(inputId = "year_scatter",
-                                            label = "Seleciona año",
-                                            choices = levels(lapop$year),
-                                            multiple = FALSE,
-                                            selected = c("2014"),
-                                            width = "100%"),
+                                # selectInput(inputId = "year_scatter",
+                                #             label = "Seleciona ola",
+                                #             choices = levels(lapop_long_wave$wave),
+                                #             multiple = FALSE,
+                                #             selected = c("2014"),
+                                #             width = "100%"),
+                                sliderInput(inputId = "year_scatter", 
+                                            label = "Rango de ola",
+                                            width = "100%",
+                                            sep = "",step = 2,
+                                            min = 2004,
+                                            max = 2018, 
+                                            value = c(2016,2018)),
                                 actionButton(inputId = "boton3",
                                              width = "100%",
                                              height="100%",
                                              label = "Graficar", 
                                              icon = icon(name = "chart-bar",
-                                                         lib = "font-awesome"))
+                                                         lib = "font-awesome"),
+                                             style="color: #fff; background-color: #FF8787; border-color: #2e6da4")
                                 
                                 )
                           ) #termino fluidPage(2)
@@ -265,8 +275,8 @@ dashboardPagePlus(
                            icon = "paint-brush",
                            title = "Tab 3")
     ), 
-  dashboardFooter(left_text  = "Observatorio de Cohesión Social -  COES",
-                  right_text = "@jciturras"),
+  dashboardFooter(left_text  = tags$a(href="https://ocs-coes.netlify.app/","Observatorio de Cohesión Social -  COES"),
+                  right_text = tags$a(href="https://github.com/ocscoes/OCS-COES",fa("github", fill = "black",height = "25"))),
   
           ) #Termino de dashboardPage()
 
