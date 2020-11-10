@@ -16,8 +16,8 @@ rm(list=ls())
 
 # Cargar bases LAPOP ------------------------------------------------------
 
-load(file = "data/lapop_aggr.RData") # Base de datos longitudinal
-load(file = "data/lapop_ind.RData") # Base de datos individual
+load(file = "input/data/original/lapop_aggr.RData") # Base de datos longitudinal
+load(file = "input/data/original/lapop_ind.RData") # Base de datos individual
 
 lapop_ind1 <- lapop_ind %>% select(year,pais,it1,prot3,aoj12,b2,b3,b4,b10a,b12,b20,
                                   b20a,b21,b21a,n9,n11,n15,pr4,ros4,ing4,eff1,pn4,
@@ -26,6 +26,7 @@ lapop_ind1 <- lapop_ind %>% select(year,pais,it1,prot3,aoj12,b2,b3,b4,b10a,b12,b
 view_df(lapop_ind1,show.id = TRUE,show.type = TRUE)
 lab1<- get_labels(lapop_ind1)
 
+names(lapop_ind1)[c(2:25)]
 
 # for (i in 2:25) {
 #   lapop_ind1[,i]<- as.numeric(unlist(lapop_ind1[,i]))
