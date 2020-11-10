@@ -9,7 +9,7 @@ rm(list=ls())
 load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2018.RData?raw=true"))
 load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2018_long-wave.RData?raw=true"))
 load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_ind_2004to2018.RData?raw=true"))
-
+load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/original/fraseo_preguntas.Rdata?raw=true"))
 
 #load("../input/data/proc/lapop_ind_2004to2018.RData")              # transversal
 #load("../input/data/proc/lapop_count_2004to2018.RData")            # longitudinal 
