@@ -30,7 +30,7 @@ function(input, output){
   etiq1a <- reactive({sjlabelled::get_label(lapop_subset())})  # Crear data con los labels para gráficos
   
 
-# ---------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
   fraseo01 <- eventReactive(
     eventExpr = input$boton1,
     {fraseo %>%  
@@ -39,7 +39,7 @@ function(input, output){
     })         
   
   
-  # Gráfico de barras (estático) -------------------------------------------------------
+# Gráfico de barras (estático) --------------------------------------------------------------------
 
 output$hist1 <-  renderPlot({
     req({input$boton1})
@@ -71,8 +71,8 @@ output$hist1 <-  renderPlot({
             plot.subtitle    = element_text(size  = 15,family = "Lato", hjust = 0.5   ,face = "italic"),
             plot.caption     = element_text(size  = 13,family = "Lato", hjust = 0   ,face = "plain") ) +
       labs(title    = paste(etiq1()$lab1, "\n \n"),
-           subtitle = paste(fraseo01(),"\n"),
-           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social")
+           subtitle = paste(strwrap(paste(fraseo01(),"\n"), width = 100), collapse = "\n"),
+           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)")
     ggdraw() +
       draw_plot(p1) +
       draw_image(
@@ -189,8 +189,8 @@ output$hist1 <-  renderPlot({
           plot.subtitle= element_text(size   = 16,family = "Lato",hjust = 0.5   ,face = "italic"),
           plot.caption = element_text(size   = 13,family = "Lato",hjust = 0,face = "plain")) +
       labs(title    = paste(etiq2()$lab1,"\n \n"),
-           subtitle = paste(fraseo02(),"\n"),
-           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social ")
+           subtitle = paste(strwrap(paste(fraseo02(),"\n"), width = 150), collapse = "\n"),
+           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)")
     ggdraw() +
       draw_plot(p2) +
       draw_image(
@@ -212,11 +212,20 @@ output$hist1 <-  renderPlot({
   
   lapop_scatter <- eventReactive(
     eventExpr = input$boton3,
-    {lapop_long_wave %>% dplyr::select(input$items_x,input$items_y,wave,pais) %>% 
+    {lapop_long_wave %>% dplyr::select(input$items_x,input$items_y,wave,pais) %>%
+        dplyr::filter(pais!="Promedio Región") %>%
         dplyr::filter(wave %in% c(min(input$year_scatter):max(input$year_scatter))) %>% # seleciona el min y max de year
         copy_labels(lapop_long_wave) # Actualiza el subset variable / pais / año  - reacciona a boton2
     })
-
+  lapop_scat_mean <- eventReactive(
+    eventExpr = input$boton3,
+    {lapop_long_wave %>% 
+        dplyr::select(input$items_x,input$items_y,wave,pais) %>%
+        dplyr::filter(pais=="Promedio Región") %>% 
+        dplyr::filter(wave %in% c(min(input$year_scatter):max(input$year_scatter))) %>%
+        copy_labels(lapop_long_wave) # Actualiza el subset variable / pais / año  - reacciona a boton2
+    })
+    
   # Etiquetas para scatterplot  ---------------------------------------------------------
   etiq3 <- reactive({
     data.table::data.table("lab1"=sjlabelled::get_label(lapop_scatter())) # Crear data con los labels para gráficos
@@ -273,25 +282,30 @@ output$hist1 <-  renderPlot({
            aes_string(x=eje_x_scat(),
                       y=eje_y_scat(), 
                       label ="pais",
-                      fill ="wave")) +
+                      group ="wave")) +
       geom_point() +
-      geom_smooth(method = "lm",colour = "black") + 
-      geom_label_repel(family="Lato",size=5,label.r = 0)+
+      geom_smooth(method = "lm",colour = "black",fill="lightblue",size=0.5) + 
+      geom_label_repel(family="Lato",size=4,label.r = 0,position = )+
+      geom_label_repel(data=lapop_scat_mean(),family="Lato",size=3,label.r = 0,color="red")+
       xlab(label = paste("\n",etiq3()$lab1[1]))+
       ylab(label = paste(etiq3()$lab1[2],"\n")) +
+      facet_wrap("wave~.",ncol = 2,nrow = 4)+
       theme_ipsum_rc()+
       scale_fill_brewer()+
-      theme(axis.text.x  = element_text(size   = 18,family = "Lato",face = "bold"),
+      theme(strip.text.x     = element_text(size   = 18, face = "bold",hjust = 0.5),
+            strip.text.y     = element_text(size   = 15, family = "Lato",face   = "bold"),
+            strip.background = element_rect(colour = "grey",fill   = "white"),panel.spacing= unit(2, "lines"),
+            axis.text.x  = element_text(size   = 18,family = "Lato",face = "bold"),
             axis.text.y  = element_text(size   = 15,family = "Lato",face = "bold"),
             axis.title.x = element_text(size   = 18,family = "Lato",face = "bold"),
             axis.title.y = element_text(size   = 18,family = "Lato",face = "bold"),
             legend.text  = element_text(size   = 12,family = "Lato"),
             plot.title   = element_text(size   = 18,family = "Lato",face = "bold",hjust = 0.5),
             plot.caption = element_text(size   = 12,family = "Lato",hjust = 0,face = "plain")) +
-      labs(title    = paste("Asociación entre", etiq3()$lab1[2], "y", etiq3()$lab1[2],"\n"),
-           subtitle = " ",
+      labs(title    = paste("Asociación entre", etiq3()$lab1[1], "y", etiq3()$lab1[2],"\n"),
+           subtitle = "\n \n",
            fill = "Medición (Ola)",
-           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018); World Bank Data \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social ") +
+           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018); World Bank Data \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)") +
       guides(
         fill = guide_legend(title = NULL,
                             override.aes = aes(label = "")

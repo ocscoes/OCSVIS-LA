@@ -4,7 +4,7 @@ output:
   html_document: 
     toc: FALSE
     toc_float: FALSE
-    css: "www/css/docs-theme.css"
+    #css: "www/css/docs-theme.css"
 bibliography: "www/bib/ocs-library.bib"
 ---
 
@@ -18,16 +18,17 @@ knitr::include_graphics("www/images/ocs-logo.png")
 
 
 
-1.  Elegir una de las pestañas disponibles para realizar el análisis
+### 1.  Elegir una de las pestañas disponibles para realizar el análisis:
 
-    -   Transversal
-    -   Longitudinal
-    -   Bivariado
+  -   **_Transversal_**: compara a los países en distintos indicadores usando todas las olas de la encuesta (es decir, es un promedio para cada país)
+  -   **_Longitudinal_**: se compara a los países considerando los distintos momentos en el tiempo del indicador seleccionado.
+  -   **_Bivariado_**: se asocian dos indicadores considerando todos los países en cada ola, pudiendo seleccionar uno o más puntos en el tiempo.
 
-2.  Seleccionar características del gráfico:
+### 2.  Seleccionar características del gráfico:
 
-    a.  Seleccione el indicador\
-    b.  Identifica Ola o rango: Cada una de las Olas representa un periodo en que se realizó la medición.
-    c.  Presiona el botón ![](www/images/graficar.png){width="15%"}
-    d.  Si seas generar un nuevo gráfico, repite los pasos anteriores.
-    e.  Para **guardar** el gráfico puedes hacer **click derecho** sobre el gráfico y poner *"Guardar imagen cómo...*"
+  a.  Seleccione el indicador
+  b.  Seleccione el País
+  c.  Seleccione la Ola o rango de tiempo: Cada una de las Olas representa el periodo en que se realizó el trabajo de campo.
+  d.  Presione el botón ![](www/images/graficar.png){width="12%"}
+  e.  Si seas generar un nuevo gráfico, repite los pasos anteriores.
+  f.  Para **guardar** el resultado puedes hacer **click derecho** sobre el gráfico y seleccionar  _"Guardar imagen como"_.
