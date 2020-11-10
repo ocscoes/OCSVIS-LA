@@ -6,12 +6,18 @@ rm(list=ls())
 
 # Cargar bases LAPOP ------------------------------------------------------
 
-load("../input/data/proc/lapop_ind_2004to2018.RData")              # transversal
-load("../input/data/proc/lapop_count_2004to2018.RData")            # longitudinal 
-load("../input/data/proc/lapop_count_2004to2018_long-wave.RData")  # longitudinal para bivariado
-fraseo<- xlsx::read.xlsx(file = "../input/data/original/fraseo_preguntas.xlsx",sheetIndex = 1,encoding = "UTF-8")
+load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2018.RData?raw=true"))
+load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2018_long-wave.RData?raw=true"))
+load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_ind_2004to2018.RData?raw=true"))
 
-logo_file <- "../app/www/images/ocs.png"
+
+#load("../input/data/proc/lapop_ind_2004to2018.RData")              # transversal
+#load("../input/data/proc/lapop_count_2004to2018.RData")            # longitudinal 
+#load("../input/data/proc/lapop_count_2004to2018_long-wave.RData")  # longitudinal para bivariado
+# fraseo<- xlsx::read.xlsx(file = "../input/data/original/fraseo_preguntas.xlsx",sheetIndex = 1,encoding = "UTF-8")
+# save(fraseo,file = "../input/data/original/fraseo_preguntas.Rdata")
+
+logo_file <- "https://github.com/ocscoes/OCS-COES/raw/master/app/www/images/ocs.png"
 url_ocs   <- "https://ocs-coes.netlify.app/"
 
 # Determinar etiquetas para variable input --------------------------------
