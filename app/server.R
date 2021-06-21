@@ -1,4 +1,9 @@
-
+#------------------------------------------------------------------------------#
+# Proyect title: "Observatorio de Cohesion Social" 
+# Author(s): Julio Iturra Sanhueza & Juan Carlos Castillo
+# website: https://www.linkedin.com/in/jciturras/
+# e-mail: julioiturrasanhueza@gmail.com
+#------------------------------------------------------------------------------#
 # SERVIDOR LAPOP_Iturra-observatorio-cohesion -----------------------------
 
 # SERVER ------------------------------------------------------------------
@@ -76,7 +81,7 @@ output$hist1 <-  renderPlot({
     ggdraw() +
       draw_plot(p1) +
       draw_image(
-        logo_file, x = 0.98, y = 1.465, hjust = 1, vjust = 1,width = 0.08)
+        logo_file, x = 0.98, y = 1.445, hjust = 1, vjust = 1,width = 0.08)
     
     #print(p1)
 
@@ -194,7 +199,7 @@ output$hist1 <-  renderPlot({
     ggdraw() +
       draw_plot(p2) +
       draw_image(
-        logo_file, x = 0.98, y = 1.462, hjust = 1, vjust = 1,width = 0.08)
+        logo_file, x = 0.98, y = 1.430, hjust = 1, vjust = 1,width = 0.08)
   })
 
   # subset scatterplot  (estatico) ------------------------------------------------------------------------

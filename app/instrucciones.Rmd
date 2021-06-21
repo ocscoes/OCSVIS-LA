@@ -12,8 +12,8 @@ bibliography: "www/bib/ocs-library.bib"
 rmarkdown::render(input = "instrucciones.Rmd")
 ```
 
-```{r echo=FALSE, fig.align='center',out.width='75%'}
-knitr::include_graphics("www/images/ocs-logo.png")
+```{r echo=FALSE, fig.align='center',out.width='30%'}
+knitr::include_graphics("www/images/ocs-negro.png")
 ```
 
 

@@ -1,3 +1,9 @@
+#------------------------------------------------------------------------------#
+# Proyect title: "Observatorio de Cohesion Social" 
+# Author(s): Julio Iturra Sanhueza & Juan Carlos Castillo
+# website: https://www.linkedin.com/in/jciturras/
+# e-mail: julioiturrasanhueza@gmail.com
+#------------------------------------------------------------------------------#
 rm(list=ls())
 
 
@@ -14,7 +20,7 @@ load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/original/fr
 # fraseo<- xlsx::read.xlsx(file = "../input/data/original/fraseo_preguntas.xlsx",sheetIndex = 1,encoding = "UTF-8")
 # save(fraseo,file = "../input/data/original/fraseo_preguntas.Rdata")
 
-logo_file <- "https://github.com/ocscoes/OCS-COES/raw/master/app/www/images/ocs.png"
+logo_file <- "https://github.com/ocscoes/OCS-COES/raw/master/app/www/images/ocs-21.png"
 url_ocs   <- "https://ocs-coes.netlify.app/"
 
 # Determinar etiquetas para variable input --------------------------------
