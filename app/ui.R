@@ -275,10 +275,12 @@ dashboardPagePlus(
     rightSidebarTabContent(id = 3,
                            icon = "paint-brush",
                            title = "Tab 3")
-    ), 
-  dashboardFooter(left_text  = tags$a(href="https://ocs-coes.netlify.app/","Observatorio de Cohesión Social -  COES"),
-                  right_text = tags$a(href="https://github.com/ocscoes/OCS-COES",fa("github", fill = "black",height = "1.5em"))),
-  
+    ),
+  dashboardFooter(left_text  = NULL,
+                  right_text = NULL),
+  # dashboardFooter(left_text  = tags$a(href="https://ocs-coes.netlify.app/","Observatorio de Cohesión Social -  COES"),
+  #                 right_text = tags$a(href="https://github.com/ocscoes/OCS-COES",fa("github", fill = "black",height = "1.5em"))),
+  # 
           ) #Termino de dashboardPage()
 
 

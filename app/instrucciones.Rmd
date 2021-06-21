@@ -32,3 +32,17 @@ knitr::include_graphics("www/images/ocs-logo.png")
   d.  Presione el botón ![](www/images/graficar.png){width="12%"}
   e.  Si desea generar un nuevo gráfico, repite los pasos anteriores.
   f.  Para **guardar** el resultado puedes hacer **click derecho** sobre el gráfico y seleccionar  _"Guardar imagen como"_.
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>

@@ -9,7 +9,7 @@ load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_
 load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/original/fraseo_preguntas.Rdata?raw=true"))
 
 # load("../input/data/proc/lapop_ind_2004to2018.RData")              # transversal
-#load("../input/data/proc/lapop_count_2004to2018.RData")            # longitudinal 
+#load("../input/data/proc/lapop_count_2004to2018.RData")             # longitudinal 
 # load("../input/data/proc/lapop_count_2004to2018_long-wave.RData")  # longitudinal para bivariado
 # fraseo<- xlsx::read.xlsx(file = "../input/data/original/fraseo_preguntas.xlsx",sheetIndex = 1,encoding = "UTF-8")
 # save(fraseo,file = "../input/data/original/fraseo_preguntas.Rdata")

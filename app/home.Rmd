@@ -14,8 +14,8 @@ bibliography: "www/bib/ocs-library.bib"
 rmarkdown::render(input = "home.Rmd")
 ```
 
-```{r echo=FALSE, fig.align='center',out.width='900px'}
-knitr::include_graphics("www/images/OCS_juitsa-sdot.png")
+```{r echo=FALSE, fig.align='center',out.width='500px'}
+knitr::include_graphics("www/images/ocs-negro.png")
 ```
 <div style="text-align:center">
 ## Indicadores Comparativos de Cohesión Social para América Latina
