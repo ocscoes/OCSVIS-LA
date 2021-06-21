@@ -239,7 +239,7 @@ paises<- unique(lapop_country$isocode)
 for (i in 1:length(paises)) {
   name<-paste0("gini_", paises[i])
   pais<- paste0(paises[i])
-  assign(name, wb(indicator = "SI.POV.GINI", country = pais, startdate = 2004, enddate = 2019))
+  assign(name, wb(indicator = "SI.POV.GINI", country = pais, startdate = 2003, enddate = 2019))
 }
 
 gini<- rbind(gini_ARG, gini_BOL, gini_CAN, gini_COL, gini_DOM, gini_GTM, gini_HND, gini_JAM, gini_NIC, gini_PER, gini_SLV,
@@ -256,7 +256,7 @@ gini<- gini %>% select(country,year=date,iso3c,gini=value)
 for (i in 1:length(paises)) {
   name<-paste0("gdp_", paises[i])
   pais<- paste0(paises[i])
-  assign(name, wb(indicator = "NY.GDP.PCAP.KD", country = pais, startdate = 2004, enddate = 2019))
+  assign(name, wb(indicator = "NY.GDP.PCAP.KD", country = pais, startdate = 2003, enddate = 2019))
 }
 
 gdp<- rbind(gdp_ARG, gdp_BOL, gdp_CAN, gdp_COL, gdp_DOM, gdp_GTM, gdp_HND, gdp_JAM, gdp_NIC, gdp_PER, gdp_SLV,
@@ -274,6 +274,7 @@ gdp<- gdp %>%
 country_vars <- full_join(x = gini,y = gdp)
 country_vars <- country_vars %>% arrange(country,year)
 ```
+
 
 **Country by wave**
 
@@ -293,7 +294,24 @@ country_vars_means <- country_vars %>%
   summarise_all(funs(mean(., na.rm=TRUE))) %>% 
   rename("gini_agg"=gini,
          "gdp_agg"=gdp)
+```
 
+```{r interpolation gini}
+for (i in levels(as.factor(country_vars$iso3c))) {
+  name<-paste0(i,"_gini.app")
+  assign(name, country_vars %>% filter(iso3c==i,year %in% c(2003:2019)) %>% mutate(gini.ap=na.approx(gini,rule=2,na.rm = F)))
+}
+
+cntr_vars<- bind_rows(ARG_gini.app, BLZ_gini.app, BOL_gini.app, BRA_gini.app, CAN_gini.app, CHL_gini.app, COL_gini.app, CRI_gini.app,
+                      DOM_gini.app, ECU_gini.app, GTM_gini.app, GUY_gini.app, HND_gini.app, HTI_gini.app, JAM_gini.app, MEX_gini.app,
+                      NIC_gini.app, PAN_gini.app, PER_gini.app, PRY_gini.app, SLV_gini.app, TTO_gini.app, URY_gini.app, USA_gini.app,
+                      VEN_gini.app)
+
+cntr_vars <- cntr_vars %>% mutate(gini=ifelse(test = is.na(gini),yes = gini.ap,no = gini))
+```
+
+```{r}
+# country_vars   <- left_join(x = cntr_vars,   y = country_vars_means) #[¡MERGE CON GINI INTRAPOLADO!]
 country_vars   <- left_join(x = country_vars,y = country_vars_means)
 country_vars   <- select(country_vars,-"year") #quitamos year de base macroeconomicos
 lapop_country3 <- left_join(lapop_country, country_vars,by="idwc")

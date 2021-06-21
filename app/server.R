@@ -178,18 +178,18 @@ output$hist1 <-  renderPlot({
       guides(shape=guide_legend(title = NULL),
              color=guide_legend(title = NULL))+
       theme_ipsum_rc()+
-      scale_color_brewer(palette = "Set1")+
+      scale_color_manual(values = colorRampPalette(brewer.pal(9, "Set1"))(25)) +
     theme(axis.text.x  = element_text(size   = 18,family = "Lato",face = "bold"),
           axis.text.y  = element_text(size   = 13,family = "Lato",face = "bold"),
           axis.title.x = element_text(size   = 18,family = "Lato",face = "bold"),
           axis.title.y = element_text(size   = 18,family = "Lato",face = "bold"),
-          legend.text  = element_text(size   = 12,family = "Lato"),
+          legend.text  = element_text(size   = 14,family = "Lato"),
           legend.position = "right",
           plot.title   = element_text(size   = 18,family = "Lato",face = "bold",hjust = 0.5),
           plot.subtitle= element_text(size   = 16,family = "Lato",hjust = 0.5   ,face = "italic"),
           plot.caption = element_text(size   = 13,family = "Lato",hjust = 0,face = "plain")) +
       labs(title    = paste(etiq2()$lab1,"\n \n"),
-           subtitle = paste(strwrap(paste(fraseo02(),"\n"), width = 150), collapse = "\n"),
+           subtitle = paste(strwrap(paste(fraseo02(),"\n"), width = 100), collapse = "\n"),
            caption  = "\nFuente: Encuesta LAPOP (2004 - 2018) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)")
     ggdraw() +
       draw_plot(p2) +
@@ -213,7 +213,7 @@ output$hist1 <-  renderPlot({
   lapop_scatter <- eventReactive(
     eventExpr = input$boton3,
     {lapop_long_wave %>% dplyr::select(input$items_x,input$items_y,wave,pais) %>%
-        dplyr::filter(pais!="Promedio Región") %>%
+        dplyr::filter(pais!="Promedio Región") %>% 
         dplyr::filter(wave %in% c(min(input$year_scatter):max(input$year_scatter))) %>% # seleciona el min y max de year
         copy_labels(lapop_long_wave) # Actualiza el subset variable / pais / año  - reacciona a boton2
     })
@@ -300,9 +300,9 @@ output$hist1 <-  renderPlot({
             axis.title.x = element_text(size   = 18,family = "Lato",face = "bold"),
             axis.title.y = element_text(size   = 18,family = "Lato",face = "bold"),
             legend.text  = element_text(size   = 12,family = "Lato"),
-            plot.title   = element_text(size   = 18,family = "Lato",face = "bold",hjust = 0.5),
+            plot.title   = element_text(size   = 15,family = "Lato",face = "bold",hjust = 0.5),
             plot.caption = element_text(size   = 12,family = "Lato",hjust = 0,face = "plain")) +
-      labs(title    = paste("Asociación entre", etiq3()$lab1[1], "y", etiq3()$lab1[2],"\n"),
+      labs(title    = paste(strwrap(paste("Asociación entre", etiq3()$lab1[1], "y", etiq3()$lab1[2],"\n"), width = 50), collapse = "\n"),
            subtitle = "\n \n",
            fill = "Medición (Ola)",
            caption  = "\nFuente: Encuesta LAPOP (2004 - 2018); World Bank Data \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)") +

@@ -12,7 +12,7 @@
 
 library(rsconnect)
 library(here)
-here()
+
 
 # Realizar el login de la cuenta y el token de acceso  --------------------
 
@@ -20,9 +20,11 @@ rsconnect::setAccountInfo(name='juitsa', #account
                           token='4E3E38F216E2433D6290D64905056C90',
                           secret='lVM2gyMtbp/0pMKlsQ77FiCbXFy/gXzlGUq60apt')
 
+rsconnect::terminateApp(appName = "ocs-coes")
+
 
 tictoc::tic() #inicio...
-rsconnect::deployApp(appName = "ocs-coes",forceUpdate = TRUE) #Subir App al server de shinyapps
+rsconnect::deployApp(forceUpdate = TRUE) #Subir App al server de shinyapps
+ 
 tictoc::toc() #término...
 
-rsconnect::terminateApp(appName = "ocs-coes")
