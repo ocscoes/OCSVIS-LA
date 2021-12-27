@@ -6,7 +6,7 @@ Esta herramienta de visualización permite realizar análisis comparativos de di
 
 ## Repositorio
 
-El código de procesamiento de datos y generación de la herramienta de visualización se encuentra abierto en el repositorio [https://github.com/ocscoes/OCS-COES](https://github.com/ocscoes/OCS-COES). El repositorio esta ordenado en modo general en 3 carpetas,
+El código de procesamiento de datos y generación de la herramienta de visualización se encuentra abierto en el repositorio [https://github.com/ocscoes/OCSVIS-LA](https://github.com/ocscoes/OCS-COES). El repositorio esta ordenado en modo general en 3 carpetas,
 
 - Aplicación Shiny que permite la visualización de los datos (app),
 - Datos utilizados (input). Cabe destacar, que siguiendo las políticas de resguardo de la información de LAPOP no se subirá la base de datos original sino solamente los códigos de procesamiento.
