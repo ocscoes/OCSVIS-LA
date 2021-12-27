@@ -100,7 +100,7 @@ dashboardPagePlus(
                 useShinyjs(),      # 2. Carga funciones JS a la app 
                 extendShinyjs(text = jsToggleFS), #3. Full screen app
                 div(id = "loading-content",
-                    tags$img(src = "https://i.pinimg.com/originals/a4/f2/cb/a4f2cb80ff2ae2772e80bf30e9d78d4c.gif")
+                    tags$img(src = "https://github.com/ocscoes/OCS-COES/raw/master/app/www/images/logo-ocs-animated.gif")
                     ), # Loading image 
                 #------------------------------------------------------------------------#
                 tags$head(
