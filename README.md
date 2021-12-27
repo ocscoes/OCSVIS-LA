@@ -9,30 +9,90 @@ Este sitio permite realizar análisis comparativos de distintos indicadores asoc
 ## Estructura del repositorio:
 
 ```
-├── app
-│   ├── rsconnect
-│   │   ├── shinyapps.io
-│   ├── www
-│       ├── bib
-|       |   └── ocs-library.bib
-│       ├── css
-|       |   ├── docs-theme.css  
-|       |   └── custom-a.css
-|       ├── html
-|       |   └── disqus.html
-|       └── images
-|           ├── OCS_1_1.svg
-|           └── OCS_sfonts.svg
-├── input
-│   ├── data
-│       ├── original
-│       |   ├── lapop_agrr.RData
-|       |   └── lapop_agrr.RData
-│       └── proc
-│          ├── lapop_agrr_v2.RData
-|          └── lapop_agrr_v2.RData
-├── production
-│   ├── backup_barplot.R
-|   ├── recode_vars.R
-├── README.md
+├───app
+│   │   .Rhistory
+│   │   global.R
+│   │   home.html
+│   │   home.Rmd
+│   │   instrucciones.html
+│   │   instrucciones.Rmd
+│   │   OCS-COES.Rproj
+│   │   server.R
+│   │   ui.R
+│   │   upload_app.R
+│   │
+│   ├───rsconnect
+│   │   └───shinyapps.io
+│   │       └───juitsa
+│   │               ocs-coes.dcf
+│   │
+│   └───www
+│       ├───bib
+│       │       ocs-library.bib
+│       │
+│       ├───css
+│       │       custom-a.css
+│       │       docs-theme.css
+│       │
+│       ├───html
+│       │       disqus.html
+│       │
+│       └───images
+│               graficar.png
+│               ocs-logo.png
+│               ocs.png
+│               OCS_1_1.png
+│               OCS_1_1.svg
+│               OCS_sfonts.svg
+│
+├───input
+│   └───data
+│       ├───original
+│       │   │   4_LAPOP_2004_2018.RData
+│       │   │   5_LAPOP_2018.dta
+│       │   │   fraseo_preguntas.Rdata
+│       │   │   fraseo_preguntas.xlsx
+│       │   │   GrandMerge.RData
+│       │   │   LAPOP_2004-2008.RData
+│       │   │   lapop_aggr.RData
+│       │   │   lapop_ind.RData
+│       │   │   swiid8_3.rda
+│       │   │
+│       │   └───lapop-faltantes
+│       │           argentina2016.dta
+│       │           argentina2018.dta
+│       │           bolivia2016.dta
+│       │           bolivia2018.dta
+│       │           brazil2016.dta
+│       │           brazil2018.dta
+│       │           canada2016.dta
+│       │           canada2018.dta
+│       │           chile2016.dta
+│       │           chile2018.dta
+│       │           colombia2016.dta
+│       │           costarica2016.dta
+│       │           costarica2018.dta
+│       │           ecuador2018.dta
+│       │           guyana2016.dta
+│       │           panama2016.dta
+│       │           panama2018.dta
+│       │           uruguay2016.dta
+│       │           uruguay2018.dta
+│       │           usa2016.dta
+│       │           usa2018.dta
+│       │           venezuela2016.dta
+│       │
+│       └───proc
+│               lapop_aggr_v2.RData
+│               lapop_count_2004to2018.RData
+│               lapop_count_2004to2018_long-wave.RData
+│               lapop_ind_2004to2018.RData
+│               lapop_ind_v2.RData
+│
+└───production
+        .Rhistory
+        country_variables-original.R
+        prod_country-lvl-vars.R
+        prod_country-lvl-vars.rmd
+        prod_var-labels.R
 ```
