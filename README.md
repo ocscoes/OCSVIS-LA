@@ -324,7 +324,7 @@ La selección de variables de la encuesta LAPOP se realizó a partir de una pers
 
 * **Horizontal**, que considera fundamentalmente las relaciones con los demás.
 
-En el procesamiento de los datos se calculó el promedio por país y por ola de la encuesta para cada uno de los indicadores seleccionados. Adicionalmente, se generaron promedios de las variables por año para tener como referente de comparación en los análisis nacionales. Junto a ello se incorporaron a la base de datos dos variables macroeconómicas, el Producto Interno Bruto y el índice de desigualdad GINI que aparecen como posibles opciones de selección en la pestaña de análisis bivariado.
+En el procesamiento de los datos se calculó el promedio por país y por ola de la encuesta para cada uno de los indicadores seleccionados. Adicionalmente, se generaron promedios de las variables por año para tener como referente de comparación en los análisis nacionales. Junto a ello se incorporaron a la base de datos dos variables macroeconómicas, el Producto Interno Bruto (PIB) y el índice de Gini para medir desigualdad de ingresos dentro del país, las cuales aparecen como posibles opciones de selección en la pestaña de análisis bivariado.
 
 El listado de variables se resume en la siguiente tabla:
 
