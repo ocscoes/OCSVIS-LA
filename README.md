@@ -12,7 +12,7 @@ El código de procesamiento de datos y generación de la herramienta de visualiz
 - Datos utilizados (input). Cabe destacar, que siguiendo las políticas de resguardo de la información de LAPOP no se subirá la base de datos original sino solamente los códigos de procesamiento.
 - Códigos de procesamiento de los datos (production).
 
-La estructura del repositorio sigue la propuesta del protocolo [IPO](https://lisa-coes.github.io/ipo/){target="_blank"}.
+La estructura del repositorio sigue la propuesta del protocolo <a href="https://lisa-coes.github.io/ipo/" target="_blank">IPO</a>
 
 ## Datos
 
