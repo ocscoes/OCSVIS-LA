@@ -1,12 +1,22 @@
-# Observatorio de Cohesión Social
+# OCSVIS-LA
 
 ## Indicadores Comparativos de Cohesión Social para América Latina
 
-Este sitio permite realizar análisis comparativos de distintos indicadores asociados a cohesión social en América Latina, como confianza interpersonal, valoración de la democracia, participación en protestas, entre otros. Para ello se utiliza la base de la encuesta **LAPOP** (Latin American Public Opinion Project), olas  2004, 2006, 2008, 2010, 2012, 2014 y 2018.
+Esta herramienta de visualización permite realizar análisis comparativos de distintos indicadores asociados a cohesión social en América Latina, como confianza interpersonal, valoración de la democracia, participación en protestas, entre otros. Para ello se utiliza la base de la encuesta **LAPOP** (Latin American Public Opinion Project), olas  2004, 2006, 2008, 2010, 2012, 2014 y 2018.
+
+## Repositorio
+
+El código de procesamiento de datos y generación de la herramienta de visualización se encuentra abierto en el repositorio [https://github.com/ocscoes/OCS-COES](https://github.com/ocscoes/OCS-COES). El repositorio esta ordenado en modo general en 3 carpetas,
+
+- Aplicación Shiny que permite la visualización de los datos (app),
+- Datos utilizados (input). Cabe destacar, que siguiendo las políticas de resguardo de la información de LAPOP no se subirá la base de datos original sino solamente los códigos de procesamiento.
+- Códigos de procesamiento de los datos (production).
+
+La estructura del repositorio sigue la propuesta del protocolo [IPO](https://juancarloscastillo.github.io/ipo/index_es.html).
 
 ## Datos
 
-El Observatorio de Cohesión Social utiliza los datos abiertos disponibles de la encuesta Barómetro de las Américas, del LAPOP (Latin American Public Opinion Project), disponible en https://www.vanderbilt.edu/lapop/. En general esta encuesta es conocida como “Encuesta LAPOP”, y se define como “the only survey of democratic public opinion and behavior that covers the Americas (North, Central, South and the Caribbean). It is an effort by LAPOP to measure democratic values and behaviors in the Americas using national probability samples of voting-age adults”. Esta encuesta es bianual, comenzando el año 2004 con 11 países y en su ola 2018 abarca 29 países.
+La herramienta de visualización utiliza los datos abiertos disponibles de la encuesta Barómetro de las Américas, del LAPOP (Latin American Public Opinion Project), disponible en https://www.vanderbilt.edu/lapop/. En general esta encuesta es conocida como “Encuesta LAPOP”, y se define como “the only survey of democratic public opinion and behavior that covers the Americas (North, Central, South and the Caribbean). It is an effort by LAPOP to measure democratic values and behaviors in the Americas using national probability samples of voting-age adults”. Esta encuesta es bianual, comenzando el año 2004 con 11 países y en su ola 2018 abarca 29 países.
 
 Además de la encuesta LAPOP se incorporan algunos indicadores económicos de países para el análisis obtenidos desde el Banco Mundial (World Bank, 2020) y la base de datos SWIID (Solt, 2020).
 
@@ -305,16 +315,6 @@ El número de casos según país y ola se presenta en la siguiente tabla.
     </tr>
   </tbody>
 </table>
-
-## Repositorio
-
-El código de generación de este sitio y del visualizador se encuentra abierto en el repositorio [https://github.com/ocscoes/OCS-COES](https://github.com/ocscoes/OCS-COES). El repositorio esta ordenado en modo general en 3 carpetas,
-
-- Aplicación Shiny que permite la visualización de los datos (app),
-- Datos utilizados (input). Cabe destacar, que siguiendo las políticas de resguardo de la información de LAPOP no se subirá la base de datos original sino solamente los códigos de procesamiento.
-- Códigos de procesamiento de los datos (production).
-
-La estructura del repositorio sigue la propuesta del protocolo [IPO](https://juancarloscastillo.github.io/ipo/index_es.html).
 
 ## Variables
 
