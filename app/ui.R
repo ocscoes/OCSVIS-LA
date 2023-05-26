@@ -16,14 +16,14 @@
 # install.packages("sjlabelled")
 # install.packages("dplyr")
 # install.packages("Cairo")
-
+# install_version("shinydashboardPlus", version = "0.7.5")
 
 library(shiny)
 library(shinyjs)
 library(shinyWidgets)
 library(shinyEffects)
-library(shinydashboard)
 library(shinydashboardPlus)
+library(shinydashboard)
 library(ggplot2)
 library(ggrepel)
 library(cowplot)
@@ -98,7 +98,7 @@ dashboardPagePlus(
                 #-------------------------------------------------------------------------
                 inlineCSS(appCSS), # 1. Cubre de negro toda la app
                 useShinyjs(),      # 2. Carga funciones JS a la app 
-                extendShinyjs(text = jsToggleFS), #3. Full screen app
+                extendShinyjs(text = jsToggleFS, functions = c("toggleFullScreen")), #3. Full screen app
                 div(id = "loading-content",
                     tags$img(src = "https://github.com/ocscoes/OCS-COES/raw/master/app/www/images/logo-ocs-animated.gif")
                     ), # Loading image 
@@ -134,13 +134,13 @@ dashboardPagePlus(
                                             width = 700),
                                 selectInput(inputId = "year",
                                             label = "Seleciona ola",
-                                            choices = levels(lapop_ind_2004to2018$wave),
+                                            choices = levels(lapop_ind_2004to2021$wave),
                                             multiple = FALSE,
-                                            selected = c("2018"),
+                                            selected = c("2021"),
                                             width = 700),
                                 selectInput(inputId = "country",
                                             label = "Seleciona País",
-                                            choices = levels(lapop_ind_2004to2018$pais),
+                                            choices = levels(lapop_ind_2004to2021$pais),
                                             multiple = TRUE,
                                             selected = c("Chile","Estados Unidos","Mexico","Ecuador"),
                                             width = 700),
@@ -190,8 +190,8 @@ dashboardPagePlus(
                                             width = "100%",
                                             sep = "",step = 1,
                                             min = 2004,
-                                            max = 2018, 
-                                            value = c(2004,2018)),
+                                            max = 2021, 
+                                            value = c(2004,2021)),
                                 ),
                             box(title = NULL,
                                 width = 6,
@@ -199,7 +199,7 @@ dashboardPagePlus(
                                 collapsible = TRUE,
                                 selectInput(inputId = "country_long",
                                             label = "Seleciona el País",
-                                            choices = levels(lapop_country_2004to2018$pais),
+                                            choices = levels(lapop_country_2004to2021$pais),
                                             multiple = TRUE,
                                             selected = c("Chile","Estados Unidos","Venezuela"),
                                             width = "100%"),
@@ -256,8 +256,8 @@ dashboardPagePlus(
                                             width = "100%",
                                             sep = "",step = 2,
                                             min = 2004,
-                                            max = 2018, 
-                                            value = c(2018,2018)),
+                                            max = 2021, 
+                                            value = c(2021,2021)),
                                 actionButton(inputId = "boton3",
                                              width = "100%",
                                              height="100%",

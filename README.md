@@ -544,95 +544,117 @@ El listado de variables se resume en la siguiente tabla:
 ## Estructura del repositorio:
 
 ```
-├───README.md
-│
-├───app
-│   │   .Rhistory
-│   │   global.R
-│   │   home.html
-│   │   home.Rmd
-│   │   instrucciones.html
-│   │   instrucciones.Rmd
-│   │   OCS-COES.Rproj
-│   │   server.R
-│   │   ui.R
-│   │   upload_app.R
-│   │
-│   ├───rsconnect
-│   │   └───shinyapps.io
-│   │       └───juitsa
-│   │               ocs-coes.dcf
-│   │
-│   └───www
-│       ├───bib
-│       │       ocs-library.bib
-│       │
-│       ├───css
-│       │       custom-a.css
-│       │       docs-theme.css
-│       │
-│       ├───html
-│       │       disqus.html
-│       │
-│       └───images
-│               graficar.png
-│               logo-ocs-animated.gif
-│               ocs-21.png
-│               ocs-logo.png
-│               ocs-negro.png
-│               OCS_1_1.png
-│               OCS_1_1.svg
-│               OCS_sfonts.svg
-│
-├───input
-│   └───data
-│       ├───original
-│       │   │   4_LAPOP_2004_2018.RData
-│       │   │   5_LAPOP_2018.dta
-│       │   │   fraseo_preguntas.Rdata
-│       │   │   fraseo_preguntas.xlsx
-│       │   │   GrandMerge.RData
-│       │   │   LAPOP_2004-2008.RData
-│       │   │   lapop_aggr.RData
-│       │   │   lapop_ind.RData
-│       │   │   swiid8_3.rda
-│       │   │
-│       │   └───lapop-faltantes
-│       │           argentina2016.dta
-│       │           argentina2018.dta
-│       │           bolivia2016.dta
-│       │           bolivia2018.dta
-│       │           brazil2016.dta
-│       │           brazil2018.dta
-│       │           canada2016.dta
-│       │           canada2018.dta
-│       │           chile2016.dta
-│       │           chile2018.dta
-│       │           colombia2016.dta
-│       │           costarica2016.dta
-│       │           costarica2018.dta
-│       │           ecuador2018.dta
-│       │           guyana2016.dta
-│       │           panama2016.dta
-│       │           panama2018.dta
-│       │           uruguay2016.dta
-│       │           uruguay2018.dta
-│       │           usa2016.dta
-│       │           usa2018.dta
-│       │           venezuela2016.dta
-│       │
-│       └───proc
-│               lapop_aggr_v2.RData
-│               lapop_count_2004to2018.RData
-│               lapop_count_2004to2018_long-wave.RData
-│               lapop_ind_2004to2018.RData
-│               lapop_ind_v2.RData
-│
-└───production
-        .Rhistory
-        country_variables-original.R
-        prod_country-lvl-vars.R
-        prod_country-lvl-vars.rmd
-        prod_var-labels.R
+.
+├── README.md
+├── app
+│   ├── OCS-COES.Rproj
+│   ├── global.R
+│   ├── home.Rmd
+│   ├── home.html
+│   ├── instrucciones.Rmd
+│   ├── instrucciones.html
+│   ├── rsconnect
+│   │   └── shinyapps.io
+│   │       ├── jandimter
+│   │       │   └── app21.dcf
+│   │       └── juitsa
+│   │           └── ocs-coes.dcf
+│   ├── server.R
+│   ├── ui.R
+│   ├── upload_app.R
+│   └── www
+│       ├── bib
+│       │   └── ocs-library.bib
+│       ├── css
+│       │   ├── custom-a.css
+│       │   └── docs-theme.css
+│       ├── html
+│       │   └── disqus.html
+│       └── images
+│           ├── OCS_1_1.png
+│           ├── OCS_1_1.svg
+│           ├── OCS_sfonts.svg
+│           ├── graficar.png
+│           ├── logo-ocs-animated.gif
+│           ├── ocs-21.png
+│           ├── ocs-logo.png
+│           └── ocs-negro.png
+├── estructura_repositorio.txt
+├── fraseo_preguntas.Rdata
+├── input
+│   └── data
+│       ├── original
+│       │   ├── 4_LAPOP_2004_2018.RData
+│       │   ├── 5_LAPOP_2018.dta
+│       │   ├── GrandMerge.RData
+│       │   ├── LAPOP2021
+│       │   │   ├── ARG_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── BOL_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── BRA_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── CAN_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── CHL_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── COL_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── CRI_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── DOM_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── ECU_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── GTM_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── GUY_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── HND_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── HTI_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── JAM_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── MEX_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── NIC_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── PAN_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── PER_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── PRY_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── SLV_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   ├── URY_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   │   └── USA_2021_LAPOP_AmericasBarometer_v1.2_w.dta
+│       │   ├── LAPOP_2004-2008.RData
+│       │   ├── cepal_gini.RData
+│       │   ├── fraseo_preguntas.Rdata
+│       │   ├── fraseo_preguntas.xlsx
+│       │   ├── lapop-faltantes
+│       │   │   ├── argentina2016.dta
+│       │   │   ├── argentina2018.dta
+│       │   │   ├── bolivia2016.dta
+│       │   │   ├── bolivia2018.dta
+│       │   │   ├── brazil2016.dta
+│       │   │   ├── brazil2018.dta
+│       │   │   ├── canada2016.dta
+│       │   │   ├── canada2018.dta
+│       │   │   ├── chile2016.dta
+│       │   │   ├── chile2018.dta
+│       │   │   ├── colombia2016.dta
+│       │   │   ├── costarica2016.dta
+│       │   │   ├── costarica2018.dta
+│       │   │   ├── ecuador2018.dta
+│       │   │   ├── guyana2016.dta
+│       │   │   ├── panama2016.dta
+│       │   │   ├── panama2018.dta
+│       │   │   ├── uruguay2016.dta
+│       │   │   ├── uruguay2018.dta
+│       │   │   ├── usa2016.dta
+│       │   │   ├── usa2018.dta
+│       │   │   └── venezuela2016.dta
+│       │   ├── lapop_aggr.RData
+│       │   ├── lapop_ind.RData
+│       │   ├── swiid8_3.rda
+│       │   └── swiid9_4.rda
+│       └── proc
+│           ├── lapop_count_2004to2021.RData
+│           ├── lapop_count_2004to2021_long-wave.RData
+│           └── lapop_ind_2004to2021.RData
+├── lapop_count_2004to2018.RData
+├── lapop_count_2004to2018_long-wave.RData
+├── lapop_ind_2004to2018.RData
+└── production
+    ├── country_variables-original.R
+    ├── prod_country-lvl-vars.R
+    ├── prod_country-lvl-vars.rmd
+    └── prod_var-labels.R
+
+18 directories, 91 files
+
 ```        
 

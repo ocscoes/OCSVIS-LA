@@ -1,0 +1,13 @@
+name: app21
+title: app21
+username:
+account: jandimter
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9188997
+bundleId: 7265014
+url: https://jandimter.shinyapps.io/app21/
+when: 1685062162.42055
+lastSyncTime: 1685062162.42055
+asMultiple: FALSE
+asStatic: FALSE
