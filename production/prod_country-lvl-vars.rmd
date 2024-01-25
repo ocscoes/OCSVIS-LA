@@ -7,12 +7,13 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r}
+```{r Carga de librerías}
 # Descargar paquetes. 
 
 if (!require("pacman")) install.packages("pacman")
 # remotes::install_github("nset-ornl/wbstats")
-pacman::p_load(tidyverse,sjlabelled,countrycode,haven,questionr,wbstats,zoo,sjPlot,sjmisc,dplyr)
+pacman::p_load(tidyverse, sjlabelled, countrycode, haven, questionr, wbstats,
+               zoo, sjPlot, sjmisc, dplyr, summarytools, srvyr)
 
 
 #options(scipen=999)
@@ -20,7 +21,71 @@ pacman::p_load(tidyverse,sjlabelled,countrycode,haven,questionr,wbstats,zoo,sjPl
 
 ```
 
+# 0. Pipeline de trabajo:
+
+1.  Carga de datos
+
+    a)  Todos los datos cargados son a nivel individual. Se
+        carga el objeto **datos** desde
+        [GrandMerge.RData]{.underline}. Este contiene datos
+        de la encuesta LAPOP entre 2004 y 2016.
+    b)  Se carga el objeto **datos0418** desde
+        [LAPOP_2004-2008.RData]{.underline}**,** archivo
+        elaborado manualmente que contiene data de para los
+        paises incluyendo 2017 y 2018.
+
+2.  Se cargan archivos con data de países faltantes
+    (complementa datos anteriormente cargados).
+
+    a)  Se seleccionan variables a usar.
+    b)  Se hace merge de los datos produciendo el objeto
+        **merge_faltante**.
+
+3. Se incorporan datos respectivos a ola 2021.
+
+4.  Se genera una nueva base de datos con los datos
+    faltantes incorporados.
+
+    a)  datosselc corresponde a la base datos filtrada.
+    b)  Esta base datos se interviene ajustando el año de
+        las olas.
+    c)  finalmente se hace un merge que reasigna el objeto
+        **datos**.
+
+5.  Se incorporan datos síntesis para los valores:
+
+    a)  Se ajustan algunas variables
+    b)  La incorporación de datos síntesis de promedios a
+        nivel país y año de los índices.
+    c)  La incorporación de datos síntesis de promedios a
+        nivel individual y año de los índices.
+    d)  El nuevo objeto es **lapop_country.**
+
+6.  Se integran datos Gini y GPD.
+    
+    a) Los datos son obtenidos mayoritariamente del World Bank.
+    b) Se realiza una imputación de datos por interpolación lineal.
+    c) Aquellos datos ausentes se imputan con valores del SWIID.
+       Esto está programado pero no se ejecuta, evaluar.
+       
+7. Generación de bases de datos generales.
+
+8. Etiquetado de datos.
+
+9. Incorporación de promedios por ola.
+
+10. Almacenado de datos.
+
+# 1. Carga de datos
+
 ```{r}
+# Variables de interés
+vars<- c("wave", "year","pais","wt", "it1", "prot3", "aoj12", "b2","b3", "b4","b10a", "b12", "b20", "b20a","b21","b21a",
+         "n9","n11","n15","ros4", "ing4","eff1", "pn4", "exc7","pol1", "vb2", "pr4")
+```
+
+
+```{r Carga de datos}
 # Cambio de formato de bases de datos: de dta a RData
 
 #datos<-read_dta("input/data/original/GrandMerge.dta") # importante poner extensión .dta
@@ -32,73 +97,115 @@ pacman::p_load(tidyverse,sjlabelled,countrycode,haven,questionr,wbstats,zoo,sjPl
 
 # Cargar base de datos ------------------------------------------------------------------------
 
-load(file = "input/data/original/GrandMerge.RData") #  "datos"  Lapop: 2004 - 2014
-load(file="input/data/original/LAPOP_2004-2008.RData") # datos0418
+# Elemento = "datos"
+# Años: 2004 - 2014
+# N = 222.625
+load(file = "../input/data/original/GrandMerge.RData") 
 
-# save(datos,file = "input/data/original/4_LAPOP_2004_2018.RData")
+# Elemento = "datos0418"
+# Años: 2004 - 2018/19
+# N = 231.354
+# Utilidad = Se filtran las waves 2016 y 2018 para complementar el archivo anterior.
+load(file="../input/data/original/LAPOP_2004-2008.RData") # datos0418
+
+# Posteriormente se redefine el objeto 'datos' conteniendo:
+# 1. datoselc = objeto datos con variables seleccionadas.
+# 2. datos1618 = objeto datos0418 con waves seleccionadas.
+# 3. merge_faltante = paises-ola ausentes en datos anteriores. Se crea a partir de múltiples archivos.
+
+#datos <- bind_rows(datosselc,datos1618,merge_faltante) # logra una base longitudinal con la pr4 incluida. 
+
+# El objeto lapop_country se crea como agregación por país y ola a partir de 'datos'
+# incorporando como variables los promedios regionales.
+
+# Objeto 'lapop_country_2004to2018' se crea a partir de 'lapop_country' incorporando datos macro e imputaciones.
+# Objeto 'lapop_ind_2004to2021' se crea a partir de 'datos'. Es básicamente 'datos' pero se reordena y crean IDs.
+
 ```
 
+# 2. Paises ausentes (2016-2018)
 
-Bases faltantes en grandmerge
-```{r}
-dta<- list.files(path = "input/data/original/lapop-faltantes/", pattern = ".dta")
+```{r Carga de archivos faltantes 2016-2018}
+dta <- list.files(path = "../input/data/original/lapop-faltantes/", pattern = ".dta")
+dta <- paste0(file = "../input/data/original/lapop-faltantes/",dta)
 
-for (i in 1:length(dta)) {
-  name<-paste0("dat_", dta[i])
-  datas<- paste0(dta[i])
-  assign(name, read_stata(file =paste0("input/data/original/lapop-faltantes/",datas)))
-  print(name)
-}
+merge_faltante <- lapply(dta, function(archivo){
+  print(archivo)
+  df <- read_dta(archivo)
+  df <- df %>% select_if(names(df) %in% vars) %>% mutate(
+    wave = substr(archivo,nchar(archivo)-7,nchar(archivo)-4)
+  ) 
+  return(df)
+})
 
-vars<- c("wave", "year","pais", "it1", "prot3", "aoj12", "b2","b3", "b4","b10a", "b12", "b20", "b20a","b21","b21a",
-         "n9","n11","n15","ros4", "ing4","eff1", "pn4", "exc7","pol1", "vb2", "pr4")
-
-data_argentina2016 <- dat_argentina2016.dta   %>% select_if(names(dat_argentina2016.dta) %in% vars) %>% mutate(wave=2016)        
-data_argentina2018 <- dat_argentina2018.dta   %>% select_if(names(dat_argentina2018.dta) %in% vars) %>% mutate(wave=2018)  
-data_bolivia2016   <- dat_bolivia2016.dta     %>% select_if(names(dat_bolivia2016.dta  ) %in% vars) %>% mutate(wave=2016)      
-data_bolivia2018   <- dat_bolivia2018.dta     %>% select_if(names(dat_bolivia2018.dta  ) %in% vars) %>% mutate(wave=2018)      
-data_brazil2016    <- dat_brazil2016.dta      %>% select_if(names(dat_brazil2016.dta   ) %in% vars) %>% mutate(wave=2016)     
-data_brazil2018    <- dat_brazil2018.dta      %>% select_if(names(dat_brazil2018.dta   ) %in% vars) %>% mutate(wave=2018) 
-data_canada2016    <- dat_canada2016.dta      %>% select_if(names(dat_canada2016.dta   ) %in% vars) %>% mutate(wave=2016)     
-data_canada2018    <- dat_canada2018.dta      %>% select_if(names(dat_canada2018.dta   ) %in% vars) %>% mutate(wave=2018) 
-data_chile2016     <- dat_chile2016.dta       %>% select_if(names(dat_chile2016.dta    ) %in% vars) %>% mutate(wave=2016)    
-data_chile2018     <- dat_chile2018.dta       %>% select_if(names(dat_chile2018.dta    ) %in% vars) %>% mutate(wave=2018)    
-data_colombia2016  <- dat_colombia2016.dta    %>% select_if(names(dat_colombia2016.dta ) %in% vars) %>% mutate(wave=2016)       
-data_costarica2016 <- dat_costarica2016.dta   %>% select_if(names(dat_costarica2016.dta) %in% vars) %>% mutate(wave=2016)         
-data_costarica2018 <- dat_costarica2018.dta   %>% select_if(names(dat_costarica2018.dta) %in% vars) %>% mutate(wave=2018)   
-data_ecuador2018   <- dat_ecuador2018.dta     %>% select_if(names(dat_ecuador2018.dta  ) %in% vars) %>% mutate(wave=2018)      
-data_guyana2016    <- dat_guyana2016.dta      %>% select_if(names(dat_guyana2016.dta   ) %in% vars) %>% mutate(wave=2016)     
-data_panama2016    <- dat_panama2016.dta      %>% select_if(names(dat_panama2016.dta   ) %in% vars) %>% mutate(wave=2016)     
-data_panama2018    <- dat_panama2018.dta      %>% select_if(names(dat_panama2018.dta   ) %in% vars) %>% mutate(wave=2018)     
-data_uruguay2016   <- dat_uruguay2016.dta     %>% select_if(names(dat_uruguay2016.dta  ) %in% vars) %>% mutate(wave=2016)      
-data_uruguay2018   <- dat_uruguay2018.dta     %>% select_if(names(dat_uruguay2018.dta  ) %in% vars) %>% mutate(wave=2018)      
-data_usa2016       <- dat_usa2016.dta         %>% select_if(names(dat_usa2016.dta      ) %in% vars) %>% mutate(wave=2016)  
-data_usa2018       <- dat_usa2018.dta         %>% select_if(names(dat_usa2018.dta      ) %in% vars) %>% mutate(wave=2018) 
-data_venezuela2016 <- dat_venezuela2016.dta   %>% select_if(names(dat_venezuela2016.dta) %in% vars) %>% mutate(wave=2016)        
-
-merge_faltante<- bind_rows(data_argentina2016,data_argentina2018,data_bolivia2016  ,data_bolivia2018  ,
-                        data_brazil2016   ,data_brazil2018   ,data_canada2016   ,data_canada2018   ,
-                        data_chile2016    ,data_chile2018    ,data_colombia2016 ,data_costarica2016,
-                        data_costarica2018,data_ecuador2018  ,data_guyana2016   ,data_panama2016   ,
-                        data_panama2018   ,data_uruguay2016  ,data_uruguay2018  ,data_usa2016      ,
-                        data_usa2018      ,data_venezuela2016)
+rm(dta)
+merge_faltante <- bind_rows(merge_faltante)
 ```
 
-# Generar base de datos individual longitudinal.
+<!-- # 3. Actualización 2021 -->
+<!-- Se anula modificación 2021 pues disponibilidad de los datos es muy baja. -->
+```{r Carga de datos 2021, eval=FALSE}
+
+# Columnas que no están presentes en los datos 2021:
+# 1. aoj12  = Confidence that Judiciary will Punish the Guilty.
+# 2. ros4   = Government Should Implement Policies to Reduce Income Inequality.
+# 3. n11    = Evaluation of Administration's Handling of Citizen Security.
+# 4. n15    = Evaluation of Administration's Handling of Economy.
+
+dta <- list.files(path = "../input/data/original/LAPOP2021/", pattern = ".dta")
+dta <- paste0(file = "../input/data/original/LAPOP2021/",dta)
+
+data2021 <- lapply(dta, function(archivo){
+  print(archivo)
+  df <- read_dta(archivo)
+  df <- df %>% select_if(names(df) %in% vars)
+  return(df)
+})
+data2021 <- bind_rows(data2021)
+rm(dta)
+```
+
+# 3. Actualización 2023
+```{r Carga de datos 2023}
+
+# Columnas que no están presentes en los datos 2023:
+
+dta <- list.files(path = "../input/data/original/2023/", pattern = ".dta")
+dta <- paste0(file = "../input/data/original/2023/",dta)
+
+data2023 <- lapply(dta, function(archivo){
+  print(archivo)
+  df <- read_dta(archivo)
+  df <- df %>% select_if(names(df) %in% vars)
+  return(df)
+})
+data2023 <- bind_rows(data2023)
+rm(dta)
+```
+
+# 4. Data con variables ausentes
 
 **Recuperar la variable pr4 ausente.**
 
-A continuación se presenta el código para crear una base de datos con los valores promedio por país y una base de datos a nivel individual con las variables nacionales agregadas. La base de datos longitudinal LAPOP, no introduce una pregunta que no se realiza todos los años [pr4], por ello, y para aumentar la cantidad de datos disponibles, agregamos a esta base de datos longitudinal dichas variables desde un *merge* de las bases por año.
+A continuación se presenta el código para crear una base de
+datos con los valores promedio por país y una base de datos
+a nivel individual con las variables nacionales agregadas.
+La base de datos longitudinal LAPOP, no introduce una
+pregunta que no se realiza todos los años [pr4], por ello, y
+para aumentar la cantidad de datos disponibles, agregamos a
+esta base de datos longitudinal dichas variables desde un
+*merge* de las bases por año.
 
-```{r}
+```{r Etapa3: reasignación de datos}
 datos0418 <-  datos0418  %>%  
-                        select(wave, year, pais, idnum, upm, 
-                              strata, wt, weight1500, estratopri,
-                              estratosec, ur, tamano, prov, cluster,
-                              it1, prot3, aoj12, b2, b3, b4,
-                              b10a, b12, b20, b20a, b21, b21a,
-                              n9, n11, n15, ros4, ing4,
-                              eff1, pn4, exc7, pol1, vb2) # Selección variables de interes
+                        select(wave, year, pais,
+                               idnum, upm, strata,
+                               wt,
+                               weight1500, estratopri, estratosec, ur, tamano, prov, cluster,
+                               it1, prot3, aoj12, b2, b3, b4,
+                               b10a, b12, b20, b20a, b21, b21a,
+                               n9, n11, n15, ros4, ing4,
+                               eff1, pn4, exc7, pol1, vb2) # Selección variables de interes
 
 datos1618 <-  datos0418  %>% filter(wave==2016 | wave==2018)
 
@@ -111,17 +218,21 @@ names(datos) # para saber el orden de las variables
  
 datos$wave <- NA
 
-datosselc <-  datos  %>% select(wave, year, pais, idnum, upm, strata, wt, weight1500, estratopri,
-                         estratosec, ur, tamano, prov, cluster,
-                         it1, prot3, aoj12, b2, b3, b4,
-                         b10a, b12, b20, b20a, b21, b21a,
-                         n9, n11, n15, ros4, ing4,
-                         eff1, pn4, exc7, pol1, vb2, pr4) # wave
+datosselc <-  datos  %>% select(wave, year, pais, #idnum, upm, strata,
+                                wt,
+                                # weight1500, estratopri,
+                                # estratosec, ur, tamano, prov, cluster,
+                                it1, prot3, aoj12, b2, b3, b4,
+                                b10a, b12, b20, b20a, b21, b21a,
+                                n9, n11, n15, ros4, ing4,
+                                eff1, pn4, exc7, pol1, vb2, pr4) # wave
 
 # Evaluar la relación entre olas y agnos
 
 table(datosselc$year) 
 table(datos0418$wave)
+table(data2023$wave)
+
 # Los casos se ordenan de tal modo wave(olas): 
 # 2004(2014), 2006(2006 y 2007),  2008(2008 y 2009), 2010(2010), 2012(2012), 2014(2014), 2016(16,17), 2018(18,19)
 
@@ -133,15 +244,22 @@ datosselc$wave <- ifelse(datosselc$year==2012, 2012, datosselc$wave)
 datosselc$wave <- ifelse(datosselc$year==2014, 2014, datosselc$wave)
 
 datosselc <- remove_all_labels(datosselc) # Las etiquetas no son compatibles
+merge_faltante <- mutate_all(merge_faltante, as.numeric)
+merge_faltante$year <- merge_faltante$wave
 
-# Merge 2004-2014 + 2018 +faltantes varias del grand merge
-datos <- bind_rows(datosselc,datos1618,merge_faltante) # logra una base longitudinal con la pr4 incluida. 
+data2023 <- mutate_all(data2023, as.numeric)
+data2023$year <- data2023$wave
+
+# Merge 2004-2014 + 2018 +faltantes varias del grand merge + 2021
+datos <- bind_rows(datosselc,datos1618,merge_faltante,data2023) # logra una base longitudinal con la pr4 incluida. 
 datos <- copy_labels(datos, datos0418)
 
-names(datos)
+#names(datos)
 ```
 
-```{r}
+# 5. Integración valores promedio
+
+```{r Etapa 4a}
 #reverse coded
 datos$exc7  <- sjmisc::rec(datos$exc7,rec = "rev")
 datos$pn4   <- sjmisc::rec(datos$pn4,rec = "rev")
@@ -150,14 +268,38 @@ datos$aoj12 <- sjmisc::rec(datos$aoj12,rec = "rev")
 datos$pol1  <- sjmisc::rec(datos$pol1 ,rec = "rev")
 ```
 
-```{r a1}
+```{r Etapa 4bc}
 # Promedio pais | year ------------------------------------------------------------------------#
-datos2 <- datos %>% group_by(pais,wave)%>%summarise_all(funs(mean(., na.rm=TRUE))) 
+
+columnas_promedios <- setdiff(names(datos),c("wave","year","pais"))
+
+library(srvyr)
+library(survey)
+library(sjmisc)
+
+datos2 <- svydesign(ids = ~1,
+                       data = datos,
+                       weights = ~wt) %>%
+  as_survey() %>%
+  group_by(pais, wave) %>%
+  summarize_all(survey_mean, na.rm = TRUE) %>%
+  select(c("pais","wave"), columnas_promedios,
+         -idnum, -upm, -strata, -weight1500, -estratopri,
+         -estratosec, -prov, -wt, -ur, -tamano, -cluster) %>%
+  mutate(pais = to_label(pais))
+
+columnas_a_modificar <- setdiff(names(datos2), "pais")
+
+# Aplicamos la función replace solo a las columnas seleccionadas
+datos2[columnas_a_modificar] <- sapply(datos2[columnas_a_modificar], function(x) replace(x, x == 0, NA))
+
 
 # Promedio wave para cada variable ------------------------------------------------------------#
 
 ## promedio de variables para cada ola (p.e. el nivel de confianza interpersonal en año 2006)
-promedio_ola <- datos %>% group_by(wave)%>%summarise_all(funs(mean(., na.rm=TRUE))) 
+promedio_ola <- datos %>%
+  group_by(wave) %>%
+  summarise_all(funs(mean(., na.rm = TRUE))) 
 
 #promedios regionales
 promedio_ola <- promedio_ola %>% select(wave,it1:pr4) 
@@ -192,7 +334,7 @@ lapop_country <- left_join(datos2, promedio_ola,by="wave")
 
 # ordenar los datos
 lapop_country <- arrange(lapop_country,
-                         pais,wave,year,
+                         pais,wave,
                          it1, it1_promr,
                          prot3, prot3_promr,
                          aoj12, aoj12_promr,
@@ -218,139 +360,139 @@ lapop_country <- arrange(lapop_country,
                          pr4, pr4_promr)
 ```
 
-```{r}
-# crear variable country name como character y nombre en iso3c (p.e. United States = USA)
+# 6. Integración datos Gini y GDP.
+
+```{r Creación de id para unión}
+# Elimina objetos innecesarios
+rm(list=setdiff(ls(),c('lapop_country',"datos")))
+
+# Crea variable con nombre en iso3c (p.e. United States = USA)
 lapop_country$pais.name <- as_factor(lapop_country$pais)
 lapop_country$isocode   <- countrycode(lapop_country$pais.name, 
                                        origin = 'country.name', 
                                        destination = 'iso3c')
-lapop_country[,c("pais","pais.name","isocode")]
+#lapop_country[,c("pais","pais.name","isocode")]
 ```
 
-# Variables a Nivel Macro
+```{r Definición función para la obtención de datos del WB}
+get_country_data <- function(countries,
+                             indicators = c("SI.POV.GINI", # Gini index.
+                                            "NY.GDP.PCAP.KD"), # GDP/c (const. 2015 US$).
+                             since = 2003,
+                             until = 2023,
+                             rmNA = FALSE,
+                             wide = TRUE,
+                             kdollars_gdp = TRUE,
+                             simplify = TRUE,
+                             agg = TRUE,
+                             interpol = TRUE){
+  
+  # Obtención datos
+  data_wd <- wb(indicator = indicators,
+                country = countries,
+                startdate = since,
+                enddate = until,
+                removeNA=rmNA,
+                return_wide=wide)
+  # Creación ID
+  data_wd$id <- paste0(data_wd$iso3c,"_",data_wd$date)
+  
+  # GDP en miles
+  if(kdollars_gdp & 'NY.GDP.PCAP.KD' %in% indicators){
+    data_wd$NY.GDP.PCAP.KD <- data_wd$NY.GDP.PCAP.KD/1000
+  }
 
-## Country level variables
-
-### Gini Index (Gini)
-
-```{r, cache=TRUE}
-paises<- unique(lapop_country$isocode)
-
-for (i in 1:length(paises)) {
-  name<-paste0("gini_", paises[i])
-  pais<- paste0(paises[i])
-  assign(name, wb(indicator = "SI.POV.GINI", country = pais, startdate = 2003, enddate = 2019))
+  # Formato simplificado
+data_wd$idwc  <- paste0(data_wd$date, data_wd$iso3c)
+data_wd <- data_wd[c("country","iso3c","date","idwc","SI.POV.GINI","NY.GDP.PCAP.KD")] %>%
+           setNames(c("country","iso3c","year","idwc","gini","gdp")) %>%
+           arrange(country,year) %>% group_by(year) %>%
+           mutate(gini_agg = mean(gini,na.rm = TRUE),
+                  gdp_agg = mean(gdp,na.rm = TRUE))
+if(interpol == TRUE){
+  
 }
 
-gini<- rbind(gini_ARG, gini_BOL, gini_CAN, gini_COL, gini_DOM, gini_GTM, gini_HND, gini_JAM, gini_NIC, gini_PER, gini_SLV,
-             gini_URY, gini_VEN, gini_BLZ, gini_BRA, gini_CHL, gini_CRI, gini_ECU, gini_GUY, gini_HTI, gini_MEX, gini_PAN,
-             gini_PRY, gini_TTO, gini_USA)
-
-gini<- gini %>% select(country,year=date,iso3c,gini=value)
-
-```
-
-### Gross Domestic Product (GDP)
-
-```{r, cache=TRUE}
-for (i in 1:length(paises)) {
-  name<-paste0("gdp_", paises[i])
-  pais<- paste0(paises[i])
-  assign(name, wb(indicator = "NY.GDP.PCAP.KD", country = pais, startdate = 2003, enddate = 2019))
+return(data_wd)
 }
+```
 
-gdp<- rbind(gdp_ARG, gdp_BOL, gdp_CAN, gdp_COL, gdp_DOM, gdp_GTM, gdp_HND, gdp_JAM, gdp_NIC, gdp_PER, gdp_SLV,
-            gdp_URY, gdp_VEN, gdp_BLZ, gdp_BRA, gdp_CHL, gdp_CRI, gdp_ECU, gdp_GUY, gdp_HTI, gdp_MEX, gdp_PAN,
-            gdp_PRY, gdp_TTO, gdp_USA)
+```{r Obtención de datos WB (Gini y GDP) + Interpolación}
+paises<- c("ARG",
+           "BOL",
+           "BRA",
+           "CHL",
+           "COL",
+           "CRI",
+           "DOM",
+           "ECU",
+           "GTM",
+           "HND",
+           "MEX",
+           "NIC",
+           "PAN",
+           "PER",
+           "PRY",
+           "SLV",
+           "URY",
+           "VEN",
+           "CAN",
+           'TTO',
+           'USA')
 
-gdp<- gdp %>% 
-  select(country,year=date,iso3c,gdp=value) %>% 
-  mutate(gdp=(gdp/1000)) #gpd in thounsand dolars
+country_vars<-get_country_data(paises,simplify = TRUE) # Alerta de función spread() deprecated.
+
+rm(paises,get_country_data)
+
+# Interpolación GINI
+country_vars <- country_vars %>% group_by(iso3c) %>%
+  mutate(gini.ap=na.approx(gini,rule=2,na.rm = F)) %>% select(-"year")
+country_vars$gini[is.na(country_vars$gini)] <- country_vars$gini.ap[is.na(country_vars$gini)]
 
 ```
 
-```{r}
-# Merge datasets
-country_vars <- full_join(x = gini,y = gdp)
-country_vars <- country_vars %>% arrange(country,year)
-```
-
-
-**Country by wave**
-
-```{r}
-table(lapop_country$pais.name,lapop_country$wave)
-```
-
-```{r}
+```{r Incorporación de la nueva data}
 #Juntar Gini, GDP y Lapop
 lapop_country$idwc <- paste0(lapop_country$wave,lapop_country$isocode)
-country_vars$idwc  <- paste0(country_vars$year, country_vars$iso3c)
-
-# Obtener promedio de year para cada indicador macro
-country_vars_means <- country_vars %>% 
-  select(year,gini,gdp) %>% 
-  group_by(year) %>% 
-  summarise_all(funs(mean(., na.rm=TRUE))) %>% 
-  rename("gini_agg"=gini,
-         "gdp_agg"=gdp)
+lapop_country <- left_join(lapop_country, country_vars,by="idwc")
+rm(country_vars)
 ```
 
-```{r interpolation gini}
-for (i in levels(as.factor(country_vars$iso3c))) {
-  name<-paste0(i,"_gini.app")
-  assign(name, country_vars %>% filter(iso3c==i,year %in% c(2003:2019)) %>% mutate(gini.ap=na.approx(gini,rule=2,na.rm = F)))
-}
-
-cntr_vars<- bind_rows(ARG_gini.app, BLZ_gini.app, BOL_gini.app, BRA_gini.app, CAN_gini.app, CHL_gini.app, COL_gini.app, CRI_gini.app,
-                      DOM_gini.app, ECU_gini.app, GTM_gini.app, GUY_gini.app, HND_gini.app, HTI_gini.app, JAM_gini.app, MEX_gini.app,
-                      NIC_gini.app, PAN_gini.app, PER_gini.app, PRY_gini.app, SLV_gini.app, TTO_gini.app, URY_gini.app, USA_gini.app,
-                      VEN_gini.app)
-
-cntr_vars <- cntr_vars %>% mutate(gini=ifelse(test = is.na(gini),yes = gini.ap,no = gini))
-```
-
-```{r}
-# country_vars   <- left_join(x = cntr_vars,   y = country_vars_means) #[¡MERGE CON GINI INTRAPOLADO!]
-country_vars   <- left_join(x = country_vars,y = country_vars_means)
-country_vars   <- select(country_vars,-"year") #quitamos year de base macroeconomicos
-lapop_country3 <- left_join(lapop_country, country_vars,by="idwc")
-```
-
-```{r eval=FALSE, include=FALSE}
+```{r Imputación con valores de la SWIID, eval=TRUE, include=FALSE}
 # Para rellenar los datos faltantes de los gini se recurrio a la base SWIID
-load("../input/data/original/swiid8_3.rda")
-lapop_country3$idwc <- paste0(lapop_country3$wave,lapop_country3$pais.name) # Id para paises en años.
-swiid_summary$idwc  <- paste0(swiid_summary$year, swiid_summary$country) # Id para paises en años. 
-swiid_summary2      <- swiid_summary %>% select(idwc,gini_disp) # Se filtra la variable gini
+load("../input/data/original/swiid9_4.rda") ; rm(swiid)
+lapop_country$idwc <- paste0(lapop_country$wave,lapop_country$pais.name) # Id para paises en años.
+swiid_summary$idwc <- paste0(swiid_summary$year, swiid_summary$country) # Id para paises en años. 
+swiid_summary      <- swiid_summary %>% select(idwc,gini_disp) # Se filtra la variable gini
 
-lapop_country4        <- left_join(lapop_country3, swiid_summary2, by="idwc") # Se junta lapop con swiid
-lapop_country4$ginina <- as.logical(is.na(lapop_country4$gini)) # Se identifican los casos con na en gini
+lapop_country        <- left_join(lapop_country, swiid_summary, by="idwc") # Se junta lapop con swiid
+lapop_country$ginina <- as.logical(is.na(lapop_country$gini)) # Se identifican los casos con na en gini
 
-basecor <- lapop_country4 %>% 
+basecor <- lapop_country %>% 
   select(gini, gini_disp) %>% 
   na.omit() # Se evalua si los valores son coherentes
-cor(basecor$gini, basecor$gini_disp) # 0.80 los valores son relativamente distintos.
+cor(basecor$gini, basecor$gini_disp) # 0.80 los valores son relativamente distintos. #Update: 92% aprox. Data 2023.
 
-lapop_country4$gini <- ifelse(lapop_country4$ginina == TRUE , 
-                              lapop_country4$gini_disp,
-                              lapop_country4$gini) # Los NA de gini del databank son remplazados por los datos de Swiid. 
-
-view_df(lapop_country4)
-remove(list = c("lapop_country3","lapop_country4","swiid_summary2"))
+lapop_country$gini <- ifelse(lapop_country$ginina == TRUE , 
+                              lapop_country$gini_disp,
+                              lapop_country$gini) # Los NA de gini del databank son remplazados por los datos de Swiid. 
+lapop_country$year <- lapop_country$wave
+# view_df(lapop_country)
+# remove(list = c("lapop_country3","lapop_country4","swiid_summary2"))
 ```
 
-## Ordenar Información de bases de datos
+# 7. Generación bases de datos finales
 
 ```{r}
-lapop_country_2004to2018 <- lapop_country3 %>%
+lapop_country$year <- lapop_country$wave
+lapop_country_2004to2021 <- lapop_country %>%
   select(pais,pais.name,iso3c,wave,year,idwc,everything()) %>% 
   select(-c("isocode","country")) %>% 
-  mutate(promedio="Promedio ola")
+  mutate(promedio="Promedio ola") # Se rellenará posteriormente.
 ```
 
 ```{r}
-lapop_ind_2004to2018 <- datos %>% 
+lapop_ind_2004to2021 <- datos %>% 
   mutate("idwc"=paste0(datos$wave, as_factor(datos$pais)),
          "pais.name"=as_factor(pais),
          "iso3c"=countrycode(pais.name,origin = 'country.name',destination = 'iso3c')) %>%
@@ -358,11 +500,12 @@ lapop_ind_2004to2018 <- datos %>%
 ```
 
 ```{r}
-view_df(lapop_country_2004to2018)
-view_df(lapop_ind_2004to2018)
+view_df(lapop_country_2004to2021)
+view_df(lapop_ind_2004to2021)
 ```
 
-### Etiquetado de variables
+# 8. Etiquetado de datos y variables.
+# 9. Incorporación promedios 
 
 **Base nivel individual**
 
@@ -372,7 +515,7 @@ levels1 = c(1,2,3,4,5,6,7)
 labels1 = c("Nada","2","3","4","5","6","Mucho")
 
 for (i in names01) {
-  lapop_ind_2004to2018[,i]<- factor(unlist(lapop_ind_2004to2018[,i]),
+  lapop_ind_2004to2021[,i]<- factor(unlist(lapop_ind_2004to2021[,i]),
                           levels = levels1,
                           labels = labels1)
 }
@@ -383,7 +526,7 @@ levels2 = c(1,2,3,4,5,6,7)
 labels2 = c("Muy en \n Desacuerdo","2","3","4","5","6","Muy de \n acuerdo")
 
 for (i in names02) {
-  lapop_ind_2004to2018[,i]<- factor(unlist(lapop_ind_2004to2018[,i]),
+  lapop_ind_2004to2021[,i]<- factor(unlist(lapop_ind_2004to2021[,i]),
                           levels = levels2,
                           labels = labels2)
 }
@@ -391,35 +534,35 @@ for (i in names02) {
 names03 <- c("aoj12","pol1")
 
 for (i in names03){
-  lapop_ind_2004to2018[,i]<- factor(unlist(lapop_ind_2004to2018[,i]),
+  lapop_ind_2004to2021[,i]<- factor(unlist(lapop_ind_2004to2021[,i]),
                           levels = c(1:4),
                           labels = c("Nada","Poco","Algo","Mucho"))
 }
 
 #--------------------------------------------------------------------------------------------------
-lapop_ind_2004to2018$it1 <- factor(x = lapop_ind_2004to2018$it1,
+lapop_ind_2004to2021$it1 <- factor(x = lapop_ind_2004to2021$it1,
                                    levels = c(1:4),
                                    labels = c("Nada \n confiable","Poco \n confiable",
                                               "Algo \n confiable","Muy \n confiable"))
 
 
 # reverse coded
-lapop_ind_2004to2018$pn4 <- factor(x = lapop_ind_2004to2018$pn4,
+lapop_ind_2004to2021$pn4 <- factor(x = lapop_ind_2004to2021$pn4,
                                    levels = c(1:4),
                                    labels = c("Muy \n insatisfecho","Insatisfecho","Satisfecho","Muy \n satisfecho"))
 #reverse coded
-lapop_ind_2004to2018$exc7 <- factor(x = lapop_ind_2004to2018$exc7,
+lapop_ind_2004to2021$exc7 <- factor(x = lapop_ind_2004to2021$exc7,
                                     levels = c(1:4),
                                     labels = c("Nada \ngeneralizada","Poco \n generalizada", # NOTA: ya invertida
                                                "Algo \n generalizada","Muy \n generalizada" ))
 
-lapop_ind_2004to2018$vb2   <- factor(x = lapop_ind_2004to2018$vb2 ,
-                                     levels = c(1,2),
-                                     labels = c("Sí votó","No votó"))
+lapop_ind_2004to2021$vb2   <- factor(x = 1-(lapop_ind_2004to2021$vb2-1),
+                                     levels = c(0,1),
+                                     labels = c("No votó","Sí votó"))
 
-lapop_ind_2004to2018$prot3 <- factor(x = lapop_ind_2004to2018$prot3 ,
-                                     levels = c(1,2),
-                                     labels = c("Sí","No"))
+lapop_ind_2004to2021$prot3 <- factor(x = 1-(lapop_ind_2004to2021$prot3-1),
+                                     levels = c(0,1),
+                                     labels = c("No","Sí"))
 
 
 #--------------------------------------------------------------------------------------------------
@@ -429,178 +572,183 @@ labels_pais <- c("Mexico","Guatemala","El Salvador","Honduras","Nicaragua", "Cos
                  "Venezuela","Argentina", "Republica Dominicana","Haiti","Jamaica","Guyana",
                  "Trinidad y Tobago","Belice","Estados Unidos","Canada")
 
-lapop_ind_2004to2018$pais <- factor(lapop_ind_2004to2018$pais,
+lapop_ind_2004to2021$pais <- factor(lapop_ind_2004to2021$pais,
                      levels = levels_pais, 
                      labels = labels_pais)
 #--------------------------------------------------------------------------------------------------
-lapop_country_2004to2018$pais <- factor(lapop_country_2004to2018$pais,
-                     levels = levels_pais, 
-                     labels = labels_pais)
+# lapop_country_2004to2021$pais <- factor(lapop_country_2004to2021$pais,
+                     # levels = levels_pais, 
+                     # labels = labels_pais)
 
 # 2. Años/ola -----------------------------------------------------------------#
 
 # Nivel individual ----------------------------------------------------------#
-length(table(lapop_ind_2004to2018$year))
-table(lapop_ind_2004to2018$year)
-lapop_ind_2004to2018$year <- factor(lapop_ind_2004to2018$year,ordered = TRUE)
-class(lapop_ind_2004to2018$year)
+length(table(lapop_ind_2004to2021$year))
+table(lapop_ind_2004to2021$year)
+lapop_ind_2004to2021$year <- factor(lapop_ind_2004to2021$year,ordered = TRUE)
+class(lapop_ind_2004to2021$year)
 
-length(table(lapop_ind_2004to2018$wave))
-table(lapop_ind_2004to2018$wave)
-lapop_ind_2004to2018$wave <- factor(lapop_ind_2004to2018$wave,ordered = TRUE)
-class(lapop_ind_2004to2018$wave)
+length(table(lapop_ind_2004to2021$wave))
+table(lapop_ind_2004to2021$wave)
+lapop_ind_2004to2021$wave <- factor(lapop_ind_2004to2021$wave,ordered = TRUE)
+class(lapop_ind_2004to2021$wave)
 
 # Nivel agregado --------------------------------------------------------#
-length(table(lapop_country_2004to2018$year))
-table(lapop_country_2004to2018$year)
-lapop_country_2004to2018$year <- factor(lapop_country_2004to2018$year,ordered = TRUE)
-class(lapop_country_2004to2018$year)
+length(table(lapop_country_2004to2021$year)) #Se generan NAs
+table(lapop_country_2004to2021$year)
+lapop_country_2004to2021$year <- factor(lapop_country_2004to2021$year,ordered = TRUE)
+class(lapop_country_2004to2021$year)
 
-length(table(lapop_country_2004to2018$wave))
-table(lapop_country_2004to2018$wave)
-lapop_country_2004to2018$wave <- factor(lapop_country_2004to2018$wave,ordered = TRUE)
-class(lapop_country_2004to2018$wave)
+length(table(lapop_country_2004to2021$wave))
+table(lapop_country_2004to2021$wave)
+lapop_country_2004to2021$wave <- factor(lapop_country_2004to2021$wave,ordered = TRUE)
+class(lapop_country_2004to2021$wave)
 ```
 
+## Etiquetado de nombres de variable
 
-### Etiquetado de nombres de variable
+### Nivel individual
 
-**Base a nivel individual**
+```{r Etiquetas a variables}
+set_label(lapop_ind_2004to2021$year)<- "Año"
+set_label(lapop_ind_2004to2021$wave)<- "Ola"
+set_label(lapop_ind_2004to2021$pais)<- "País"
+set_label(lapop_ind_2004to2021$idwc)<- "País y año"
+set_label(lapop_ind_2004to2021$pais.name)<- "País (english)"
+set_label(lapop_ind_2004to2021$iso3c)<- "Pais (iso3 code)"
+set_label(lapop_ind_2004to2021$it1 )<- "Confianza Interpersonal"
+set_label(lapop_ind_2004to2021$prot3)<- "Participar en Protesta"
+set_label(lapop_ind_2004to2021$aoj12)<- "Confianza en Eficacia Sistema Judicial"
+set_label(lapop_ind_2004to2021$b2  )<- "Respeto por las Instituciones"
+set_label(lapop_ind_2004to2021$b3  )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
+set_label(lapop_ind_2004to2021$b4  )<- "Orgullo con el Sistema Político"
+set_label(lapop_ind_2004to2021$b10a)<- "Confianza en Sistema Judicial"
+set_label(lapop_ind_2004to2021$b12 )<- "Confianza en Fuerzas Armadas"
+set_label(lapop_ind_2004to2021$b20 )<- "Confianza en Iglesia Católica"
+set_label(lapop_ind_2004to2021$b20a)<- "Confianza en Iglesias Evangélicas/Protestantes"
+set_label(lapop_ind_2004to2021$b21 )<- "Confianza en Partidos Políticos"
+set_label(lapop_ind_2004to2021$b21a)<- "Confianza en Ejecutivo"
+set_label(lapop_ind_2004to2021$n9  )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
+set_label(lapop_ind_2004to2021$n11 )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
+set_label(lapop_ind_2004to2021$n15 )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
+set_label(lapop_ind_2004to2021$pr4 )<- "Respeto por la Propiedad Privada"
+set_label(lapop_ind_2004to2021$ros4)<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
+set_label(lapop_ind_2004to2021$ing4)<- "Democracia es Mejor que otras Formas de Gobierno"
+set_label(lapop_ind_2004to2021$eff1)<- "Gobernantes están Interesados en lo que la Gente Piensa"
+set_label(lapop_ind_2004to2021$pn4 )<- "Satisfacción con la Democracia"
+set_label(lapop_ind_2004to2021$exc7)<- "Percepción de Corrupción Pública"
+set_label(lapop_ind_2004to2021$pol1)<- "Interés en Política"
+set_label(lapop_ind_2004to2021$vb2 )<- "Voto en Últimas Elecciones Presidenciales"
+```
 
 ```{r}
-set_label(lapop_ind_2004to2018$year)<- "Año"
-set_label(lapop_ind_2004to2018$wave)<- "Ola"
-set_label(lapop_ind_2004to2018$pais)<- "País"
-set_label(lapop_ind_2004to2018$idwc)<- "País y año"
-set_label(lapop_ind_2004to2018$pais.name)<- "País (english)"
-set_label(lapop_ind_2004to2018$iso3c)<- "Pais (iso3 code)"
-set_label(lapop_ind_2004to2018$it1 )<- "Confianza Interpersonal"
-set_label(lapop_ind_2004to2018$prot3)<- "Participar en Protesta"
-set_label(lapop_ind_2004to2018$aoj12)<- "Confianza en Eficacia Sistema Judicial"
-set_label(lapop_ind_2004to2018$b2  )<- "Respeto por las Instituciones"
-set_label(lapop_ind_2004to2018$b3  )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
-set_label(lapop_ind_2004to2018$b4  )<- "Orgullo con el Sistema Político"
-set_label(lapop_ind_2004to2018$b10a)<- "Confianza en Sistema Judicial"
-set_label(lapop_ind_2004to2018$b12 )<- "Confianza en Fuerzas Armadas"
-set_label(lapop_ind_2004to2018$b20 )<- "Confianza en Iglesia Católica"
-set_label(lapop_ind_2004to2018$b20a)<- "Confianza en Iglesias Evangélicas/Protestantes"
-set_label(lapop_ind_2004to2018$b21 )<- "Confianza en Partidos Políticos"
-set_label(lapop_ind_2004to2018$b21a)<- "Confianza en Ejecutivo"
-set_label(lapop_ind_2004to2018$n9  )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
-set_label(lapop_ind_2004to2018$n11 )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
-set_label(lapop_ind_2004to2018$n15 )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
-set_label(lapop_ind_2004to2018$pr4 )<- "Respeto por la Propiedad Privada"
-set_label(lapop_ind_2004to2018$ros4)<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
-set_label(lapop_ind_2004to2018$ing4)<- "Democracia es Mejor que otras Formas de Gobierno"
-set_label(lapop_ind_2004to2018$eff1)<- "Gobernantes están Interesados en lo que la Gente Piensa"
-set_label(lapop_ind_2004to2018$pn4 )<- "Satisfacción con la Democracia"
-set_label(lapop_ind_2004to2018$exc7)<- "Percepción de Corrupción Pública"
-set_label(lapop_ind_2004to2018$pol1)<- "Interés en Política"
-set_label(lapop_ind_2004to2018$vb2 )<- "Voto en Últimas Elecciones Presidenciales"
+view_df(lapop_ind_2004to2021,show.id = TRUE, show.type = TRUE, encoding = "UTF-8", show.prc = TRUE)
+tab_xtab(lapop_ind_2004to2021$pais,lapop_ind_2004to2021$wave,file = "table_wave_country.html") # bien [10.nov.2020; 00:31]
 ```
 
-```{r}
-view_df(lapop_ind_2004to2018,show.id = TRUE, show.type = TRUE, encoding = "UTF-8", show.prc = TRUE)
-tab_xtab(lapop_ind_2004to2018$pais,lapop_ind_2004to2018$wave,file = "table_wave_country.html") # bien [10.nov.2020; 00:31]
-```
-
-**Base nivel agregado**
+### Nivel agregado
 
 ```{r}
 #Corregir valores de variables binarias agregadas
-summary(lapop_country_2004to2018$prot3) # 1 = participa;   2 = no participa
-# lapop_country_2004to2018$prot3 <- (1-(lapop_country_2004to2018$prot3-1))# 0= no participa; 1= participa
+summary(lapop_country_2004to2021$prot3) # 1 = participa;   2 = no participa
+lapop_country_2004to2021$prot3 <- (1-(lapop_country_2004to2021$prot3-1))# 0= no participa; 1= participa
 
-summary(lapop_country_2004to2018$vb2) # 1 = Voted;   2 = Did not voted
-# lapop_country_2004to2018$vb2   <- (1-(lapop_country_2004to2018$vb2-1)) # 0= % No votó ; 1= % Votó
+summary(lapop_country_2004to2021$vb2) # 1 = Voted;   2 = Did not voted
+lapop_country_2004to2021$vb2   <- (1-(lapop_country_2004to2021$vb2-1)) # 0= % No votó ; 1= % Votó
 ```
 
 ```{r}
-set_label(lapop_country_2004to2018$year)<- "Año"
-set_label(lapop_country_2004to2018$wave)<- "Ola"
-set_label(lapop_country_2004to2018$pais)<- "País"
-set_label(lapop_country_2004to2018$idwc)<- "País y año"
-set_label(lapop_country_2004to2018$pais.name)<- "País (english)"
-set_label(lapop_country_2004to2018$iso3c)<- "País (iso3 code)"
-set_label(lapop_country_2004to2018$it1 )<- "Confianza Interpersonal"
-set_label(lapop_country_2004to2018$prot3)<- "Participar en Protesta (% Sí ha participado)"
-set_label(lapop_country_2004to2018$aoj12)<- "Confianza en Eficacia Sistema Judicial"
-set_label(lapop_country_2004to2018$b2  )<- "Respeto por las Instituciones"
-set_label(lapop_country_2004to2018$b3  )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
-set_label(lapop_country_2004to2018$b4  )<- "Orgullo con el Sistema Político"
-set_label(lapop_country_2004to2018$b10a)<- "Confianza en Sistema Judicial"
-set_label(lapop_country_2004to2018$b12 )<- "Confianza en Fuerzas Armadas"
-set_label(lapop_country_2004to2018$b20 )<- "Confianza en Iglesia Católica"
-set_label(lapop_country_2004to2018$b20a)<- "Confianza en Iglesias Evangélicas/Protestantes"
-set_label(lapop_country_2004to2018$b21 )<- "Confianza en Partidos Políticos"
-set_label(lapop_country_2004to2018$b21a)<- "Confianza en Ejecutivo"
-set_label(lapop_country_2004to2018$n9  )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
-set_label(lapop_country_2004to2018$n11 )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
-set_label(lapop_country_2004to2018$n15 )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
-set_label(lapop_country_2004to2018$pr4 )<- "Respeto por la Propiedad Privada"
-set_label(lapop_country_2004to2018$ros4)<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
-set_label(lapop_country_2004to2018$ing4)<- "Democracia es Mejor que otras Formas de Gobierno"
-set_label(lapop_country_2004to2018$eff1)<- "Gobernantes están Interesados en lo que la Gente Piensa"
-set_label(lapop_country_2004to2018$pn4 )<- "Satisfacción con la Democracia"
-set_label(lapop_country_2004to2018$exc7)<- "Percepción de Corrupción Pública"
-set_label(lapop_country_2004to2018$pol1)<- "Interés en Política"
-set_label(lapop_country_2004to2018$vb2 )<- "Voto en Últimas Elecciones Presidenciales (% Sí votó)"
+set_label(lapop_country_2004to2021$year)<- "Año"
+set_label(lapop_country_2004to2021$wave)<- "Ola"
+set_label(lapop_country_2004to2021$pais)<- "País"
+set_label(lapop_country_2004to2021$idwc)<- "País y año"
+set_label(lapop_country_2004to2021$pais.name)<- "País (english)"
+set_label(lapop_country_2004to2021$iso3c)<- "País (iso3 code)"
+set_label(lapop_country_2004to2021$it1 )<- "Confianza Interpersonal"
+set_label(lapop_country_2004to2021$prot3)<- "Participar en Protesta (% Sí ha participado)"
+set_label(lapop_country_2004to2021$aoj12)<- "Confianza en Eficacia Sistema Judicial"
+set_label(lapop_country_2004to2021$b2  )<- "Respeto por las Instituciones"
+set_label(lapop_country_2004to2021$b3  )<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema  Político"
+set_label(lapop_country_2004to2021$b4  )<- "Orgullo con el Sistema Político"
+set_label(lapop_country_2004to2021$b10a)<- "Confianza en Sistema Judicial"
+set_label(lapop_country_2004to2021$b12 )<- "Confianza en Fuerzas Armadas"
+set_label(lapop_country_2004to2021$b20 )<- "Confianza en Iglesia Católica"
+set_label(lapop_country_2004to2021$b20a)<- "Confianza en Iglesias Evangélicas/Protestantes"
+set_label(lapop_country_2004to2021$b21 )<- "Confianza en Partidos Políticos"
+set_label(lapop_country_2004to2021$b21a)<- "Confianza en Ejecutivo"
+set_label(lapop_country_2004to2021$n9  )<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción"
+set_label(lapop_country_2004to2021$n11 )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana"
+set_label(lapop_country_2004to2021$n15 )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
+set_label(lapop_country_2004to2021$pr4 )<- "Respeto por la Propiedad Privada"
+set_label(lapop_country_2004to2021$ros4)<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos"
+set_label(lapop_country_2004to2021$ing4)<- "Democracia es Mejor que otras Formas de Gobierno"
+set_label(lapop_country_2004to2021$eff1)<- "Gobernantes están Interesados en lo que la Gente Piensa"
+set_label(lapop_country_2004to2021$pn4 )<- "Satisfacción con la Democracia"
+set_label(lapop_country_2004to2021$exc7)<- "Percepción de Corrupción Pública"
+set_label(lapop_country_2004to2021$pol1)<- "Interés en Política"
+set_label(lapop_country_2004to2021$vb2 )<- "Voto en Últimas Elecciones Presidenciales (% Sí votó)"
 
 #---------------------------------------------------------------------------------------------------#
-set_label(lapop_country_2004to2018$it1_promr )<- "Confianza Interpersonal (promedio ola)"
-set_label(lapop_country_2004to2018$prot3_promr)<- "Participar en Protesta (promedio ola)"
-set_label(lapop_country_2004to2018$aoj12_promr)<- "Confianza en Eficacia Sistema Judicial (promedio ola)"
-set_label(lapop_country_2004to2018$b2_promr)<- "Respeto por las Instituciones (promedio ola)"
-set_label(lapop_country_2004to2018$b3_promr)<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema Político (promedio ola)"
-set_label(lapop_country_2004to2018$b4_promr)<- "Orgullo con el Sistema Político (promedio ola)"
-set_label(lapop_country_2004to2018$b10a_promr)<- "Confianza en Sistema Judicial (promedio ola)"
-set_label(lapop_country_2004to2018$b12_promr)<- "Confianza en Fuerzas Armadas (promedio ola)"
-set_label(lapop_country_2004to2018$b20_promr)<- "Confianza en Iglesia Católica (promedio ola)"
-set_label(lapop_country_2004to2018$b20a_promr)<- "Confianza en Iglesias Evangélicas/Protestantes (promedio ola)"
-set_label(lapop_country_2004to2018$b21_promr )<- "Confianza en Partidos Políticos (promedio ola)"
-set_label(lapop_country_2004to2018$b21a_promr)<- "Confianza en Ejecutivo (promedio ola)"
-set_label(lapop_country_2004to2018$n9_promr)<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción (promedio ola)"
-set_label(lapop_country_2004to2018$n11_promr )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana (promedio ola)"
-set_label(lapop_country_2004to2018$n15_promr )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
-set_label(lapop_country_2004to2018$pr4_promr )<- "Respeto por la Propiedad Privada (promedio ola)"
-set_label(lapop_country_2004to2018$ros4_promr)<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos (promedio ola)"
-set_label(lapop_country_2004to2018$ing4_promr)<- "Democracia es Mejor que otras Formas de Gobierno (promedio ola)"
-set_label(lapop_country_2004to2018$eff1_promr)<- "Gobernantes están Interesados en lo que la Gente Piensa"
-set_label(lapop_country_2004to2018$pn4_promr )<- "Satisfacción con la Democracia (promedio ola)"
-set_label(lapop_country_2004to2018$exc7_promr)<- "Percepción de Corrupción Pública (promedio ola)"
-set_label(lapop_country_2004to2018$pol1_promr)<- "Interés en Política (promedio ola)"
-set_label(lapop_country_2004to2018$vb2_promr)<- "Voto en Últimas Elecciones Presidenciales (promedio ola)"
+set_label(lapop_country_2004to2021$it1_promr )<- "Confianza Interpersonal (promedio ola)"
+set_label(lapop_country_2004to2021$prot3_promr)<- "Participar en Protesta (promedio ola)"
+set_label(lapop_country_2004to2021$aoj12_promr)<- "Confianza en Eficacia Sistema Judicial (promedio ola)"
+set_label(lapop_country_2004to2021$b2_promr)<- "Respeto por las Instituciones (promedio ola)"
+set_label(lapop_country_2004to2021$b3_promr)<- "Grado de Acuerdo: Derechos Básicos Están Protegidos por el Sistema Político (promedio ola)"
+set_label(lapop_country_2004to2021$b4_promr)<- "Orgullo con el Sistema Político (promedio ola)"
+set_label(lapop_country_2004to2021$b10a_promr)<- "Confianza en Sistema Judicial (promedio ola)"
+set_label(lapop_country_2004to2021$b12_promr)<- "Confianza en Fuerzas Armadas (promedio ola)"
+set_label(lapop_country_2004to2021$b20_promr)<- "Confianza en Iglesia Católica (promedio ola)"
+set_label(lapop_country_2004to2021$b20a_promr)<- "Confianza en Iglesias Evangélicas/Protestantes (promedio ola)"
+set_label(lapop_country_2004to2021$b21_promr )<- "Confianza en Partidos Políticos (promedio ola)"
+set_label(lapop_country_2004to2021$b21a_promr)<- "Confianza en Ejecutivo (promedio ola)"
+set_label(lapop_country_2004to2021$n9_promr)<- "Evaluación del Desempeño del Gobierno Combatiendo Corrupción (promedio ola)"
+set_label(lapop_country_2004to2021$n11_promr )<- "Evaluación del Desempeño del Gobierno en Seguridad Ciudadana (promedio ola)"
+set_label(lapop_country_2004to2021$n15_promr )<- "Evaluación del Desempeño del Gobierno Manejando Economía"
+set_label(lapop_country_2004to2021$pr4_promr )<- "Respeto por la Propiedad Privada (promedio ola)"
+set_label(lapop_country_2004to2021$ros4_promr)<- "Gobierno debe Implementar Políticas para Reducir Desigualdadad de Ingresos (promedio ola)"
+set_label(lapop_country_2004to2021$ing4_promr)<- "Democracia es Mejor que otras Formas de Gobierno (promedio ola)"
+set_label(lapop_country_2004to2021$eff1_promr)<- "Gobernantes están Interesados en lo que la Gente Piensa"
+set_label(lapop_country_2004to2021$pn4_promr )<- "Satisfacción con la Democracia (promedio ola)"
+set_label(lapop_country_2004to2021$exc7_promr)<- "Percepción de Corrupción Pública (promedio ola)"
+set_label(lapop_country_2004to2021$pol1_promr)<- "Interés en Política (promedio ola)"
+set_label(lapop_country_2004to2021$vb2_promr)<- "Voto en Últimas Elecciones Presidenciales (promedio ola)"
 
-set_label(lapop_country_2004to2018$gini)     <- "Índice de Gini"
-set_label(lapop_country_2004to2018$gini_agg) <- "Índice de Gini (promedio ola)"
-set_label(lapop_country_2004to2018$gdp)      <- "Producto Interno Bruto (en miles de USD)"
-set_label(lapop_country_2004to2018$gdp_agg)  <- "Producto Interno Bruto (promedio ola)"
+set_label(lapop_country_2004to2021$gini)     <- "Índice de Gini"
+set_label(lapop_country_2004to2021$gini_agg) <- "Índice de Gini (promedio ola)"
+set_label(lapop_country_2004to2021$gdp)      <- "Producto Interno Bruto (en miles de USD)"
+set_label(lapop_country_2004to2021$gdp_agg)  <- "Producto Interno Bruto (promedio ola)"
+rm(i,labels_pais,labels1,labels2,levels_pais,levels1,levels2,names01,names02,names03)
 ```
 
 ```{r}
-view_df(lapop_country_2004to2018,show.id = TRUE, show.type = TRUE)
+view_df(lapop_country_2004to2021,show.id = TRUE, show.type = TRUE)
 ```
 
-## Base agregada con medida promedio anual en filas
+# 9. Cómputo promedio anual en filas
 
 ```{r}
-med1<- lapop_country_2004to2018 %>% select(-promedio)
-med1$year <- as.character(med1$year)
-med1$year <- set_label(x = med1$year,label = get_label(lapop_country_2004to2018$year))
-prom_wave <- med1 %>% group_by(wave)%>%summarise_all(funs(mean(., na.rm=TRUE))) 
+med1<- lapop_country_2004to2021 %>% select(-promedio) %>%
+  mutate(year = set_label(as.character(year),
+                          label = get_label(lapop_country_2004to2021$year)))
+
+prom_wave <- med1 %>% group_by(wave) %>% summarise_if(is.numeric, mean, na.rm = TRUE)
+# med1$year <- as.character(med1$year)
+# med1$year <- set_label(x = med1$year,label = get_label(lapop_country_2004to2021$year))
+# prom_wave <- med1 %>% group_by(wave)%>%summarise_all(funs(mean(., na.rm=TRUE))) 
+
 prom_wave$year <- "Todos"
 prom_wave$year <- factor(prom_wave$year,ordered = T)
 prom_wave$pais <- "Promedio Región" # 100="Promedio ola"
 prom_wave$pais.name <- "Promedio Región"
 prom_wave$iso3c <- "WAVG"
-prom_wave$idwc <- "2004_2018LA"
-prom_wave<-prom_wave %>%  select(names(med1))
-names(med1)==names(prom_wave)
+prom_wave$idwc <- "2004_2021LA"
+prom_wave<-prom_wave %>%  select(setdiff(names(med1),"ginina") )
+# names(med1)==names(prom_wave)
 
 lapop_long_wave   <- bind_rows(med1, prom_wave) 
 lapop_long_wave <- set_label(lapop_long_wave,get_label(med1))
-
-# Year/wWave --------------------------------------------------------#
+rm(med1, prom_wave)
+# Year/ Wave --------------------------------------------------------#
 length(table(lapop_long_wave$year))
 table(lapop_long_wave$year)
 lapop_long_wave$year <- factor(lapop_long_wave$year,ordered = TRUE)
@@ -616,10 +764,10 @@ class(lapop_long_wave$wave)
 view_df(lapop_long_wave,show.id = TRUE, show.type = TRUE,show.prc = T)
 ```
 
-# Guardar base de datos
+# 10. Almacenado de datos.
 
 ```{r}
-save(lapop_ind_2004to2018,    file ="input/data/proc/lapop_ind_2004to2018.RData")
-save(lapop_country_2004to2018,file ="input/data/proc/lapop_count_2004to2018.RData")
-save(lapop_long_wave,         file ="input/data/proc/lapop_count_2004to2018_long-wave.RData")
+save(lapop_ind_2004to2021,    file ="../input/data/proc/lapop_ind_2004to2021.RData")
+save(lapop_country_2004to2021,file ="../input/data/proc/lapop_count_2004to2021.RData")
+save(lapop_long_wave,         file ="../input/data/proc/lapop_count_2004to2021_long-wave.RData")
 ```

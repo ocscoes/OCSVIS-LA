@@ -9,15 +9,22 @@ rm(list=ls())
 
 # Cargar bases LAPOP ------------------------------------------------------
 
-load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2018.RData?raw=true"))
-load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_ind_2004to2018.RData?raw=true"))
-load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2018_long-wave.RData?raw=true"))
-load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/original/fraseo_preguntas.Rdata?raw=true"))
-
-# load("../input/data/proc/lapop_ind_2004to2018.RData")              # transversal
-#load("../input/data/proc/lapop_count_2004to2018.RData")             # longitudinal 
-# load("../input/data/proc/lapop_count_2004to2018_long-wave.RData")  # longitudinal para bivariado
+# load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2021.RData?raw=true"))
+# load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_ind_2004to2021.RData?raw=true"))
+# load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/proc/lapop_count_2004to2021_long-wave.RData?raw=true"))
+# load(url("https://github.com/ocscoes/OCS-COES/blob/master/input/data/original/fraseo_preguntas.Rdata?raw=true"))
+# 
+# load("../input/data/proc/lapop_ind_2004to2021.RData")              # transversal
+# load("../input/data/proc/lapop_count_2004to2021.RData")             # longitudinal
+# load("../input/data/proc/lapop_count_2004to2021_long-wave.RData")  # longitudinal para bivariado
 # fraseo<- xlsx::read.xlsx(file = "../input/data/original/fraseo_preguntas.xlsx",sheetIndex = 1,encoding = "UTF-8")
+
+load("data/lapop_ind_2004to2021.RData")              # transversal
+load("data/lapop_count_2004to2021.RData")             # longitudinal
+load("data/lapop_count_2004to2021_long-wave.RData")  # longitudinal para bivariado
+fraseo<- xlsx::read.xlsx(file = "data/fraseo_preguntas.xlsx",sheetIndex = 1,encoding = "UTF-8")
+
+
 # save(fraseo,file = "../input/data/original/fraseo_preguntas.Rdata")
 
 logo_file <- "https://github.com/ocscoes/OCS-COES/raw/master/app/www/images/ocs-21.png"
@@ -81,3 +88,4 @@ list("Confianza Interpersonal"                                                  
 list("Índice de Gini"                                                              = "gini",
      "Producto Interno Bruto"                                                      = "gdp")
 )
+

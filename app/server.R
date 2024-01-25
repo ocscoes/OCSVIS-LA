@@ -18,9 +18,9 @@ function(input, output){
 
   lapop_subset <- eventReactive(
     eventExpr = input$boton1,
-    {lapop_ind_2004to2018 %>% dplyr::select(input$items2,pais,wave) %>% 
+    {lapop_ind_2004to2021 %>% dplyr::select(input$items2,pais,wave) %>% 
         dplyr::filter(pais %in% input$country & wave %in% input$year) %>%
-        copy_labels(lapop_ind_2004to2018) # Actualiza el subset variable / pais / año  - reacciona a boton1
+        copy_labels(lapop_ind_2004to2021) # Actualiza el subset variable / pais / año  - reacciona a boton1
                                           # Para usar plotly tuve que agregar un na.omit(), de lo contrario siempre aparecía una barra "null"
   })                                      # - Problema: al agregar na.omit() pierdo los attr labels de sjlabelled
                             
@@ -77,7 +77,7 @@ output$hist1 <-  renderPlot({
             plot.caption     = element_text(size  = 13,family = "Lato", hjust = 0   ,face = "plain") ) +
       labs(title    = paste(etiq1()$lab1, "\n \n"),
            subtitle = paste(strwrap(paste(fraseo01(),"\n"), width = 100), collapse = "\n"),
-           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)")
+           caption  = "\nFuente: Encuesta LAPOP (2004 - 2023) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)")
     ggdraw() +
       draw_plot(p1) +
       draw_image(
@@ -114,19 +114,19 @@ output$hist1 <-  renderPlot({
   
   lapop_subset_long <- eventReactive(
     eventExpr = input$boton2,
-    {lapop_country_2004to2018 %>% dplyr::select(input$items_long,pais,wave) %>% 
+    {lapop_country_2004to2021 %>% dplyr::select(input$items_long,pais,wave) %>% 
         dplyr::filter(pais %in% input$country_long) %>%
         dplyr::filter(wave %in% c(min(input$year_long):max(input$year_long))) %>% # seleciona el min y max de year
-        copy_labels(lapop_country_2004to2018) # Actualiza el subset variable / pais / año  - reacciona a boton2
+        copy_labels(lapop_country_2004to2021) # Actualiza el subset variable / pais / año  - reacciona a boton2
     })
 
   # Subset 2: sirve para calcular la linea promedio general | no se filtra por pais -------------#
 
   lapop_subset_all <- eventReactive(
     eventExpr = input$boton2,
-    {lapop_country_2004to2018 %>% dplyr::select(input$items_long,pais,wave,promedio) %>% 
+    {lapop_country_2004to2021 %>% dplyr::select(input$items_long,pais,wave,promedio) %>% 
         dplyr::filter(wave %in% c(min(input$year_long):max(input$year_long))) %>%
-        copy_labels(lapop_country_2004to2018) # Actualiza el subset variable / pais / año  - reacciona a boton2
+        copy_labels(lapop_country_2004to2021) # Actualiza el subset variable / pais / año  - reacciona a boton2
     })
   
   # Etiquetas para Gráfico longitudinal  ---------------------------------------------------------
@@ -135,7 +135,7 @@ output$hist1 <-  renderPlot({
   })
   eje_x2    <-  eventReactive(eventExpr = input$boton2,{input$items_long})     # Actualiza la variable para el plot  - reacciona a boton2
   
-  fraseo02 <- eventReactive(
+    fraseo02 <- eventReactive(
     eventExpr = input$boton2,
     {fraseo %>%  
         dplyr::filter(var == input$items_long) %>% 
@@ -148,32 +148,48 @@ output$hist1 <-  renderPlot({
   # range [min, max]
   range_val<- eventReactive(
     eventExpr = input$boton2,
-    {range(seq(levels(lapop_ind_2004to2018[,input$items_long])))
+    {range(seq(levels(lapop_ind_2004to2021[,input$items_long])))
     })
 
   # breaks 
   breaks_val<- eventReactive(
     eventExpr = input$boton2,
-    {seq(levels(lapop_ind_2004to2018[,input$items_long]))
+    {seq(levels(lapop_ind_2004to2021[,input$items_long]))
     })
+  
+
   
   # value labels
   val_labels <- eventReactive(
     eventExpr = input$boton2,
-    {levels(lapop_ind_2004to2018[,input$items_long])
+    {levels(lapop_ind_2004to2021[,input$items_long])
     })
   
   # Grafico longitudinal (estatico) ------------------------------------------------------------------------
 
   output$plotlong1 <-  renderPlot({
     
+    if(eje_x2() %in% c("vb2","prot3")){
+      # range [min, max]
+      range_val<- eventReactive(
+        eventExpr = input$boton2,
+        {range(seq(levels(lapop_ind_2004to2021[,input$items_long])))-1
+        })
+      
+      # breaks 
+      breaks_val<- eventReactive(
+        eventExpr = input$boton2,
+        {seq(levels(lapop_ind_2004to2021[,input$items_long]))-1
+        })
+    }
+    
     # req({input$items_long})
     req({input$boton2})
     p2<- ggplot(data = lapop_subset_long(),aes_string(x = "wave", y = eje_x2(),group ="pais", color = "pais")) +
       geom_line(size=1.0) +
       geom_point(shape=21,size=3, color ="black",fill="white") +
-      stat_summary(data = lapop_subset_all(), aes_string(y = eje_x2(),x = "wave",group = 1), fun.y=mean, colour="black", size=1,alpha =0.8, linetype= "dotted", geom="line") +
-      stat_summary(data = lapop_subset_all(), aes_string(y = eje_x2(),x = "wave",group = 1, shape="promedio"), fun.y=mean, colour='navyblue',size=2, geom="point") +
+      stat_summary(data = lapop_subset_all() %>% filter(wave %in% lapop_subset_long()$wave), aes_string(y = eje_x2(),x = "wave",group = 1), fun.y=mean, colour="black", size=1,alpha =0.8, linetype= "dotted", geom="line") +
+      stat_summary(data = lapop_subset_all()%>% filter(wave %in% lapop_subset_long()$wave), aes_string(y = eje_x2(),x = "wave",group = 1, shape="promedio"), fun.y=mean, colour='navyblue',size=2, geom="point") +
       xlab(label = NULL) +
       ylab(label = NULL) +
       scale_x_discrete(name=NULL,na.translate = FALSE)+
@@ -195,7 +211,7 @@ output$hist1 <-  renderPlot({
           plot.caption = element_text(size   = 13,family = "Lato",hjust = 0,face = "plain")) +
       labs(title    = paste(etiq2()$lab1,"\n \n"),
            subtitle = paste(strwrap(paste(fraseo02(),"\n"), width = 100), collapse = "\n"),
-           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)")
+           caption  = "\nFuente: Encuesta LAPOP (2004 - 2023) \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)")
     ggdraw() +
       draw_plot(p2) +
       draw_image(
@@ -244,37 +260,37 @@ output$hist1 <-  renderPlot({
   # range [min, max] - eje X -------------------------------------------------------------------#
   range_val_x<- eventReactive(
     eventExpr = input$boton3,
-    {range(seq(levels(lapop_ind_2004to2018[,input$items_x])))
+    {range(seq(levels(lapop_ind_2004to2021[,input$items_x])))
     })
   
   # breaks 
   breaks_val_x<- eventReactive(
     eventExpr = input$boton3,
-    {seq(levels(lapop_ind_2004to2018[,input$items_x]))
+    {seq(levels(lapop_ind_2004to2021[,input$items_x]))
     })
   
   # value labels
   val_labels_x <- eventReactive(
     eventExpr = input$boton3,
-    {levels(lapop_ind_2004to2018[,input$items_x])
+    {levels(lapop_ind_2004to2021[,input$items_x])
     })
   
   # range [min, max] - eje Y -------------------------------------------------------------------#
   range_val_y<- eventReactive(
     eventExpr = input$boton3,
-    {range(seq(levels(lapop_ind_2004to2018[,input$items_y])))
+    {range(seq(levels(lapop_ind_2004to2021[,input$items_y])))
     })
   
   # breaks 
   breaks_val_y<- eventReactive(
     eventExpr = input$boton3,
-    {seq(levels(lapop_ind_2004to2018[,input$items_y]))
+    {seq(levels(lapop_ind_2004to2021[,input$items_y]))
     })
   
   # value labels
   val_labels_y <- eventReactive(
     eventExpr = input$boton3,
-    {levels(lapop_ind_2004to2018[,input$items_y])
+    {levels(lapop_ind_2004to2021[,input$items_y])
     })
   
   # Grafico scatterplot (estatico) ------------------------------------------------------------------------
@@ -310,7 +326,7 @@ output$hist1 <-  renderPlot({
       labs(title    = paste(strwrap(paste("Asociación entre", etiq3()$lab1[1], "y", etiq3()$lab1[2],"\n"), width = 50), collapse = "\n"),
            subtitle = "\n \n",
            fill = "Medición (Ola)",
-           caption  = "\nFuente: Encuesta LAPOP (2004 - 2018); World Bank Data \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)") +
+           caption  = "\nFuente: Encuesta LAPOP (2004 - 2023); World Bank Data \nObservatorio de Cohesión Social - Centro de Estudios de Conflicto y Cohesión Social (www.coes.cl)") +
       guides(
         fill = guide_legend(title = NULL,
                             override.aes = aes(label = "")
