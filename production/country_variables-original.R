@@ -5,33 +5,65 @@ p_load(dplyr, tidyverse, wbstats, zoo)
 
 # Country Level variables 
 
-paises<- c("ARG",
-           "BOL",
-           "BRA",
-           "CHL",
-           "COL",
-           "CRI",
-           "DOM",
-           "ECU",
-           "GTM",
-           "HND",
-           "MEX",
-           "NIC",
-           "PAN",
-           "PER",
-           "PRY",
-           "SLV",
-           "URY",
-           "VEN",#original
-           "CAN",
-           'TTO',
-           'USA')
+paises<- c("ARG", # Argentina
+           "BOL", # Bolivia
+           "BLZ", # Belize
+           "BRA", # Brazil
+           "CAN", # Canada
+           "CHL", # Chile
+           "COL", # Colombia
+           "CRI", # Costa Rica
+           "DOM", # Rep. Dominicana
+           "ECU", # Ecuador
+           "SLV", # Salvador
+           "GTM", # Guatemala
+           "GUY", # Guyana
+           "HTI", # Haiti
+           "HND", # Honduras
+           "JAM", # Jamaica
+           "MEX", # México
+           "NIC", # Nicaragua
+           "PAN", # Panamá
+           "PRY", # Paraguay
+           "PER", # Perú
+           'TTO', # Trinidad y Tobago
+           'USA', # Unites States
+           "URY", # Uruguay
+           "VEN"  # Venezuela
+)
+
+paises<- c("Argentina"          = "ARG",
+           "Bolivia"            = "BOL",
+           "Belize"             = "BLZ",
+           "Brazil"             = "BRA",
+           "Canada"             = "CAN",
+           "Chile"              = "CHL",
+           "Colombia"           = "COL",
+           "Costa Rica"         = "CRI",
+           "Dominican Republic" = "DOM",
+           "Ecuador"            = "ECU",
+           "El Salvador"        = "SLV",
+           "Guatemala"          = "GTM",
+           "Guyana"             = "GUY",
+           "Haiti"              = "HTI",
+           "Honduras"           = "HND",
+           "Jamaica"            = "JAM",
+           "Mexico"             = "MEX",
+           "Nicaragua"          = "NIC",
+           "Panama"             = "PAN",
+           "Paraguay"           = "PRY",
+           "Peru"               = "PER",
+           "Trinidad & Tobago"  = 'TTO',
+           "United States"      = 'USA',
+           "Uruguay"            = "URY",
+           "Venezuela"          = "VEN"
+           )
 
 get_country_data <- function(countries,
                              indicators = c("SI.POV.GINI", # Gini index.
                                             "NY.GDP.PCAP.KD"), # GDP per capita (constant 2015 US$).
                              since = 2003,
-                             until = 2021,
+                             until = 2022,
                              rmNA=FALSE,
                              wide=TRUE,
                              kdollars_gdp=TRUE,
@@ -53,7 +85,7 @@ get_country_data <- function(countries,
     data_wd$NY.GDP.PCAP.KD <- data_wd$NY.GDP.PCAP.KD/1000
   }
 
-  # Imputación
+  # Imputación-----
   if(impute == TRUE){
     data_wd <- data_wd %>% arrange(country, date)
     data_wd$imputated<- FALSE
@@ -64,7 +96,7 @@ get_country_data <- function(countries,
                             filter(date < data_wd$date[i],
                                    date >= as.numeric(data_wd$date[i])-1,
                                    !is.na(SI.POV.GINI),
-                                   imputated == FALSE) %>%
+                                   imputated == FALSE) %>%+
                                    tail(1)
         if(!nrow(patch)==0){
           
@@ -81,7 +113,7 @@ get_country_data <- function(countries,
     }
   }
 
-  # Formato simplificado
+  # Formato simplificado-----
   if(simplify == TRUE){
     data_wd <- data_wd[c("id","SI.POV.GINI","NY.GDP.PCAP.KD","iso3c","date")] %>%
       setNames(c("id","gini","gdp","country","date"))
@@ -91,7 +123,12 @@ get_country_data <- function(countries,
 
 country_vars<-get_country_data(paises,simplify = TRUE) # Alerta de función spread() deprecated.
                                # Origen de la alerta: función wb().
+country_vars$pais <- NA
+for(i in 1:nrow(country_vars)){
+  country_vars$pais[i] <- names(paises)[paises==country_vars$country[i]]
+}
 
+save(country_vars, file="country_vars.rdata")
 
 # #GINI
 # for (i in 1:length(paises)) {

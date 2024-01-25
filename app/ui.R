@@ -16,14 +16,18 @@
 # install.packages("sjlabelled")
 # install.packages("dplyr")
 # install.packages("Cairo")
+# library(devtools)
+# install.packages("shinydashboardPlus")
 # install_version("shinydashboardPlus", version = "0.7.5")
 
 library(shiny)
 library(shinyjs)
 library(shinyWidgets)
 library(shinyEffects)
-library(shinydashboardPlus)
+# library(shinydashboardPlus)
 library(shinydashboard)
+library(shinydashboardPlus)
+
 library(ggplot2)
 library(ggrepel)
 library(cowplot)
@@ -37,7 +41,8 @@ library(hrbrthemes)
 library(sjlabelled)
 library(dplyr)
 library(V8)
-library(Cairo);options(shiny.usecairo=TRUE) # Para la calidad de los plots
+# library(Cairo)
+options(shiny.usecairo=TRUE) # Para la calidad de los plots
 
 
 # fullscreen buton ----------------------------------------------------------------------------
@@ -74,13 +79,17 @@ setShadow <- shinyEffects::setShadow
 
 # INTERFAZ ----------------------------------------------------------------
 
-dashboardPagePlus(
-  dashboardHeaderPlus(title = tagList(
-    span(class = "logo-lg", "OCS-COES"),
-    img(src = "images/OCS_1_1.svg")),
+shinydashboardPlus::dashboardPage(
+  shinydashboardPlus::dashboardHeader(
+    title =  NULL,
+      # tagList(
+    # span(class = "logo-lg", "OCS-COES"),
+    # img(src = "images/OCS_1_1.svg")
+    # ),
     disable = TRUE,
-    titleWidth = 300,
-    enable_rightsidebar = FALSE),
+    titleWidth = 300
+    # enable_rightsidebar = FALSE
+    ),
   # Barra Lateral: tabs--------------------------------------------------------
               dashboardSidebar(width = 200,
                                sidebarMenu(
@@ -136,7 +145,7 @@ dashboardPagePlus(
                                             label = "Seleciona ola",
                                             choices = levels(lapop_ind_2004to2021$wave),
                                             multiple = FALSE,
-                                            selected = c("2021"),
+                                            selected = c("2018"),
                                             width = 700),
                                 selectInput(inputId = "country",
                                             label = "Seleciona País",
@@ -169,14 +178,8 @@ dashboardPagePlus(
                   # tab2 : Analisis Longitudinal --------------------------------------------------------------------
                   tabItem(tabName = "longitudinal", 
                           fluidPage(
-                            # box(title = NULL,
-                            #     width = 13, 
-                            #     collapsible = TRUE,
-                            #     plotOutput(outputId = "plotlong1",
-                            #                width = "100%",
-                            #                height = 620)
-                            # ),
-                            box(title = NULL,width = 6,
+                            box(title = NULL,
+                                width = 6,
                                 collapsible = TRUE,
                                 selectInput(inputId = "items_long",
                                             label = "Seleciona Indicador",
@@ -188,10 +191,11 @@ dashboardPagePlus(
                                 sliderInput(inputId = "year_long", 
                                             label = "Rango de ola",
                                             width = "100%",
-                                            sep = "",step = 1,
+                                            sep = "",
+                                            step = 1,
                                             min = 2004,
-                                            max = 2021, 
-                                            value = c(2004,2021)),
+                                            max = 2023, 
+                                            value = c(2004,2023))
                                 ),
                             box(title = NULL,
                                 width = 6,
@@ -201,10 +205,11 @@ dashboardPagePlus(
                                             label = "Seleciona el País",
                                             choices = levels(lapop_country_2004to2021$pais),
                                             multiple = TRUE,
-                                            selected = c("Chile","Estados Unidos","Venezuela"),
+                                            selected = c("Chile","United States","Venezuela"),
                                             width = "100%"),
                                 actionButton(inputId = "boton2",
-                                             width = "100%",height="100%",
+                                             width = "100%",
+                                             height="100%",
                                              label = "Graficar", 
                                              icon = icon(name = "chart-bar",
                                                          lib = "font-awesome"),
@@ -234,14 +239,14 @@ dashboardPagePlus(
                                 selectInput(inputId = "items_x",
                                             label = "Seleciona Indicador (Horizontal)",
                                             choices = var_labelcor,
-                                            selected = "gini",
+                                            selected = "b2",
                                             selectize = FALSE,
                                             multiple = FALSE,
                                             width = "100%"),
                                 selectInput(inputId = "items_y",
                                             label = "Seleciona Indicador (Vertical)",
                                             choices = var_labelcor,
-                                            selected = "pn4",
+                                            selected = "ros4",
                                             selectize = FALSE,
                                             multiple = FALSE,
                                             width = "100%"),
@@ -256,8 +261,8 @@ dashboardPagePlus(
                                             width = "100%",
                                             sep = "",step = 2,
                                             min = 2004,
-                                            max = 2021, 
-                                            value = c(2021,2021)),
+                                            max = 2023, 
+                                            value = c(2014,2023)),
                                 actionButton(inputId = "boton3",
                                              width = "100%",
                                              height="100%",
@@ -268,26 +273,9 @@ dashboardPagePlus(
                                 
                                 )
                           ) #termino fluidPage(2)
-                  ) #termino tabItem(2)
+                  ) #termino tabItem(2) ------
                 )# Termino de tabItems() -- Entorno principal de pestañas en sidebar
-              ), #Termino de dashboardBody() -- Entorno principal para elementos, inputs, tables & plots
-  rightSidebar(
-    background = "dark",
-    rightSidebarTabContent(
-      id = 1,
-      title = "Tab 1 (en desarrollo)",
-      icon = "desktop",
-      active = TRUE
-    ),
-    rightSidebarTabContent(id = 3,
-                           icon = "paint-brush",
-                           title = "Tab 3")
-    ),
-  dashboardFooter(left_text  = NULL,
-                  right_text = NULL),
-  # dashboardFooter(left_text  = tags$a(href="https://ocs-coes.netlify.app/","Observatorio de Cohesión Social -  COES"),
-  #                 right_text = tags$a(href="https://github.com/ocscoes/OCS-COES",fa("github", fill = "black",height = "1.5em"))),
-  # 
+              )
           ) #Termino de dashboardPage()
 
 
