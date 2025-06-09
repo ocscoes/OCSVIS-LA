@@ -1,0 +1,298 @@
+---
+title: "Cohesión Social en América Latina"
+format:
+  dashboard: 
+   nav-buttons:
+     - github
+     - icon: globe
+       href: https://ocs-coes.netlify.app
+logo: "www/images/ocs-negro.png"
+server: shiny
+resources: 
+ - www
+ - css
+---
+
+```{r}
+#| context: setup
+
+
+## URLs
+# logo_file <- "https://github.com/ocscoes/OCS-COES/raw/master/app/www/images/ocs-21.png"
+# url_ocs   <- "https://ocs-coes.netlify.app/"
+
+## Cargar librerías
+library(tidyverse)
+library(sf)
+library(leaflet)
+library(plotly)
+library(shinyjs)
+library(shinyWidgets)
+library(shinyEffects)
+library(shinydashboardPlus)
+library(shinydashboard)
+library(ggrepel)
+library(cowplot)
+library(magick)
+library(highcharter)
+library(fontawesome)
+library(scales)
+library(ggthemes)
+library(RColorBrewer)
+library(hrbrthemes)
+library(sjlabelled)
+library(V8)
+library(Cairo)
+options(shiny.usecairo = TRUE)
+
+
+## Cargar datos
+
+load("data/world_data.rdata")
+
+if (!inherits(world_data, "sf")) {
+  world_data <- st_as_sf(world_data)
+}
+
+
+unique_years <- unique(world_data$Ola)
+step_size <- unique(diff(unique_years))
+
+# Bivariado
+
+load(file = "data/base_shiny.rdata")
+
+unique_years_bi <- unique(df$Ola)
+step_size_bi <- unique(diff(unique_years))
+
+# Cálculo de los rangos mínimos y máximos para cada variable
+range_values <- df %>%
+  group_by(Variable) %>%
+  summarise(min_val = min(Valor, na.rm = TRUE),
+            max_val = max(Valor, na.rm = TRUE))
+```
+
+# Inicio
+
+1.  Elegir una de las pestañas disponibles para realizar el análisis:
+
+  -   **_Mapa_**: En esta sección se proyectan en el mapa de América latina los promedios de cada país para cada dimensión o subdimensión. Por defecto está seleccionado para el promedio histórico, pero es posible seleccionar un año de interés.
+  -   **_Longitudinal_**: En este apartado se compara a los países a través de un gráfico de líneas histórico. Debes seleccionar una dimensión o subdimensión a visualizar. Es posible seleccionar qué país o países se presentan.
+  -   **_Bivariado_**: Aquí se encuentran dos selectores entre los que encontrarás las dimensiones y subdimensiones además de algunas variables de caracterización de los países tales como su PIB o esperanza de vida.
+
+2.  Seleccionar características del gráfico:
+
+  a.  Seleccione el indicador
+  b.  Seleccione el País
+  c.  Seleccione la Ola o rango de tiempo: Cada una de las Olas representa el periodo en que se realizó el trabajo de campo.
+  d.  Si desea generar un nuevo gráfico, repite los pasos anteriores.
+  
+  
+Más información sobre las fuentes de datos, la selección de indicadores y la construcción de los índices en: 
+
+# Mapa
+
+## {.sidebar width="20%"}
+
+```{r}
+sliderInput("Ola", "Selecciona una ola",
+            min = min(world_data$Ola),
+            max = max(world_data$Ola),
+            step = 2,
+            value = max(world_data$Ola))
+```
+
+```{r}
+div(style = "
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 6px;",
+  
+  lapply(1:8, function(i) {
+    btn_id <- paste0("btn_var", i)
+    btn_label <- c(
+      "Cohesión<br>General",
+      "Cohesión<br>Horizontal",
+      "Cohesión<br>Vertical",
+      "Confianza<br>Interpersonal",
+      "Seguridad<br>Pública",
+      "Confianza en<br>Instituciones",
+      "Actitud hacia<br>la Democracia",
+      "Justicia<br>Redistributiva"
+    )[i]
+    
+    btn_icon <- c(
+      "cohesion-general.svg",
+      "cohesion-horizontal.svg",
+      "cohesion-vertical.svg",
+      "Confianza Interpersonal.svg",
+      "seguridad publica.svg",
+      "Confianza en instituciones.svg",
+      "Actitud hacia la democracia.svg",
+      "Justicia distributiva.svg"
+    )[i]
+    
+    div(style = "
+        width: 48%;
+        height: 125px;
+        display: flex;
+        align-items: center;
+        justify-content: center;",
+      actionButton(
+        inputId = btn_id,
+        label = HTML(glue::glue(
+          '<div style="text-align:center; font-size:12px; line-height:1.1;">
+             <img src="www/img/{btn_icon}" width="35"><br>{btn_label}
+           </div>'
+        )),
+        class = "btn btn-light",
+        style = "width: 100%; height: 100%; padding: 5px;"
+      )
+    )
+  })
+)
+
+```
+
+
+
+## map
+
+
+```{r}
+ leafletOutput("map", height = "1050px")
+```
+
+
+<!-- ```{r} -->
+<!-- fluidRow( -->
+<!--   column( -->
+<!--     width = 3, -->
+
+<!--     sliderInput("Ola", "Selecciona una ola", -->
+<!--                 min = min(world_data$Ola), -->
+<!--                 max = max(world_data$Ola), -->
+<!--                 step = 1, -->
+<!--                 value = max(world_data$Ola)), -->
+
+<!--     # Botones en una grilla de 2 columnas -->
+
+<!--   column( -->
+<!--     width = 9, -->
+<!--     leafletOutput("map", height = "700px") -->
+<!--   ) -->
+<!-- ) -->
+
+<!-- ``` -->
+
+
+# Análisis Longitudinal
+
+# Análisis Bivariado
+
+```{r}
+#| context: server
+
+# Variable reactiva para la dimensión seleccionada
+selected_variable <- reactiveVal("Cohesión general")
+
+button_var_map <- list(
+  btn_var1 = "Cohesión general",
+  btn_var2 = "Cohesión horizontal",
+  btn_var3 = "Cohesión vertical",
+  btn_var4 = "Confianza Interpersonal",
+  btn_var5 = "Seguridad Pública",
+  btn_var6 = "Confianza en las Instituciones",
+  btn_var7 = "Actitudes a la Democracia",
+  btn_var8 = "Justicia Redistributiva"
+)
+
+# Observadores para los botones
+lapply(names(button_var_map), function(btn_id) {
+  observeEvent(input[[btn_id]], {
+    selected_variable(button_var_map[[btn_id]])
+  })
+})
+
+# Render inicial del mapa
+output$map <- renderLeaflet({
+  leaflet(world_data) |>
+    addTiles() |>
+    setView(lng = -78.4678, lat = -1.8312, zoom = 3.5)
+})
+
+# Observador para actualizar el mapa cuando cambia ola o variable
+observe({
+  req(input$Ola)
+  req(selected_variable())
+  
+  variable <- selected_variable()
+
+  data_year <- world_data %>% filter(Ola == input$Ola) %>% st_as_sf()
+  
+
+  # Validar que la variable exista en los datos
+  if (!variable %in% names(data_year)) {
+    showModal(modalDialog(
+      title = "Error",
+      paste0("La variable '", variable, "' no se encuentra en los datos."),
+      easyClose = TRUE
+    ))
+    return()
+  }
+
+  # Si todos los valores son NA, no dibujar
+  if (all(is.na(data_year[[variable]]))) {
+    leafletProxy("map") |>
+      clearShapes() |>
+      clearControls() |>
+      addTiles() |>
+      setView(lng = -78.4678, lat = -1.8312, zoom = 3.5)
+
+    showModal(modalDialog(
+      title = "Atención",
+      "No hay datos disponibles para esta combinación de año y variable. Intenta con otra ola.",
+      easyClose = TRUE
+    ))
+    return()
+  }
+
+  # Crear paleta de colores
+  bins <- c(floor(min(data_year[[variable]], na.rm = TRUE)),
+            quantile(data_year[[variable]], probs = seq(0.2, 1, 0.2), na.rm = TRUE)) |>
+          unique() |>
+          round(1)
+
+  if (length(bins) < 2) {
+    bins <- seq(floor(min(data_year[[variable]], na.rm = TRUE)),
+                ceiling(max(data_year[[variable]], na.rm = TRUE)), length.out = 5)
+  }
+
+  pal <- colorBin(palette = colorRampPalette(c("#FFFFFF", "#37DF79"))(length(bins) - 1),
+                  domain = data_year[[variable]],
+                  bins = bins)
+
+  # Actualizar el mapa
+  leafletProxy("map", data = data_year) |>
+    clearShapes() |>
+    clearControls() |>
+    addTiles() |>
+    addPolygons(
+      stroke = FALSE,
+      fillOpacity = 0.7,
+      color = ~pal(data_year[[variable]]),
+      label = ~paste0(País, ": ", round(data_year[[variable]], 1)),
+      labelOptions = labelOptions(
+        textsize = "15px",
+        style = list("font-weight" = "500")
+      )
+    ) |>
+    addLegend(pal = pal,
+              values = data_year[[variable]],
+              title = variable,
+              position = "bottomright") |>
+    setView(lng = -78.4678, lat = -1.8312, zoom = 3.5)
+})
+```
+
+
