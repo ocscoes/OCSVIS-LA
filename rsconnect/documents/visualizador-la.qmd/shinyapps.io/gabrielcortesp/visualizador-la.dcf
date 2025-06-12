@@ -1,0 +1,15 @@
+name: visualizador-la
+title: visualizador-la
+username: gabrielcortesp
+account: gabrielcortesp
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14905497
+bundleId: 10439512
+url: https://gabrielcortesp.shinyapps.io/visualizador-la/
+version: 1
+quarto_version: 1.6.42
+quarto_engines: knitr
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: ui.R
