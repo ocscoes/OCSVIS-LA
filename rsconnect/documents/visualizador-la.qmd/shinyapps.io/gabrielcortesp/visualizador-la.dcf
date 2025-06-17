@@ -5,7 +5,7 @@ account: gabrielcortesp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14905497
-bundleId: 10439512
+bundleId: 10474479
 url: https://gabrielcortesp.shinyapps.io/visualizador-la/
 version: 1
 quarto_version: 1.6.42

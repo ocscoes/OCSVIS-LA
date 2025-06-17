@@ -1,7 +1,7 @@
 ---
 title: "Cohesión Social en América Latina"
 format:
-  dashboard: 
+  dashboard:
    nav-buttons:
      - github
      - icon: globe
@@ -15,6 +15,7 @@ resources:
 
 ```{r}
 #| context: setup
+#| include: false
 
 
 ## URLs
@@ -45,6 +46,9 @@ library(V8)
 library(Cairo)
 options(shiny.usecairo = TRUE)
 
+shinyWidgets:::html_dependency_picker_bs(
+  theme = bslib::bs_theme(version = 5)
+)
 
 ## Cargar datos
 
@@ -60,27 +64,34 @@ step_size <- unique(diff(unique_years))
 
 # Bivariado
 
-# load(file = "data/base_shiny.rdata")
-# 
-# df <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
-# 
-# unique_years_bi <- unique(df$Ola)
-# step_size_bi <- unique(diff(unique_years))
-# 
-# # Cálculo de los rangos mínimos y máximos para cada variable
-# range_values <- df %>%
-#   group_by(Variable) %>%
-#   summarise(min_val = min(Valor, na.rm = TRUE),
-#             max_val = max(Valor, na.rm = TRUE))
+load(file = "data/base_shiny.rdata")
 
-# Base con jerarquías
-
-load(file = "data/base_shiny_jerarq.rdata")
-
-df <- df_jerarquico %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
+df <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
 
 unique_years_bi <- unique(df$Ola)
 step_size_bi <- unique(diff(unique_years))
+
+# Cálculo de los rangos mínimos y máximos para cada variable
+range_values <- df %>%
+  group_by(Variable) %>%
+  summarise(min_val = min(Valor, na.rm = TRUE),
+            max_val = max(Valor, na.rm = TRUE))
+
+# Base con jerarquías
+
+load(file = "data/base_shiny_indicadores.rdata")
+
+df <- df_indicadores %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
+
+unique_years_bi <- unique(df$Ola)
+step_size_bi <- unique(diff(unique_years))
+
+all_indices <- unique(df$Indice) # <-- Cambia 'Indice' si tu columna se llama diferente
+all_countries <- unique(df$País) # <-- Cambia 'País' si tu columna se llama diferente
+
+PROMEDIO_GENERAL_OPTION <- "Promedio General"
+UP_LEVEL_OPTION_VALUE <- "__VOLVER__" # Nuevo valor único para la opción "subir de nivel"
+
 
 # Cálculo de los rangos mínimos y máximos para cada variable
 # range_values <- df %>%
@@ -188,14 +199,44 @@ div(style = "
 ## {.sidebar width="20%"}
 
 ```{r}
-selectInput("pais", "País(es)", choices = NULL, multiple = TRUE, selected = "Chile")
-selectInput("indice", "Índice", choices = NULL)
-selectInput("dimension", "Dimensión", choices = NULL)
-selectInput("subdimension", "Subdimensión", choices = NULL)
-selectInput("indicador", "Indicador", choices = NULL)
 
+# Selector para País(es) - permite selección múltiple
+pickerInput(
+  inputId = "pais",
+  label = "Seleccionar país(es):",
+  choices = all_countries,
+  selected = c("Chile"),
+  multiple = TRUE,
+  options = pickerOptions(
+    actionsBox = TRUE,
+    liveSearch = TRUE,
+    selectedTextFormat = "count > 2",
+    noneSelectedText = "Seleccione al menos un país"
+  )
+)
+# Selector para Índice
+selectInput("indice", "Seleccionar Índice:",
+            choices = c("---" = UP_LEVEL_OPTION_VALUE, all_indices), # Opción para "subir de nivel"
+            selected = UP_LEVEL_OPTION_VALUE) # Por defecto, la opción de "subir de nivel"
+
+# Selector para la Dimensión
+# Sus opciones se actualizarán dinámicamente según el Índice seleccionado.
+selectInput("dimension", "Seleccionar Dimensión:",
+            choices = c("---" = UP_LEVEL_OPTION_VALUE), # Inicialmente vacío con etiqueta clara
+            selected = UP_LEVEL_OPTION_VALUE) # Por defecto, la opción de "subir de nivel"
+
+# Selector para la Subdimensión
+# Sus opciones se actualizarán dinámicamente según la Dimensión seleccionada.
+selectInput("subdimension", "Seleccionar Subdimensión:",
+            choices = c("---" = UP_LEVEL_OPTION_VALUE), # Inicialmente vacío con etiqueta clara
+            selected = UP_LEVEL_OPTION_VALUE) # Por defecto, la opción de "subir de nivel"
+
+# Selector para el Indicador
+# Sus opciones se actualizarán dinámicamente según la Subdimensión seleccionada.
+selectInput("indicador", "Seleccionar Indicador:",
+            choices = c("---" = UP_LEVEL_OPTION_VALUE), # Inicialmente vacío con etiqueta clara
+            selected = UP_LEVEL_OPTION_VALUE) # Por defecto, la opción de "subir de nivel"
 ```
-
 
 ## Gráfico
 
@@ -209,12 +250,40 @@ selectInput("indicador", "Indicador", choices = NULL)
 ## {.sidebar width="20%"}
 
 ```{r}
-sliderInput("Ola_bi", "", min = min(unique_years_bi), max = max(unique_years_bi), value = max(unique_years_bi), step = 2, sep = "")
 
-            selectInput("x_var", "Variable para el eje X:", choices = unique(df$Variable), selected = "Cohesión horizontal")
-            selectInput("y_var", "Cariable para el eje Y:", choices = unique(df$Variable), selected = "Cohesión vertical")
-            
-            checkboxInput("show_flags", "Banderas en lugar de puntos.", TRUE)
+# Control deslizante para seleccionar la "Ola" (año)
+sliderInput("Ola_bi", "Seleccione la Ola:",
+            min = min(unique_years_bi),
+            max = max(unique_years_bi),
+            value = max(unique_years_bi), # Por defecto, la última Ola
+            step = 2, # Pasos de 2 años
+            sep = "") # Sin separador de miles en los años
+
+# Selector para la Dimensión
+# Incluye una opción vacía ("") para permitir la visualización del nivel de Cohesión General
+selectInput("dimension", "Seleccionar Dimensión:",
+            choices = c("", unique(df$Nombre[df$Nivel == "Dimension"])),
+            selected = "")
+
+# Selector para la Subdimensión
+# Sus opciones se actualizarán dinámicamente según la Dimensión seleccionada.
+# Inicialmente vacío hasta que se elija una Dimensión.
+selectInput("subdimension", "Seleccionar Subdimensión:",
+            choices = c(""),
+            selected = "",
+            # Deshabilitado por defecto hasta que se elija una Dimensión
+            # Esto se controlará dinámicamente en el servidor.
+            # No se usa 'disabled' aquí directamente para evitar conflicto con updateSelectInput.
+)
+
+# Selector para el Indicador
+# Sus opciones se actualizarán dinámicamente según la Subdimensión seleccionada.
+# Inicialmente vacío hasta que se elija una Subdimensión.
+selectInput("indicador", "Seleccionar Indicador:",
+            choices = c(""),
+            selected = "",
+            # Similar al anterior, el estado de deshabilitado se gestionará en el servidor.
+)
 ```
 
 ## Gráfico
@@ -332,220 +401,337 @@ observe({
     setView(lng = -78.4678, lat = -1.8312, zoom = 3.5)
 })
 
-## LONGITUDINAL ----
 
-observe({
-  updateSelectInput(session, "pais", 
-                    choices = unique(df$País), 
-                    selected = "Chile")
-})
+## Longitudinal ----
 
-observe({
-  updateSelectInput(session, "pais", choices = unique(df$País))
-  updateSelectInput(session, "indice", choices = unique(df$Indice))
-})
+# --- Observadores para la actualización dinámica de los selectores anidados ---
 
+# Observador para el selector de Índice
 observeEvent(input$indice, {
-  dims <- df %>% filter(Indice == input$indice, Nivel == "Dimension") %>% pull(Dimension) %>% unique()
-  updateSelectInput(session, "dimension", choices = dims)
-})
+  # Si se selecciona un Índice (no es la opción de "subir de nivel")
+  if (input$indice != UP_LEVEL_OPTION_VALUE) {
+    # Filtra y actualiza las opciones del selector de Dimensión
+    dims <- df %>%
+      filter(Indice == input$indice) %>%
+      pull(Dimension) %>%
+      unique() %>%
+      na.omit() # Asegurar que no hay NAs que puedan interferir
+    updateSelectInput(session, "dimension", choices = c("---" = UP_LEVEL_OPTION_VALUE, dims), selected = UP_LEVEL_OPTION_VALUE)
+    # Resetea los selectores inferiores
+    updateSelectInput(session, "subdimension", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+    updateSelectInput(session, "indicador", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+  } else {
+    # Si se selecciona "---" para Índice, resetea todos los selectores inferiores a "---"
+    updateSelectInput(session, "dimension", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+    updateSelectInput(session, "subdimension", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+    updateSelectInput(session, "indicador", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+  }
+}, ignoreNULL = FALSE) # Se ejecuta en la carga inicial
 
+# Observador para el selector de Dimensión
 observeEvent(input$dimension, {
-  subs <- df %>% filter(Dimension == input$dimension, Nivel == "Subdimension") %>% pull(Subdimension) %>% unique()
-  updateSelectInput(session, "subdimension", choices = subs)
-})
+  # Si se selecciona una Dimensión (no es la opción de "subir de nivel")
+  if (input$dimension != UP_LEVEL_OPTION_VALUE) {
+    # Filtra y actualiza las opciones del selector de Subdimensión
+    subs <- df %>%
+      filter(Indice == input$indice, Dimension == input$dimension) %>%
+      pull(Subdimension) %>%
+      unique() %>%
+      na.omit() # Asegurar que no hay NAs que puedan interferir
+    updateSelectInput(session, "subdimension", choices = c("---" = UP_LEVEL_OPTION_VALUE, subs), selected = UP_LEVEL_OPTION_VALUE)
+    # Resetea el selector de Indicador
+    updateSelectInput(session, "indicador", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+  } else {
+    # Si se selecciona "---" para Dimensión, resetea Subdimensión e Indicador a "---"
+    updateSelectInput(session, "subdimension", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+    updateSelectInput(session, "indicador", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+  }
+}, ignoreNULL = FALSE)
 
+# Observador para el selector de Subdimensión
 observeEvent(input$subdimension, {
-  inds <- df %>% filter(Subdimension == input$subdimension, Nivel == "Indicador") %>% pull(Indicador) %>% unique()
-  updateSelectInput(session, "indicador", choices = inds)
-})
+  # Si se selecciona una Subdimensión (no es la opción de "subir de nivel")
+  if (input$subdimension != UP_LEVEL_OPTION_VALUE) {
+    # Filtra y actualiza las opciones del selector de Indicador
+    inds <- df %>%
+      filter(Indice == input$indice, Dimension == input$dimension, Subdimension == input$subdimension) %>%
+      pull(Indicador) %>%
+      unique() %>%
+      na.omit() # Asegurar que no hay NAs que puedan interferir
+    updateSelectInput(session, "indicador", choices = c("---" = UP_LEVEL_OPTION_VALUE, inds), selected = UP_LEVEL_OPTION_VALUE)
+  } else {
+    # Si no se selecciona ninguna Subdimensión, resetea Indicador a "---"
+    updateSelectInput(session, "indicador", choices = c("---" = UP_LEVEL_OPTION_VALUE), selected = UP_LEVEL_OPTION_VALUE)
+  }
+}, ignoreNULL = FALSE)
+
+
+# --- Renderizado del Gráfico Plotly ---
 
 output$longitudinal_plotly <- renderPlotly({
-  req(input$pais, input$indicador)
+  # Asegura que al menos un país (o la opción 'Promedio General') esté seleccionado
+  req(input$pais)
 
-  temp_df <- df %>%
-    filter(País %in% input$pais, Nivel == "Indicador", Indicador == input$indicador)
+  # Determinar qué países incluir en el filtro
+  is_promedio_general_selected <- PROMEDIO_GENERAL_OPTION %in% input$pais
+  specific_countries_selected <- input$pais[input$pais != PROMEDIO_GENERAL_OPTION]
 
-  p <- plot_ly()
+  # Base de datos filtrada por la jerarquía (Indice, Dimensión, Subdimensión, Indicador)
+  data_filtered_by_hierarchy <- NULL
+  plot_level_name <- ""
+  title_prefix <- ""
+  
+  # Lógica para filtrar por nivel de jerarquía
+  if (input$indicador != UP_LEVEL_OPTION_VALUE) { # Si un indicador está seleccionado
+    data_filtered_by_hierarchy <- df %>%
+      filter(Indice == input$indice, Dimension == input$dimension, Subdimension == input$subdimension, Indicador == input$indicador)
+    plot_level_name <- input$indicador
+    title_prefix <- "Serie temporal del Indicador:"
+  } else if (input$subdimension != UP_LEVEL_OPTION_VALUE) { # Si una subdimensión está seleccionada
+    data_filtered_by_hierarchy <- df %>%
+      filter(Indice == input$indice, Dimension == input$dimension, Subdimension == input$subdimension)
+    plot_level_name <- input$subdimension
+    title_prefix <- "Serie temporal de la Subdimensión:"
+  } else if (input$dimension != UP_LEVEL_OPTION_VALUE) { # Si una dimensión está seleccionada
+    data_filtered_by_hierarchy <- df %>%
+      filter(Indice == input$indice, Dimension == input$dimension)
+    plot_level_name <- input$dimension
+    title_prefix <- "Serie temporal de la Dimensión:"
+  } else if (input$indice != UP_LEVEL_OPTION_VALUE) { # Si un índice está seleccionado
+    data_filtered_by_hierarchy <- df %>%
+      filter(Indice == input$indice)
+    plot_level_name <- input$indice
+    title_prefix <- "Serie temporal del Índice:"
+  } else { # Si ninguno está seleccionado (Cohesión General)
+    data_filtered_by_hierarchy <- df # Se usarán todos los datos para el promedio
+    plot_level_name <- "Cohesión General"
+    title_prefix <- "Serie temporal de la"
+  }
 
-  for (pais in unique(temp_df$País)) {
-    df_pais <- temp_df %>% filter(País == pais)
+  # Preparar los datos para el gráfico final
+  final_plot_df <- data.frame() # Inicializar un data frame vacío para todos los trazos
 
-    p <- add_trace(
-      p,
-      x = df_pais$Ola,
-      y = df_pais$Valor,
-      type = 'scatter',
-      mode = 'lines',
-      name = pais,
-      hovertemplate = paste("País: ", pais,
-                            "<br>Ola: %{x}<br>Valor: %{y}<extra></extra>")
+  # 1. Manejar la línea de "Promedio General" si está seleccionada
+  if (is_promedio_general_selected) {
+    avg_data <- data_filtered_by_hierarchy %>%
+      group_by(Ola) %>%
+      summarise(Valor_promedio = mean(Valor, na.rm = TRUE), .groups = 'drop') %>%
+      mutate(País = PROMEDIO_GENERAL_OPTION) # Asignar un nombre especial para este trazo
+    final_plot_df <- bind_rows(final_plot_df, avg_data)
+  }
+
+  # 2. Manejar los países específicos seleccionados
+  # Si no hay países específicos seleccionados Y "Promedio General" NO está seleccionado,
+  # entonces por defecto se grafican todos los países individuales.
+  if (length(specific_countries_selected) == 0 && !is_promedio_general_selected) {
+    specific_countries_selected <- unique(df$País) # Por defecto, mostrar todos los países si no hay selección específica
+  }
+  
+  if (length(specific_countries_selected) > 0) {
+    individual_country_data <- data_filtered_by_hierarchy %>%
+      filter(País %in% specific_countries_selected) %>%
+      group_by(País, Ola) %>%
+      summarise(Valor_promedio = mean(Valor, na.rm = TRUE), .groups = 'drop')
+    final_plot_df <- bind_rows(final_plot_df, individual_country_data)
+  }
+
+
+  # Manejo de errores: Si no hay datos para graficar
+  if (nrow(final_plot_df) == 0) {
+    return(
+      plotly_empty(type = "scatter", mode = "markers") %>%
+      layout(
+        title = "No hay datos disponibles para la selección actual.",
+        xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+        yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE)
+      )
     )
   }
 
+  # Crear el gráfico de líneas con Plotly
+  p <- plot_ly(data = final_plot_df,
+               x = ~Ola,
+               y = ~Valor_promedio,
+               color = ~País, # Esto crea un trazo separado para cada valor único en la columna 'País' (incluido "Promedio General")
+               type = 'scatter',
+               mode = 'lines+markers',
+               line = list(width = 3),
+               marker = list(size = 8),
+               hovertemplate = paste("<b>País:</b> %{fullData.name}<br>",
+                                     "<b>Nivel:</b> ", plot_level_name,
+                                     "<br><b>Ola:</b> %{x}<br><b>Valor:</b> %{y:.2f}<extra></extra>")
+  )
+
+
+  # Configuración del layout del gráfico
   p <- p %>% layout(
-    title = paste("Serie temporal:", input$indicador),
-    xaxis = list(title = "Ola", range = c(2003, max(temp_df$Ola, na.rm = TRUE))),
-    yaxis = list(title = "Valor")
+    title = list(text = paste(title_prefix, plot_level_name), font = list(size = 20)),
+    xaxis = list(title = "Ola", tickvals = unique(df$Ola), tickmode = "array", # Muestra todas las olas originales para el rango del eje X
+                 range    = c(min(df$Ola, na.rm = TRUE) - 0.5,
+                 max(df$Ola, na.rm = TRUE) + 0.5)
+  ),
+    yaxis = list(title = "Valor"), # Rango de 0 a 100 para valores porcentuales
+    legend = list(orientation = 'h', xanchor = "center", x = 0.5), # Leyenda horizontal en el centro
+    margin = list(t = 70, b = 70) # Ajusta márgenes
   )
 
   return(p)
 })
 
+## BIVARIADO ----
 
-# ## BIVARIADO ----
-# 
-# noDataMessage <- reactiveVal(FALSE)
-#   
-#   observe({
-#     x_var <- input$x_var
-#     y_var <- input$y_var
-#     time_point <- input$Ola_bi
-#     
-#     temp_df <- df %>% filter(Ola == time_point)
-#     
-#     x_data <- temp_df %>% filter(Variable == x_var, .preserve = TRUE) %>% pull(Valor)
-#     y_data <- temp_df %>% filter(Variable == y_var, .preserve = TRUE) %>% pull(Valor)
-#     
-#     x_available <- nrow(temp_df %>% filter(Variable == x_var, .preserve = TRUE)) > 0 && any(!is.na(x_data))
-#     y_available <- nrow(temp_df %>% filter(Variable == y_var, .preserve = TRUE)) > 0 && any(!is.na(y_data))
-#     
-#     if (x_available && y_available) {
-#       removeModal()
-#       noDataMessage(FALSE)
-#     } else {
-#       showModal(modalDialog(
-#         tags$div(tags$h4("Atención"), style = "display: inline-block;"),
-#         tags$button(tags$i(class = "fa fa-times"), type = "button", class = "close", `data-dismiss` = "modal", 
-#                     `aria-label` = "Close", style = "margin-left: 15px;"),
-#         "No hay datos disponibles para la variable en este año. Por favor, seleccione otro.",
-#         easyClose = TRUE,
-#         footer = NULL
-#       ))
-#       noDataMessage(TRUE)
-#     }
-#   })
-#   
-#   
-#   get_flag_emoji <- function(country_name) {
-#     sanitized_country_name <- gsub(" ", "_", country_name)
-#     
-#     flag_emojis <- list(
-#       Argentina          = "\U0001F1E6\U0001F1F7",
-#       Belize             = "\U0001F1E7\U0001F1FF",
-#       Bolivia            = "\U0001F1E7\U0001F1F4",
-#       Brazil             = "\U0001F1E7\U0001F1F7",
-#       Canada             = "\U0001F1E8\U0001F1E6",
-#       Chile              = "\U0001F1E8\U0001F1F1",
-#       Colombia           = "\U0001F1E8\U0001F1F4",
-#       Costa_Rica         = "\U0001F1E8\U0001F1F7",
-#       Dominican_Republic = "\U0001F1E9\U0001F1F4",
-#       Ecuador            = "\U0001F1EA\U0001F1E8",
-#       El_Salvador        = "\U0001F1F8\U0001F1FB",
-#       Guatemala          = "\U0001F1EC\U0001F1F9",
-#       Guyana             = "\U0001F1EC\U0001F1FE",
-#       Haiti              = "\U0001F1ED\U0001F1F9",
-#       Honduras           = "\U0001F1ED\U0001F1F3",
-#       Jamaica            = "\U0001F1EF\U0001F1F2",
-#       Mexico             = "\U0001F1F2\U0001F1FD",
-#       Nicaragua          = "\U0001F1F3\U0001F1EE",
-#       Panama             = "\U0001F1F5\U0001F1E6",
-#       Paraguay           = "\U0001F1F5\U0001F1FE",
-#       Peru               = "\U0001F1F5\U0001F1EA",
-#       "Trinidad_&_Tobago" = "\U0001F1F9\U0001F1F9",
-#       United_States      = "\U0001F1FA\U0001F1F8",
-#       Uruguay            = "\U0001F1FA\U0001F1FE",
-#       Venezuela          = "\U0001F1FB\U0001F1EA",
-#       Promedio           = "\U0001f6a9"
-#     )
-#     
-#     return(flag_emojis[[sanitized_country_name]])
-#   }
-#   
-#   # Esto es para calcular los minimos y máximos globales, con el fin de fijar los ejes. 
-#   global_ranges <- reactive({
-#   list(
-#     x = range(df %>% filter(Variable == input$x_var) %>% pull(Valor), na.rm = TRUE),
-#     y = range(df %>% filter(Variable == input$y_var) %>% pull(Valor), na.rm = TRUE)
-#   )
-# })
-# 
-#   
-#   output$plot <- renderPlotly({
-#     if (noDataMessage()) return(NULL)
-#     
-#     x_var <- input$x_var
-#     y_var <- input$y_var
-#     time_point <- input$Ola_bi
-#     show_flags <- input$show_flags  # Aquí se añade el estado del checkbox
-#     
-#     temp_df <- df %>% filter(Ola == time_point)
-#     
-#     p <- plot_ly()
-#     for(pais in unique(temp_df$País)){
-#       print(pais)
-#       x_vals <- temp_df %>% filter(País == pais, Variable == x_var) %>% pull(Valor)
-#       y_vals <- temp_df %>% filter(País == pais, Variable == y_var) %>% pull(Valor)
-#       
-#       if (show_flags) {
-#         # Aquí se añade la funcionalidad para mostrar las banderas como emojis
-#         flag_emoji <- get_flag_emoji(gsub(" ", "_", pais))
-#         p <- add_text(
-#           p,
-#           x = x_vals,
-#           y = y_vals,
-#           text = flag_emoji,
-#           name = pais,
-#           size = 5,
-#           hovertemplate = paste("País: ", pais,
-#                                 "<br>", x_var, ": %{x}",
-#                                 "<br>", y_var, ": %{y}<extra></extra>")
-#         )
-#         
-#         p <- p %>% layout(
-#           font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"),
-#           legend = list(font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"))
-#         )
-#       } else {
-#         # Aquí está tu código original para mostrar los marcadores
-#         p <- add_markers(
-#           p,
-#           x = x_vals,
-#           y = y_vals,
-#           name = pais,
-#           marker = list(
-#             sizemode = "diameter",
-#             size = 12  # Tamaño de la imagen
-#           ),
-#           hovertemplate = paste("País: ", pais,
-#                                 "<br>", x_var, ": %{x}",
-#                                 "<br>", y_var, ": %{y}<extra></extra>")
-#         )
-#       }
-#     }
-#     
-#     # Adición de título y títulos de ejes
-#     # p <- p %>% layout(
-#     #   title = "Análisis bivariado para subdimensiones de cohesión social",
-#     #   xaxis = list(title = x_var),
-#     #   yaxis = list(title = y_var)
-#     #   # plot_bgcolor = '#ECF0F5',  # Cambio de color de fondo
-#     #   # paper_bgcolor= '#ECF0F5'  # Cambio de color de fondo
-#       
-#       p <- p %>% layout(
-#   title = "Análisis bivariado para subdimensiones de cohesión social",
-#   xaxis = list(
-#     title = x_var,
-#     range = global_ranges()$x
-#   ),
-#   yaxis = list(
-#     title = y_var,
-#     range = global_ranges()$y
-#   )
-# )
-#     
-#     return(p)
-#   })
+noDataMessage <- reactiveVal(FALSE)
+
+  observe({
+    x_var <- input$x_var
+    y_var <- input$y_var
+    time_point <- input$Ola_bi
+
+    temp_df <- df %>% filter(Ola == time_point)
+
+    x_data <- temp_df %>% filter(Variable == x_var, .preserve = TRUE) %>% pull(Valor)
+    y_data <- temp_df %>% filter(Variable == y_var, .preserve = TRUE) %>% pull(Valor)
+
+    x_available <- nrow(temp_df %>% filter(Variable == x_var, .preserve = TRUE)) > 0 && any(!is.na(x_data))
+    y_available <- nrow(temp_df %>% filter(Variable == y_var, .preserve = TRUE)) > 0 && any(!is.na(y_data))
+
+    if (x_available && y_available) {
+      removeModal()
+      noDataMessage(FALSE)
+    } else {
+      showModal(modalDialog(
+        tags$div(tags$h4("Atención"), style = "display: inline-block;"),
+        tags$button(tags$i(class = "fa fa-times"), type = "button", class = "close", `data-dismiss` = "modal",
+                    `aria-label` = "Close", style = "margin-left: 15px;"),
+        "No hay datos disponibles para la variable en este año. Por favor, seleccione otro.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
+      noDataMessage(TRUE)
+    }
+  })
+
+
+  get_flag_emoji <- function(country_name) {
+    sanitized_country_name <- gsub(" ", "_", country_name)
+
+    flag_emojis <- list(
+      Argentina          = "\U0001F1E6\U0001F1F7",
+      Belize             = "\U0001F1E7\U0001F1FF",
+      Bolivia            = "\U0001F1E7\U0001F1F4",
+      Brazil             = "\U0001F1E7\U0001F1F7",
+      Canada             = "\U0001F1E8\U0001F1E6",
+      Chile              = "\U0001F1E8\U0001F1F1",
+      Colombia           = "\U0001F1E8\U0001F1F4",
+      Costa_Rica         = "\U0001F1E8\U0001F1F7",
+      Dominican_Republic = "\U0001F1E9\U0001F1F4",
+      Ecuador            = "\U0001F1EA\U0001F1E8",
+      El_Salvador        = "\U0001F1F8\U0001F1FB",
+      Guatemala          = "\U0001F1EC\U0001F1F9",
+      Guyana             = "\U0001F1EC\U0001F1FE",
+      Haiti              = "\U0001F1ED\U0001F1F9",
+      Honduras           = "\U0001F1ED\U0001F1F3",
+      Jamaica            = "\U0001F1EF\U0001F1F2",
+      Mexico             = "\U0001F1F2\U0001F1FD",
+      Nicaragua          = "\U0001F1F3\U0001F1EE",
+      Panama             = "\U0001F1F5\U0001F1E6",
+      Paraguay           = "\U0001F1F5\U0001F1FE",
+      Peru               = "\U0001F1F5\U0001F1EA",
+      "Trinidad_&_Tobago" = "\U0001F1F9\U0001F1F9",
+      United_States      = "\U0001F1FA\U0001F1F8",
+      Uruguay            = "\U0001F1FA\U0001F1FE",
+      Venezuela          = "\U0001F1FB\U0001F1EA",
+      Promedio           = "\U0001f6a9"
+    )
+
+    return(flag_emojis[[sanitized_country_name]])
+  }
+
+  # Esto es para calcular los minimos y máximos globales, con el fin de fijar los ejes.
+  global_ranges <- reactive({
+  list(
+    x = range(df %>% filter(Variable == input$x_var) %>% pull(Valor), na.rm = TRUE),
+    y = range(df %>% filter(Variable == input$y_var) %>% pull(Valor), na.rm = TRUE)
+  )
+})
+
+
+  output$plot <- renderPlotly({
+    if (noDataMessage()) return(NULL)
+
+    x_var <- input$x_var
+    y_var <- input$y_var
+    time_point <- input$Ola_bi
+    show_flags <- input$show_flags  # Aquí se añade el estado del checkbox
+
+    temp_df <- df %>% filter(Ola == time_point)
+
+    p <- plot_ly()
+    for(pais in unique(temp_df$País)){
+      print(pais)
+      x_vals <- temp_df %>% filter(País == pais, Variable == x_var) %>% pull(Valor)
+      y_vals <- temp_df %>% filter(País == pais, Variable == y_var) %>% pull(Valor)
+
+      if (show_flags) {
+        # Aquí se añade la funcionalidad para mostrar las banderas como emojis
+        flag_emoji <- get_flag_emoji(gsub(" ", "_", pais))
+        p <- add_text(
+          p,
+          x = x_vals,
+          y = y_vals,
+          text = flag_emoji,
+          name = pais,
+          size = 5,
+          hovertemplate = paste("País: ", pais,
+                                "<br>", x_var, ": %{x}",
+                                "<br>", y_var, ": %{y}<extra></extra>")
+        )
+
+        p <- p %>% layout(
+          font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"),
+          legend = list(font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"))
+        )
+      } else {
+        # Aquí está tu código original para mostrar los marcadores
+        p <- add_markers(
+          p,
+          x = x_vals,
+          y = y_vals,
+          name = pais,
+          marker = list(
+            sizemode = "diameter",
+            size = 12  # Tamaño de la imagen
+          ),
+          hovertemplate = paste("País: ", pais,
+                                "<br>", x_var, ": %{x}",
+                                "<br>", y_var, ": %{y}<extra></extra>")
+        )
+      }
+    }
+
+    # Adición de título y títulos de ejes
+    # p <- p %>% layout(
+    #   title = "Análisis bivariado para subdimensiones de cohesión social",
+    #   xaxis = list(title = x_var),
+    #   yaxis = list(title = y_var)
+    #   # plot_bgcolor = '#ECF0F5',  # Cambio de color de fondo
+    #   # paper_bgcolor= '#ECF0F5'  # Cambio de color de fondo
+
+      p <- p %>% layout(
+  title = "Análisis bivariado para subdimensiones de cohesión social",
+  xaxis = list(
+    title = x_var,
+    range = global_ranges()$x
+  ),
+  yaxis = list(
+    title = y_var,
+    range = global_ranges()$y
+  )
+)
+
+    return(p)
+  })
+
 
 ```
 
