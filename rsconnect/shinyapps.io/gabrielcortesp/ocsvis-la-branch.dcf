@@ -1,0 +1,10 @@
+name: ocsvis-la-branch
+title:
+username: gabrielcortesp
+account: gabrielcortesp
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14956894
+bundleId:
+url: https://gabrielcortesp.shinyapps.io/ocsvis-la-branch/
+version: 1
