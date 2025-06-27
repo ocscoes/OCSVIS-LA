@@ -65,9 +65,10 @@ step_size <- unique(diff(unique_years))
 
 # Bivariado
 
-load(file = "data/base_shiny.rdata")
+load(file = "data/base_shiny_otros.rdata")
 
-df_bivariado <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
+df_bivariado <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname",
+                              !is.nan(Valor))
 
 unique_years_bi <- unique(df$Ola)
 step_size_bi <- unique(diff(unique_years))
@@ -82,7 +83,8 @@ range_values <- df %>%
 
 load(file = "data/base_shiny_indicadores.rdata")
 
-df <- df_indicadores %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
+df <- df_indicadores %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname",
+                                Ola %% 2 == 0)
 
 unique_years_bi <- unique(df$Ola)
 step_size_bi <- unique(diff(unique_years))
@@ -538,7 +540,6 @@ output$longitudinal_plotly <- renderPlotly({
                line = list(width = 3),
                marker = list(size = 8),
                hovertemplate = paste("<b>País:</b> %{fullData.name}<br>",
-                                     "<b>Nivel:</b> ", plot_level_name,
                                      "<br><b>Ola:</b> %{x}<br><b>Valor:</b> %{y:.2f}<extra></extra>")
   )
 
@@ -626,13 +627,6 @@ get_flag_emoji <- function(country_name) {
   return(flag_emojis[[sanitized_country_name]])
 }
 
-global_ranges <- reactive({
-  list(
-    x = range(df_bivariado %>% filter(Variable == input$x_var) %>% pull(Valor), na.rm = TRUE),
-    y = range(df_bivariado %>% filter(Variable == input$y_var) %>% pull(Valor), na.rm = TRUE)
-  )
-})
-
 output$plot <- renderPlotly({
   if (noDataMessage()) return(NULL)
 
@@ -659,8 +653,8 @@ output$plot <- renderPlotly({
         name = pais,
         size = 5,
         hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x}",
-                              "<br>", y_var, ": %{y}<extra></extra>")
+                              "<br>", x_var, ": %{x:.2f}",
+                              "<br>", y_var, ": %{y:.2f}<extra></extra>")
       )
 
       p <- p %>% layout(
@@ -678,8 +672,8 @@ output$plot <- renderPlotly({
           size = 12
         ),
         hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x}",
-                              "<br>", y_var, ": %{y}<extra></extra>")
+                              "<br>", x_var, ": %{x:.2f}",
+                              "<br>", y_var, ": %{y:.2f}<extra></extra>")
       )
     }
   }
@@ -688,11 +682,11 @@ output$plot <- renderPlotly({
     title = "Análisis bivariado para subdimensiones de cohesión social",
     xaxis = list(
       title = x_var,
-      range = global_ranges()$x
+      autorange= TRUE
     ),
     yaxis = list(
       title = y_var,
-      range = global_ranges()$y
+    autorange= TRUE
     )
   )
 

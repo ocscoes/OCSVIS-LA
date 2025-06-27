@@ -1,11 +1,11 @@
 name: visualizador-la
-title:
+title: visualizador-la
 username: gabrielcortesp
 account: gabrielcortesp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14956917
-bundleId: 10479053
+bundleId: 10479230
 url: https://gabrielcortesp.shinyapps.io/visualizador-la/
 version: 1
 quarto_version: 1.6.42

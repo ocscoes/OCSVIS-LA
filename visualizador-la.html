@@ -357,14 +357,7 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="form-group shiny-input-container">
 <label class="control-label" id="x_var-label" for="x_var">Variable para el eje X:</label>
 <div>
-<select id="x_var" class="shiny-input-select"><option value="Seguridad Objetiva">Seguridad Objetiva</option>
-<option value="Seguridad Subjetiva">Seguridad Subjetiva</option>
-<option value="Confianza en el Congreso">Confianza en el Congreso</option>
-<option value="Confianza Partidos Políticos">Confianza Partidos Políticos</option>
-<option value="Confianza Poder Judicial">Confianza Poder Judicial</option>
-<option value="Apoyo Democracia">Apoyo Democracia</option>
-<option value="Satisfacción Democracia">Satisfacción Democracia</option>
-<option value="Confianza Interpersonal">Confianza Interpersonal</option>
+<select id="x_var" class="shiny-input-select"><option value="Confianza Interpersonal">Confianza Interpersonal</option>
 <option value="Seguridad Pública">Seguridad Pública</option>
 <option value="Confianza en las Instituciones">Confianza en las Instituciones</option>
 <option value="Actitudes a la Democracia">Actitudes a la Democracia</option>
@@ -372,8 +365,12 @@ grid-auto-rows: minmax(0, 1fr);">
 <option value="Cohesión horizontal" selected="">Cohesión horizontal</option>
 <option value="Cohesión vertical">Cohesión vertical</option>
 <option value="Cohesión general">Cohesión general</option>
-<option value="Coef. Gini">Coef. Gini</option>
-<option value="PIB per capita (miles)">PIB per capita (miles)</option></select>
+<option value="Orgullo Nacional">Orgullo Nacional</option>
+<option value="Importancia Igualdad de Ingresos">Importancia Igualdad de Ingresos</option>
+<option value="Importancia Trabajo Duro">Importancia Trabajo Duro</option>
+<option value="Percepción de Corrupción">Percepción de Corrupción</option>
+<option value="Interés en la Política">Interés en la Política</option>
+<option value="Comportamiento Prosocial">Comportamiento Prosocial</option></select>
 <script type="application/json" data-for="x_var" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
 </div>
 </div>
@@ -382,14 +379,7 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="form-group shiny-input-container">
 <label class="control-label" id="y_var-label" for="y_var">Variable para el eje Y:</label>
 <div>
-<select id="y_var" class="shiny-input-select"><option value="Seguridad Objetiva">Seguridad Objetiva</option>
-<option value="Seguridad Subjetiva">Seguridad Subjetiva</option>
-<option value="Confianza en el Congreso">Confianza en el Congreso</option>
-<option value="Confianza Partidos Políticos">Confianza Partidos Políticos</option>
-<option value="Confianza Poder Judicial">Confianza Poder Judicial</option>
-<option value="Apoyo Democracia">Apoyo Democracia</option>
-<option value="Satisfacción Democracia">Satisfacción Democracia</option>
-<option value="Confianza Interpersonal">Confianza Interpersonal</option>
+<select id="y_var" class="shiny-input-select"><option value="Confianza Interpersonal">Confianza Interpersonal</option>
 <option value="Seguridad Pública">Seguridad Pública</option>
 <option value="Confianza en las Instituciones">Confianza en las Instituciones</option>
 <option value="Actitudes a la Democracia">Actitudes a la Democracia</option>
@@ -397,8 +387,12 @@ grid-auto-rows: minmax(0, 1fr);">
 <option value="Cohesión horizontal">Cohesión horizontal</option>
 <option value="Cohesión vertical" selected="">Cohesión vertical</option>
 <option value="Cohesión general">Cohesión general</option>
-<option value="Coef. Gini">Coef. Gini</option>
-<option value="PIB per capita (miles)">PIB per capita (miles)</option></select>
+<option value="Orgullo Nacional">Orgullo Nacional</option>
+<option value="Importancia Igualdad de Ingresos">Importancia Igualdad de Ingresos</option>
+<option value="Importancia Trabajo Duro">Importancia Trabajo Duro</option>
+<option value="Percepción de Corrupción">Percepción de Corrupción</option>
+<option value="Interés en la Política">Interés en la Política</option>
+<option value="Comportamiento Prosocial">Comportamiento Prosocial</option></select>
 <script type="application/json" data-for="y_var" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
 </div>
 </div>
@@ -474,9 +468,10 @@ step_size <- unique(diff(unique_years))
 
 # Bivariado
 
-load(file = "data/base_shiny.rdata")
+load(file = "data/base_shiny_otros.rdata")
 
-df_bivariado <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
+df_bivariado <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname",
+                              !is.nan(Valor))
 
 unique_years_bi <- unique(df$Ola)
 step_size_bi <- unique(diff(unique_years))
@@ -491,7 +486,8 @@ range_values <- df %>%
 
 load(file = "data/base_shiny_indicadores.rdata")
 
-df <- df_indicadores %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname")
+df <- df_indicadores %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname",
+                                Ola %% 2 == 0)
 
 unique_years_bi <- unique(df$Ola)
 step_size_bi <- unique(diff(unique_years))
@@ -773,7 +769,6 @@ output$longitudinal_plotly <- renderPlotly({
                line = list(width = 3),
                marker = list(size = 8),
                hovertemplate = paste("<b>País:<\u002fb> %{fullData.name}<br>",
-                                     "<b>Nivel:<\u002fb> ", plot_level_name,
                                      "<br><b>Ola:<\u002fb> %{x}<br><b>Valor:<\u002fb> %{y:.2f}<extra><\u002fextra>")
   )
 
@@ -861,13 +856,6 @@ get_flag_emoji <- function(country_name) {
   return(flag_emojis[[sanitized_country_name]])
 }
 
-global_ranges <- reactive({
-  list(
-    x = range(df_bivariado %>% filter(Variable == input$x_var) %>% pull(Valor), na.rm = TRUE),
-    y = range(df_bivariado %>% filter(Variable == input$y_var) %>% pull(Valor), na.rm = TRUE)
-  )
-})
-
 output$plot <- renderPlotly({
   if (noDataMessage()) return(NULL)
 
@@ -894,8 +882,8 @@ output$plot <- renderPlotly({
         name = pais,
         size = 5,
         hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x}",
-                              "<br>", y_var, ": %{y}<extra><\u002fextra>")
+                              "<br>", x_var, ": %{x:.2f}",
+                              "<br>", y_var, ": %{y:.2f}<extra><\u002fextra>")
       )
 
       p <- p %>% layout(
@@ -913,8 +901,8 @@ output$plot <- renderPlotly({
           size = 12
         ),
         hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x}",
-                              "<br>", y_var, ": %{y}<extra><\u002fextra>")
+                              "<br>", x_var, ": %{x:.2f}",
+                              "<br>", y_var, ": %{y:.2f}<extra><\u002fextra>")
       )
     }
   }
@@ -923,11 +911,11 @@ output$plot <- renderPlotly({
     title = "Análisis bivariado para subdimensiones de cohesión social",
     xaxis = list(
       title = x_var,
-      range = global_ranges()$x
+      autorange= TRUE
     ),
     yaxis = list(
       title = y_var,
-      range = global_ranges()$y
+    autorange= TRUE
     )
   )
 
