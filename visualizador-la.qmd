@@ -124,7 +124,7 @@ Más información sobre las fuentes de datos, la selección de indicadores y la 
 
 # Mapa
 
-## {.sidebar width="20%"}
+## {.sidebar width="25%"}
 
 ```{r}
 sliderInput("Ola", "Selecciona una ola",
@@ -135,36 +135,73 @@ sliderInput("Ola", "Selecciona una ola",
 ```
 
 ```{r}
-div(style = "
-  display: flex; 
-  flex-wrap: wrap; 
-  gap: 6px;",
+# CSS Personalizado para los botones
+tags$style(HTML("
+  #variable-buttons .btn {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #dee2e6;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    white-space: normal;
+    font-weight: 500;
+  }
+
+  #variable-buttons .btn:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  #variable-buttons .btn.active {
+    background-color:  #497abd;
+    color: white;
+    border-color: #00441b;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  #variable-buttons .btn.active img {
+     filter: brightness(0) invert(1);
+  }
+"))
+
+# Contenedor de botones
+div(id = "variable-buttons",
+    style = "display: flex; flex-wrap: wrap; gap: 6px;",
   
   lapply(1:8, function(i) {
     btn_id <- paste0("btn_var", i)
     btn_label <- c(
-      "Cohesión<br>General",
-      "Cohesión<br>Horizontal",
+      "Cohesión<br>General", 
+      "Cohesión<br>Horizontal", 
       "Cohesión<br>Vertical",
-      "Confianza<br>Interpersonal",
-      "Seguridad<br>Pública",
+      "Confianza<br>Interpersonal", 
+      "Seguridad<br>Pública", 
       "Confianza en<br>Instituciones",
-      "Actitud hacia<br>la Democracia",
+      "Actitud hacia<br>la Democracia", 
       "Justicia<br>Redistributiva"
     )[i]
     
+
     btn_icon <- c(
       "cohesion-general.svg",
       "cohesion-horizontal.svg",
       "cohesion-vertical.svg",
-      "Confianza interpersonal.svg",
-      "seguridad publica.svg",
-      "Confianza en instituciones.svg",
-      "Actitud hacia la democracia.svg",
-      "Justicia distributiva.svg"
+      "confianza-interpersonal.svg",       
+      "seguridad-publica.svg",             
+      "confianza-instituciones.svg",       
+      "actitud-democracia.svg",            
+      "justicia-distributiva.svg"          
     )[i]
+    # --- FIN DE CAMBIOS ---
     
-    div(style = "
+    btn_class <- "btn btn-light"
+    if (i == 1) {
+      btn_class <- "btn btn-light active"
+    }
+    
+ div(style = "
         width: 48%;
         height: 125px;
         display: flex;
@@ -184,15 +221,39 @@ div(style = "
   })
 )
 
+# JavaScript para gestionar la clase 'active' en los botones
+tags$script(HTML("
+  document.addEventListener('DOMContentLoaded', function() {
+    const buttonContainer = document.getElementById('variable-buttons');
+    if (!buttonContainer) return;
+
+    buttonContainer.addEventListener('click', function(event) {
+        const button = event.target.closest('.action-button');
+        if (!button) return;
+
+        const allButtons = buttonContainer.querySelectorAll('.action-button');
+        allButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    });
+  });
+"))
 ```
 
+## Contenido {orientation="columns"}
 
-
-## map
+### map {height="80%"}
 
 
 ```{r}
  leafletOutput("map", height = "1050px")
+```
+
+
+
+### descripcion{height="10%"}
+
+```{r}
+uiOutput("descripcion_variable")
 ```
 
 
@@ -282,7 +343,9 @@ plotlyOutput("plot", height = "800px")
 
 ## MAPA -----
 
-# Variable reactiva para la dimensión seleccionada
+labels <- c("Muy bajo", "Bajo", "Medio", "Alto", "Muy alto")
+
+# Variable reactiva inicializada con el valor del primer botón
 selected_variable <- reactiveVal("")
 
 button_var_map <- list(
@@ -296,7 +359,7 @@ button_var_map <- list(
   btn_var8 = "Justicia Redistributiva"
 )
 
-# Observadores para los botones
+# Observadores para los botones que actualizan la variable reactiva
 lapply(names(button_var_map), function(btn_id) {
   observeEvent(input[[btn_id]], {
     selected_variable(button_var_map[[btn_id]])
@@ -306,47 +369,29 @@ lapply(names(button_var_map), function(btn_id) {
 # Render inicial del mapa
 output$map <- renderLeaflet({
   leaflet(world_data) |>
-    addTiles() |>
-    setView(lng = -78.4678, lat = -1.8312, zoom = 3.5)
+    addProviderTiles(providers$CartoDB.Positron) |>
+    setView(lng = -70, lat = -15, zoom = 3)
 })
 
-# Observador para actualizar el mapa cuando cambia ola o variable
+# Observador para actualizar el mapa
 observe({
-  req(input$Ola)
-  req(selected_variable())
+  req(input$Ola, selected_variable())
 
   variable <- selected_variable()
-
   data_year <- world_data %>% filter(Ola == input$Ola) %>% st_as_sf()
   
-
-  # Validar que la variable exista en los datos
   if (!variable %in% names(data_year)) {
-    showModal(modalDialog(
-      title = "Error",
-      paste0("La variable '", variable, "' no se encuentra en los datos."),
-      easyClose = TRUE
-    ))
+    showModal(modalDialog(title = "Error", paste0("La variable '", variable, "' no se encuentra."), easyClose = TRUE))
     return()
   }
 
-  # Si todos los valores son NA, no dibujar
   if (all(is.na(data_year[[variable]]))) {
-    leafletProxy("map") |>
-      clearShapes() |>
-      clearControls() |>
-      addTiles() |>
-      setView(lng = -78.4678, lat = -1.8312, zoom = 3.5)
-
-    showModal(modalDialog(
-      title = "Atención",
-      "No hay datos disponibles para esta combinación de año y variable. Intenta con otra ola.",
-      easyClose = TRUE
-    ))
+    leafletProxy("map") |> clearShapes() |> clearControls()
+    showModal(modalDialog(title = "Sin Datos", "No hay datos disponibles para esta combinación. Intenta con otra ola.", easyClose = TRUE))
     return()
   }
 
-  # Crear paleta de colores
+  # Paleta de colores
   bins <- c(floor(min(data_year[[variable]], na.rm = TRUE)),
             quantile(data_year[[variable]], probs = seq(0.2, 1, 0.2), na.rm = TRUE)) |>
           unique()
@@ -359,28 +404,73 @@ observe({
   pal <- colorBin(palette = colorRampPalette(c("#e5f5e0", "#006d2c"))(length(bins) - 1),
                   domain = data_year[[variable]],
                   bins = bins)
+  # Popup con información
+  popup_content <- paste0(
+    "<strong>", data_year$País, "</strong><br/>",
+    variable, ": <strong>", round(data_year[[variable]], 2), "</strong>"
+  )
 
-  # Actualizar el mapa
   leafletProxy("map", data = data_year) |>
     clearShapes() |>
     clearControls() |>
-    addTiles() |>
     addPolygons(
-      stroke = FALSE,
+      fillColor = ~pal(data_year[[variable]]),
+      weight = 1,
+      opacity = 1,
+      color = "#666",
+      dashArray = "",
       fillOpacity = 0.7,
-      color = ~pal(data_year[[variable]]),
-      label = ~paste0(País, ": ", round(data_year[[variable]], 1)),
+      highlightOptions = highlightOptions(
+        weight = 3,
+        color = "#666",
+        dashArray = "",
+        fillOpacity = 0.7,
+        bringToFront = TRUE),
+      label = ~lapply(popup_content, HTML),
       labelOptions = labelOptions(
+        style = list("font-weight" = "normal", padding = "3px 8px"),
         textsize = "15px",
-        style = list("font-weight" = "500")
+        direction = "auto"
       )
     ) |>
-    addLegend(pal = pal,
+     addLegend(pal = pal,
               values = data_year[[variable]],
               title = variable,
               position = "bottomright",
-              labFormat = labelFormat(digits = 1)) |>
-    setView(lng = -78.4678, lat = -1.8312, zoom = 3.5)
+              labFormat = function(type, cuts, p) {
+    labels
+  })
+})
+
+### Descriptores de variables
+
+# Variable reactiva para guardar la selección
+variable_seleccionada <- reactiveVal("")  # valor inicial
+
+observeEvent(input$btn_var1, variable_seleccionada("Cohesión General"))
+observeEvent(input$btn_var2, variable_seleccionada("Cohesión Horizontal"))
+observeEvent(input$btn_var3, variable_seleccionada("Cohesión Vertical"))
+observeEvent(input$btn_var4, variable_seleccionada("Confianza Interpersonal"))
+observeEvent(input$btn_var5, variable_seleccionada("Seguridad Pública"))
+observeEvent(input$btn_var6, variable_seleccionada("Confianza en Instituciones"))
+observeEvent(input$btn_var7, variable_seleccionada("Actitud hacia la Democracia"))
+observeEvent(input$btn_var8, variable_seleccionada("Justicia Redistributiva"))
+
+output$descripcion_variable <- renderUI({
+  definiciones <- list(
+    "Cohesión General" = "Partimos de una definición mínima de cohesión social que incluye 'tanto a las interacciones verticales como horizontales entre los miembros de la sociedad, caracterizado por un conjunto de actitudes y normas que incluyen la confianza, el sentido de pertenencia y la voluntad de participar y ayudar, así como sus manifestaciones conductuales' (Chan et al., 2006, p. 290) <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable.",
+    "Cohesión Horizontal" = "La dimensión horizontal está dirigida hacia la cohesión dentro de la sociedad civil. Incluye indicadores sobre seguridad pública y confianza interpersonal. <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable.",
+    "Cohesión Vertical" = "La dimensión vertical está dirigida hacia la cohesión entre los ciudadanos (o sociedad civil) y el Estado. Incluye indicadores sobre confianza en instituciones, actitudes hacia la democracia y justicia redistributiva. <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable.",
+    "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra. <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable.",
+    "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.  <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable.",
+    "Confianza en Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial. <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable.",
+    "Actitud hacia la Democracia" = "La valoración y apoyo que se le da al sistema democrático. <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable.",
+    "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad. <br><br> Las categorías están basadas en los quintiles de la distribución real de la variable."
+  )
+  
+  texto <- definiciones[[variable_seleccionada()]]
+  
+  HTML(glue::glue("<p><strong>{variable_seleccionada()}:</strong> {texto}</p>"))
 })
 
 

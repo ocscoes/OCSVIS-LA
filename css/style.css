@@ -1,0 +1,13 @@
+/* Estilo para el hover */
+    .btn-light:hover {
+      background-color: blue !important;
+      border-color: #d3d3d3 !important;
+      transform: scale(1.02);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+      .btn-light:active {
+        background-color: red !important;
+        color: white !important;
+        box-shadow: 0 0 8px rgba(0, 0, 255, 0.5) !important;
+      }
