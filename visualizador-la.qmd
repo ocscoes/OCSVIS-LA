@@ -368,7 +368,7 @@ tags$script(HTML("
 ```
 
 ```{r}
-uiOutput("descripcion_variable")
+uiOutput("descripcion_barras")
 ```
 
 ## Grafico de barras
@@ -1047,7 +1047,7 @@ output$descripcion_bivariado <- renderUI({
   "))
 })
 
-## Gráfico de barras
+## Gráfico de barras ----
 output$bar_plot <- renderPlotly({
   req(input$Ola, selected_variable())
   
@@ -1098,5 +1098,21 @@ output$bar_plot <- renderPlotly({
     )
 })
 
+output$descripcion_barras <- renderUI({
+  definiciones <- list(
+    "Cohesión General" = "Partimos de una definición mínima de cohesión social que incluye 'tanto a las interacciones verticales como horizontales entre los miembros de la sociedad, caracterizado por un conjunto de actitudes y normas que incluyen la confianza, el sentido de pertenencia y la voluntad de participar y ayudar, así como sus manifestaciones conductuales' (Chan et al., 2006, p. 290).",
+    "Cohesión Horizontal" = "La dimensión horizontal está dirigida hacia la cohesión dentro de la sociedad civil. Incluye indicadores sobre seguridad pública y confianza interpersonal.",
+    "Cohesión Vertical" = "La dimensión vertical está dirigida hacia la cohesión entre los ciudadanos (o sociedad civil) y el Estado. Incluye indicadores sobre confianza en instituciones, actitudes hacia la democracia y justicia redistributiva.",
+    "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra.",
+    "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.",
+    "Confianza en Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial.",
+    "Actitud hacia la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
+    "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad."
+  )
+  
+  texto <- definiciones[[variable_seleccionada()]]
+  
+  HTML(glue::glue("<p><strong>{variable_seleccionada()}:</strong> {texto}</p>"))
+})
 
 ```
