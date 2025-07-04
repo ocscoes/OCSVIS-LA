@@ -5,9 +5,10 @@ account: gabrielcortesp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14956917
-bundleId: 10479230
+bundleId: 10562095
 url: https://gabrielcortesp.shinyapps.io/visualizador-la/
 version: 1
 quarto_version: 1.6.42
 quarto_engines: knitr
-serverRender: FALSE
+asMultiple: FALSE
+asStatic: FALSE

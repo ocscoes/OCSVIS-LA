@@ -104,28 +104,13 @@ ul.task-list li input[type="checkbox"] {
 <div class="bslib-sidebar-layout html-fill-item html-fill-container" data-bslib-sidebar-open="desktop" data-bslib-sidebar-init="true" style=" --bslib-sidebar-width: 25%" data-bslib-sidebar-border="false" data-bslib-sidebar-border-radius="false"><div class="main html-fill-container html-fill-item"><div class="sidebar-content html-fill-item html-fill-container">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
 grid-auto-rows: minmax(0, 1fr);">
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 80fr) minmax(3em, 10fr); grid-auto-columns: minmax(0, 1fr);">
+<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, 80fr); grid-auto-columns: minmax(0, 1fr);">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
 grid-auto-rows: minmax(0, 1fr);">
 <div class="card cell html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-body html-fill-item html-fill-container">
 <div class="cell-output-display html-fill-item html-fill-container">
 <div class="leaflet html-widget html-widget-output shiny-report-size html-fill-item html-fill-container" id="map" style="width:100%;height:1050px;"></div>
-</div>
-</div>
-<bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
-    <template>Expand</template>
-    <span class="bslib-full-screen-enter badge rounded-pill">
-        <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" style="height:1em;width:1em;" aria-hidden="true" role="img"><path d="M20 5C20 4.4 19.6 4 19 4H13C12.4 4 12 3.6 12 3C12 2.4 12.4 2 13 2H21C21.6 2 22 2.4 22 3V11C22 11.6 21.6 12 21 12C20.4 12 20 11.6 20 11V5ZM4 19C4 19.6 4.4 20 5 20H11C11.6 20 12 20.4 12 21C12 21.6 11.6 22 11 22H3C2.4 22 2 21.6 2 21V13C2 12.4 2.4 12 3 12C3.6 12 4 12.4 4 13V19Z"></path></svg>
-    </span>
-</bslib-tooltip><script data-bslib-card-init="">bslib.Card.initializeAllCards();</script></div>
-</div>
-<div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-columns: minmax(3em, 1fr);
-grid-auto-rows: minmax(0, 1fr);">
-<div class="card cell html-fill-item html-fill-container bslib-card" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
-<div class="card-body html-fill-item html-fill-container">
-<div class="cell-output-display html-fill-item html-fill-container no-overflow-x">
-<div id="descripcion_variable" class="shiny-html-output html-fill-item html-fill-container"></div>
 </div>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
@@ -275,6 +260,9 @@ grid-auto-rows: minmax(0, 1fr);">
     });
   });
 </script>
+</div>
+<div class="cell-output-display no-overflow-x">
+<div id="descripcion_variable" class="shiny-html-output"></div>
 </div>
 </div></aside>
 <button class="collapse-toggle" type="button" title="Toggle sidebar" aria-expanded="true" aria-controls="bslib-sidebar-1">
@@ -913,108 +901,160 @@ observe({
   }
 })
 
-get_flag_emoji <- function(country_name) {
-  sanitized_country_name <- gsub(" ", "_", country_name)
-
-  flag_emojis <- list(
-    Argentina          = "\U0001F1E6\U0001F1F7",
-    Belize             = "\U0001F1E7\U0001F1FF",
-    Bolivia            = "\U0001F1E7\U0001F1F4",
-    Brazil             = "\U0001F1E7\U0001F1F7",
-    Canada             = "\U0001F1E8\U0001F1E6",
-    Chile              = "\U0001F1E8\U0001F1F1",
-    Colombia           = "\U0001F1E8\U0001F1F4",
-    Costa_Rica         = "\U0001F1E8\U0001F1F7",
-    Dominican_Republic = "\U0001F1E9\U0001F1F4",
-    Ecuador            = "\U0001F1EA\U0001F1E8",
-    El_Salvador        = "\U0001F1F8\U0001F1FB",
-    Guatemala          = "\U0001F1EC\U0001F1F9",
-    Guyana             = "\U0001F1EC\U0001F1FE",
-    Haiti              = "\U0001F1ED\U0001F1F9",
-    Honduras           = "\U0001F1ED\U0001F1F3",
-    Jamaica            = "\U0001F1EF\U0001F1F2",
-    Mexico             = "\U0001F1F2\U0001F1FD",
-    Nicaragua          = "\U0001F1F3\U0001F1EE",
-    Panama             = "\U0001F1F5\U0001F1E6",
-    Paraguay           = "\U0001F1F5\U0001F1FE",
-    Peru               = "\U0001F1F5\U0001F1EA",
-    "Trinidad_&_Tobago" = "\U0001F1F9\U0001F1F9",
-    United_States      = "\U0001F1FA\U0001F1F8",
-    Uruguay            = "\U0001F1FA\U0001F1FE",
-    Venezuela          = "\U0001F1FB\U0001F1EA",
-    Promedio           = "\U0001f6a9"
+# --- Función para obtener la URL de la bandera ---
+# En lugar de devolver un emoji, esta función devuelve la URL de una imagen de la bandera.
+# Usamos el servicio de CDN 'flagcdn.com', que es gratuito y confiable.
+get_flag_url <- function(country_name) {
+  # Mapeo de nombres de países a códigos ISO de 2 letras (en minúsculas)
+  country_codes <- list(
+    Argentina = "ar",
+    Belize = "bz",
+    Bolivia = "bo",
+    Brazil = "br",
+    Canada = "ca",
+    Chile = "cl",
+    Colombia = "co",
+    `Costa Rica` = "cr",
+    `Dominican Republic` = "do",
+    Ecuador = "ec",
+    `El Salvador` = "sv",
+    Guatemala = "gt",
+    Guyana = "gy",
+    Haiti = "ht",
+    Honduras = "hn",
+    Jamaica = "jm",
+    Mexico = "mx",
+    Nicaragua = "ni",
+    Panama = "pa",
+    Paraguay = "py",
+    Peru = "pe",
+    `Trinidad & Tobago` = "tt",
+    `United States` = "us",
+    Uruguay = "uy",
+    Venezuela = "ve"
+    # No incluimos "Promedio" ya que no tiene una bandera de país.
   )
-
-  return(flag_emojis[[sanitized_country_name]])
+  
+  code <- country_codes[[country_name]]
+  if (is.null(code)) {
+    return(NA) # Devolver NA si el país no se encuentra
+  }
+  
+  # Formatear la URL. Usamos un ancho de 40px como ejemplo.
+  return(paste0("https://flagcdn.com/w40/", code, ".png"))
 }
 
+# --- Renderizado del Gráfico en Shiny ---
 output$plot <- renderPlotly({
   if (noDataMessage()) return(NULL)
-
+  
   x_var <- input$x_var
   y_var <- input$y_var
   time_point <- input$Ola_bi
   show_flags <- input$show_flags
-
-  temp_df <- df_bivariado %>% filter(Ola == time_point)
-
-  p <- plot_ly()
-  for(pais in unique(temp_df$País)){
-    print(pais)
-    x_vals <- temp_df %>% filter(País == pais, Variable == x_var) %>% pull(Valor)
-    y_vals <- temp_df %>% filter(País == pais, Variable == y_var) %>% pull(Valor)
-
-    if (show_flags) {
-      flag_emoji <- get_flag_emoji(gsub(" ", "_", pais))
-      p <- add_text(
-        p,
-        x = x_vals,
-        y = y_vals,
-        text = flag_emoji,
-        name = pais,
-        size = 5,
-        hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x:.2f}",
-                              "<br>", y_var, ": %{y:.2f}<extra><\u002fextra>")
-      )
-
-      p <- p %>% layout(
-        font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"),
-        legend = list(font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"))
-      )
-    } else {
-      p <- add_markers(
-        p,
-        x = x_vals,
-        y = y_vals,
-        name = pais,
-        marker = list(
-          sizemode = "diameter",
-          size = 12
-        ),
-        hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x:.2f}",
-                              "<br>", y_var, ": %{y:.2f}<extra><\u002fextra>")
-      )
-    }
+  
+  temp_df <- df_bivariado %>%
+    filter(Ola == time_point) %>%
+    pivot_wider(names_from = Variable, values_from = Valor) %>%
+    select(País, all_of(c(x_var, y_var))) %>%
+    drop_na()
+  
+  if (!all(c(x_var, y_var) %in% names(temp_df))) {
+    showNotification("Error: Variables seleccionadas no encontradas", type = "error")
+    return(NULL)
   }
+  
+  temp_df <- temp_df %>%
+    rename(x_val = !!sym(x_var), y_val = !!sym(y_var))
+  
+  p <- plot_ly()
+  images_list <- list()
+  
+  # Dimensiones relativas para imágenes (solo si se usan)
+  x_range <- diff(range(temp_df$x_val, na.rm = TRUE))
+  y_range <- diff(range(temp_df$y_val, na.rm = TRUE))
+  sizex <- x_range * 0.05
+  sizey <- y_range * 0.08
+  
+  for (pais in unique(temp_df$País)) {
+  row <- temp_df[temp_df$País == pais, ]
+  if (nrow(row) == 0) next
 
-  p <- p %>% layout(
-    title = "Análisis bivariado para subdimensiones de cohesión social",
-    xaxis = list(
-      title = x_var,
-      autorange= TRUE
-    ),
-    yaxis = list(
-      title = y_var,
-    autorange= TRUE
-    )
+  # Hover personalizado
+  hover_text <- paste0(
+    "País: ", pais,
+    "<br>", x_var, ": ", sprintf("%.2f", row$x_val),
+    "<br>", y_var, ": ", sprintf("%.2f", row$y_val)
   )
 
+  # Si se muestran banderas
+  if (show_flags) {
+    img_url <- get_flag_url(pais)
+
+    # Agregar imagen
+    images_list[[length(images_list) + 1]] <- list(
+      source = img_url,
+      x = row$x_val,
+      y = row$y_val,
+      sizex = sizex,
+      sizey = sizey,
+      xref = "x",
+      yref = "y",
+      xanchor = "center",
+      yanchor = "middle",
+      layer = "above"
+    )
+
+    # Agregar marcador invisible para hover y leyenda
+    p <- add_markers(p,
+      x = row$x_val,
+      y = row$y_val,
+      name = pais,
+      marker = list(opacity = 0),
+      text = hover_text,
+      hoverinfo = "text"
+    )
+
+  } else {
+    # Agregar punto con color automático y leyenda
+    p <- add_markers(p,
+      x = row$x_val,
+      y = row$y_val,
+      name = pais,
+      marker = list(size = 12),
+      text = hover_text,
+      hoverinfo = "text"
+    )
+  }
+}
+
+
+  # Línea LOESS
+  if (nrow(temp_df) >= 5) {
+    tryCatch({
+      fit_loess <- loess(y_val ~ x_val, data = temp_df)
+      x_seq <- seq(min(temp_df$x_val), max(temp_df$x_val), length.out = 100)
+      y_pred <- predict(fit_loess, newdata = data.frame(x_val = x_seq))
+      p <- add_lines(
+        p, x = x_seq, y = y_pred, name = "Tendencia",
+        line = list(color = "black", dash = "dash"), hoverinfo = "none"
+      )
+    }, error = function(e) {
+      message("Error al ajustar LOESS: ", e$message)
+    })
+  }
+  
+  # Layout final
+  p <- p %>% layout(
+    title = "Análisis bivariado para subdimensiones de cohesión social",
+    xaxis = list(title = x_var),
+    yaxis = list(title = y_var),
+    images = images_list,
+    showlegend = TRUE
+  )
+  
   return(p)
 })
-
-
 </script>
  
 <script type="application/shiny-prerendered" data-context="server-extras">
@@ -1051,7 +1091,7 @@ ojs_define <- function(..., .session = shiny::getDefaultReactiveDomain()) {
 <!--/html_preserve-->
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="execution_dependencies">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","bslib","cachem","Cairo","class","classInt","cli","compiler","cowplot","crosstalk","curl","data.table","datasets","DBI","digest","dplyr","e1071","evaluate","extrafont","extrafontdb","farver","fastmap","fontawesome","fontBitstreamVera","fontLiberation","fontquiver","forcats","gdtools","generics","ggplot2","ggrepel","ggthemes","glue","graphics","grDevices","grid","gtable","highcharter","hms","hrbrthemes","htmltools","htmlwidgets","httpuv","httr","igraph","insight","jquerylib","jsonlite","KernSmooth","knitr","later","lattice","lazyeval","leaflet","lifecycle","lubridate","magick","magrittr","memoise","methods","mime","pillar","pkgconfig","plotly","promises","proxy","purrr","quantmod","R6","RColorBrewer","Rcpp","readr","rlang","rlist","rmarkdown","rstudioapi","Rttf2pt1","sass","scales","sf","shiny","shinydashboard","shinydashboardPlus","shinyEffects","shinyjs","shinyWidgets","sjlabelled","stats","stringi","stringr","systemfonts","tibble","tidyr","tidyselect","tidyverse","timechange","tools","TTR","tzdb","units","utils","V8","vctrs","viridisLite","withr","xfun","xtable","xts","yaml","zoo"]},{"type":"character","attributes":{},"value":["0.2.1","1.5.0","4.5.1","1.0.8","0.9.0","1.1.0","1.6-2","7.3-23","0.4-11","3.6.5","4.5.1","1.1.3","1.2.1","6.3.0","1.17.6","4.5.1","1.2.3","0.6.37","1.1.4","1.7-16","1.0.4","0.19","1.0","2.1.2","1.2.0","0.5.3","0.1.1","0.1.0","0.2.1","1.0.0","0.4.2","0.1.4","3.5.2","0.9.6","5.1.0","1.8.0","4.5.1","4.5.1","4.5.1","0.3.6","0.9.4","1.1.3","0.8.7","0.5.8.1","1.6.4","1.6.16","1.4.7","2.1.4","1.3.0","0.1.4","2.0.0","2.23-26","1.50","1.4.2","0.22-7","0.2.2","2.2.2","1.0.4","1.9.4","2.8.7","2.0.3","2.0.1","4.5.1","0.13","1.10.2","2.0.3","4.10.4","1.3.3","0.4-27","1.0.4","0.4.27","2.6.1","1.1-3","1.0.14","2.1.5","1.1.6","0.4.6.2","2.29","0.17.1","1.3.12","0.4.10","1.4.0","1.0-21","1.10.0","0.7.3","2.0.5","0.2.0","2.1.0","0.9.0","1.2.0","4.5.1","1.8.7","1.5.1","1.2.3","3.3.0","1.3.1","1.2.1","2.0.0","0.3.0","4.5.1","0.24.4","0.5.0","0.8-7","4.5.1","6.0.4","0.6.5","0.4.2","3.0.2","0.52","1.8-4","0.14.1","2.3.10","1.8-14"]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","bslib","cachem","Cairo","class","classInt","cli","compiler","cowplot","crosstalk","curl","data.table","datasets","DBI","digest","dplyr","e1071","evaluate","extrafont","extrafontdb","farver","fastmap","fontawesome","fontBitstreamVera","fontLiberation","fontquiver","forcats","gdtools","generics","ggplot2","ggrepel","ggthemes","glue","graphics","grDevices","grid","gtable","highcharter","hms","hrbrthemes","htmltools","htmlwidgets","httpuv","httr","igraph","insight","jquerylib","jsonlite","KernSmooth","knitr","later","lattice","lazyeval","leaflet","lifecycle","lubridate","magick","magrittr","memoise","methods","mime","pillar","pkgconfig","plotly","promises","proxy","purrr","quantmod","R6","RColorBrewer","Rcpp","readr","rlang","rlist","rmarkdown","rstudioapi","Rttf2pt1","sass","scales","sf","shiny","shinydashboard","shinydashboardPlus","shinyEffects","shinyjs","shinyWidgets","sjlabelled","stats","stringi","stringr","systemfonts","tibble","tidyr","tidyselect","tidyverse","timechange","tools","TTR","tzdb","units","utils","V8","vctrs","viridisLite","withr","xfun","xtable","xts","yaml","zoo"]},{"type":"character","attributes":{},"value":["0.2.1","1.5.0","4.5.0","1.0.8","0.9.0","1.1.0","1.6-2","7.3-23","0.4-11","3.6.5","4.5.0","1.1.3","1.2.1","6.3.0","1.17.6","4.5.0","1.2.3","0.6.37","1.1.4","1.7-16","1.0.4","0.19","1.0","2.1.2","1.2.0","0.5.3","0.1.1","0.1.0","0.2.1","1.0.0","0.4.2","0.1.4","3.5.2","0.9.6","5.1.0","1.8.0","4.5.0","4.5.0","4.5.0","0.3.6","0.9.4","1.1.3","0.8.7","0.5.8.1","1.6.4","1.6.16","1.4.7","2.1.4","1.3.0","0.1.4","2.0.0","2.23-26","1.50","1.4.2","0.22-6","0.2.2","2.2.2","1.0.4","1.9.4","2.8.7","2.0.3","2.0.1","4.5.0","0.13","1.10.2","2.0.3","4.10.4","1.3.3","0.4-27","1.0.4","0.4.27","2.6.1","1.1-3","1.0.14","2.1.5","1.1.6","0.4.6.2","2.29","0.17.1","1.3.12","0.4.10","1.4.0","1.0-21","1.10.0","0.7.3","2.0.5","0.2.0","2.1.0","0.9.0","1.2.0","4.5.0","1.8.7","1.5.1","1.2.3","3.3.0","1.3.1","1.2.1","2.0.0","0.3.0","4.5.0","0.24.4","0.5.0","0.8-7","4.5.0","6.0.4","0.6.5","0.4.2","3.0.2","0.52","1.8-4","0.14.1","2.3.10","1.8-14"]}]}]}
 </script>
 <!--/html_preserve-->
 

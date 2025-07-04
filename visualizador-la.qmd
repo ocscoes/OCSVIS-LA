@@ -239,6 +239,10 @@ tags$script(HTML("
 "))
 ```
 
+```{r}
+uiOutput("descripcion_variable")
+```
+
 ## Contenido {orientation="columns"}
 
 ### map {height="80%"}
@@ -247,15 +251,6 @@ tags$script(HTML("
 ```{r}
  leafletOutput("map", height = "1050px")
 ```
-
-
-
-### descripcion{height="10%"}
-
-```{r}
-uiOutput("descripcion_variable")
-```
-
 
 # Análisis Longitudinal
 
@@ -682,108 +677,158 @@ observe({
   }
 })
 
-get_flag_emoji <- function(country_name) {
-  sanitized_country_name <- gsub(" ", "_", country_name)
-
-  flag_emojis <- list(
-    Argentina          = "\U0001F1E6\U0001F1F7",
-    Belize             = "\U0001F1E7\U0001F1FF",
-    Bolivia            = "\U0001F1E7\U0001F1F4",
-    Brazil             = "\U0001F1E7\U0001F1F7",
-    Canada             = "\U0001F1E8\U0001F1E6",
-    Chile              = "\U0001F1E8\U0001F1F1",
-    Colombia           = "\U0001F1E8\U0001F1F4",
-    Costa_Rica         = "\U0001F1E8\U0001F1F7",
-    Dominican_Republic = "\U0001F1E9\U0001F1F4",
-    Ecuador            = "\U0001F1EA\U0001F1E8",
-    El_Salvador        = "\U0001F1F8\U0001F1FB",
-    Guatemala          = "\U0001F1EC\U0001F1F9",
-    Guyana             = "\U0001F1EC\U0001F1FE",
-    Haiti              = "\U0001F1ED\U0001F1F9",
-    Honduras           = "\U0001F1ED\U0001F1F3",
-    Jamaica            = "\U0001F1EF\U0001F1F2",
-    Mexico             = "\U0001F1F2\U0001F1FD",
-    Nicaragua          = "\U0001F1F3\U0001F1EE",
-    Panama             = "\U0001F1F5\U0001F1E6",
-    Paraguay           = "\U0001F1F5\U0001F1FE",
-    Peru               = "\U0001F1F5\U0001F1EA",
-    "Trinidad_&_Tobago" = "\U0001F1F9\U0001F1F9",
-    United_States      = "\U0001F1FA\U0001F1F8",
-    Uruguay            = "\U0001F1FA\U0001F1FE",
-    Venezuela          = "\U0001F1FB\U0001F1EA",
-    Promedio           = "\U0001f6a9"
+# --- Función para obtener la URL de la bandera ---
+# En lugar de devolver un emoji, esta función devuelve la URL de una imagen de la bandera.
+# Usamos el servicio de CDN 'flagcdn.com', que es gratuito y confiable.
+get_flag_url <- function(country_name) {
+  # Mapeo de nombres de países a códigos ISO de 2 letras (en minúsculas)
+  country_codes <- list(
+    Argentina = "ar",
+    Belize = "bz",
+    Bolivia = "bo",
+    Brazil = "br",
+    Canada = "ca",
+    Chile = "cl",
+    Colombia = "co",
+    `Costa Rica` = "cr",
+    `Dominican Republic` = "do",
+    Ecuador = "ec",
+    `El Salvador` = "sv",
+    Guatemala = "gt",
+    Guyana = "gy",
+    Haiti = "ht",
+    Honduras = "hn",
+    Jamaica = "jm",
+    Mexico = "mx",
+    Nicaragua = "ni",
+    Panama = "pa",
+    Paraguay = "py",
+    Peru = "pe",
+    `Trinidad & Tobago` = "tt",
+    `United States` = "us",
+    Uruguay = "uy",
+    Venezuela = "ve"
+    # No incluimos "Promedio" ya que no tiene una bandera de país.
   )
-
-  return(flag_emojis[[sanitized_country_name]])
+  
+  code <- country_codes[[country_name]]
+  if (is.null(code)) {
+    return(NA) # Devolver NA si el país no se encuentra
+  }
+  
+  # Formatear la URL. Usamos un ancho de 40px como ejemplo.
+  return(paste0("https://flagcdn.com/w40/", code, ".png"))
 }
 
+# --- Renderizado del Gráfico en Shiny ---
 output$plot <- renderPlotly({
   if (noDataMessage()) return(NULL)
-
+  
   x_var <- input$x_var
   y_var <- input$y_var
   time_point <- input$Ola_bi
   show_flags <- input$show_flags
-
-  temp_df <- df_bivariado %>% filter(Ola == time_point)
-
-  p <- plot_ly()
-  for(pais in unique(temp_df$País)){
-    print(pais)
-    x_vals <- temp_df %>% filter(País == pais, Variable == x_var) %>% pull(Valor)
-    y_vals <- temp_df %>% filter(País == pais, Variable == y_var) %>% pull(Valor)
-
-    if (show_flags) {
-      flag_emoji <- get_flag_emoji(gsub(" ", "_", pais))
-      p <- add_text(
-        p,
-        x = x_vals,
-        y = y_vals,
-        text = flag_emoji,
-        name = pais,
-        size = 5,
-        hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x:.2f}",
-                              "<br>", y_var, ": %{y:.2f}<extra></extra>")
-      )
-
-      p <- p %>% layout(
-        font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"),
-        legend = list(font = list(family = "Noto Color Emoji, Open Sans, verdana, arial, sans-serif"))
-      )
-    } else {
-      p <- add_markers(
-        p,
-        x = x_vals,
-        y = y_vals,
-        name = pais,
-        marker = list(
-          sizemode = "diameter",
-          size = 12
-        ),
-        hovertemplate = paste("País: ", pais,
-                              "<br>", x_var, ": %{x:.2f}",
-                              "<br>", y_var, ": %{y:.2f}<extra></extra>")
-      )
-    }
+  
+  temp_df <- df_bivariado %>%
+    filter(Ola == time_point) %>%
+    pivot_wider(names_from = Variable, values_from = Valor) %>%
+    select(País, all_of(c(x_var, y_var))) %>%
+    drop_na()
+  
+  if (!all(c(x_var, y_var) %in% names(temp_df))) {
+    showNotification("Error: Variables seleccionadas no encontradas", type = "error")
+    return(NULL)
   }
+  
+  temp_df <- temp_df %>%
+    rename(x_val = !!sym(x_var), y_val = !!sym(y_var))
+  
+  p <- plot_ly()
+  images_list <- list()
+  
+  # Dimensiones relativas para imágenes (solo si se usan)
+  x_range <- diff(range(temp_df$x_val, na.rm = TRUE))
+  y_range <- diff(range(temp_df$y_val, na.rm = TRUE))
+  sizex <- x_range * 0.05
+  sizey <- y_range * 0.08
+  
+  for (pais in unique(temp_df$País)) {
+  row <- temp_df[temp_df$País == pais, ]
+  if (nrow(row) == 0) next
 
-  p <- p %>% layout(
-    title = "Análisis bivariado para subdimensiones de cohesión social",
-    xaxis = list(
-      title = x_var,
-      autorange= TRUE
-    ),
-    yaxis = list(
-      title = y_var,
-    autorange= TRUE
-    )
+  # Hover personalizado
+  hover_text <- paste0(
+    "País: ", pais,
+    "<br>", x_var, ": ", sprintf("%.2f", row$x_val),
+    "<br>", y_var, ": ", sprintf("%.2f", row$y_val)
   )
 
+  # Si se muestran banderas
+  if (show_flags) {
+    img_url <- get_flag_url(pais)
+
+    # Agregar imagen
+    images_list[[length(images_list) + 1]] <- list(
+      source = img_url,
+      x = row$x_val,
+      y = row$y_val,
+      sizex = sizex,
+      sizey = sizey,
+      xref = "x",
+      yref = "y",
+      xanchor = "center",
+      yanchor = "middle",
+      layer = "above"
+    )
+
+    # Agregar marcador invisible para hover y leyenda
+    p <- add_markers(p,
+      x = row$x_val,
+      y = row$y_val,
+      name = pais,
+      marker = list(opacity = 0),
+      text = hover_text,
+      hoverinfo = "text"
+    )
+
+  } else {
+    # Agregar punto con color automático y leyenda
+    p <- add_markers(p,
+      x = row$x_val,
+      y = row$y_val,
+      name = pais,
+      marker = list(size = 12),
+      text = hover_text,
+      hoverinfo = "text"
+    )
+  }
+}
+
+
+  # Línea LOESS
+  if (nrow(temp_df) >= 5) {
+    tryCatch({
+      fit_loess <- loess(y_val ~ x_val, data = temp_df)
+      x_seq <- seq(min(temp_df$x_val), max(temp_df$x_val), length.out = 100)
+      y_pred <- predict(fit_loess, newdata = data.frame(x_val = x_seq))
+      p <- add_lines(
+        p, x = x_seq, y = y_pred, name = "Tendencia",
+        line = list(color = "black", dash = "dash"), hoverinfo = "none"
+      )
+    }, error = function(e) {
+      message("Error al ajustar LOESS: ", e$message)
+    })
+  }
+  
+  # Layout final
+  p <- p %>% layout(
+    title = "Análisis bivariado para subdimensiones de cohesión social",
+    xaxis = list(title = x_var),
+    yaxis = list(title = y_var),
+    images = images_list,
+    showlegend = TRUE
+  )
+  
   return(p)
 })
-
-
 ```
-
-
