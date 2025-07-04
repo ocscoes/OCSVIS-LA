@@ -243,9 +243,7 @@ tags$script(HTML("
 uiOutput("descripcion_variable")
 ```
 
-## Contenido {orientation="columns"}
-
-### map {height="80%"}
+## map
 
 
 ```{r}
@@ -297,6 +295,10 @@ selectInput("indicador", "Seleccionar Indicador:",
             selected = UP_LEVEL_OPTION_VALUE) # Por defecto, la opción de "subir de nivel"
 ```
 
+```{r}
+uiOutput("descripcion_longitudinal")
+```
+
 ## Gráfico
 
 ```{r}
@@ -322,6 +324,10 @@ sliderInput("Ola_bi", "Seleccione la Ola:",
             selectInput("y_var", "Variable para el eje Y:", choices = unique(df_bivariado$Variable), selected = "Cohesión vertical")
             
             checkboxInput("show_flags", "Banderas en lugar de puntos.", TRUE)
+```
+
+```{r}
+uiOutput("descripcion_bivariado")
 ```
 
 ## Gráfico
@@ -644,6 +650,50 @@ output$longitudinal_plotly <- renderPlotly({
   return(p)
 })
 
+output$descripcion_longitudinal <- renderUI({
+  definiciones <- list(
+    "Cohesión Social" = "Partimos de una definición mínima de cohesión social que incluye 'tanto a las interacciones verticales como horizontales entre los miembros de la sociedad, caracterizado por un conjunto de actitudes y normas que incluyen la confianza, el sentido de pertenencia y la voluntad de participar y ayudar, así como sus manifestaciones conductuales' (Chan et al., 2006, p. 290).",
+    "Cohesión horizontal" = "La dimensión horizontal está dirigida hacia la cohesión dentro de la sociedad civil. Incluye indicadores sobre seguridad pública y confianza interpersonal",
+    "Cohesión vertical" = "La dimensión vertical está dirigida hacia la cohesión entre los ciudadanos (o sociedad civil) y el Estado. Incluye indicadores sobre confianza en instituciones, actitudes hacia la democracia y justicia redistributiva.",
+    "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra.",
+    "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.",
+    "Confianza en las Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial.",
+    "Actitud a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
+    "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad.",
+    "Seguridad Objetiva"= "Frecuencia en que las personas han sido víctimas de algún delito en el último año (LAPOP)",
+    "Seguridad Subjetiva"= "Percepción de seguridad en el barrio (LAPOP)", 
+    "Confianza en el Congreso"= "Nivel de confianza en el poder legislativo del país (LAPOP)",
+    "Confianza Partidos Políticos"= "Nivel de confianza en los partidos políticos del país (LAPOP)",
+    "Confianza Poder Judicial"= "Nivel de confianza en las cortes de justicia del país (LAPOP)",
+    "Apoyo Democracia" = "Acuerdo con que la democracia es la mejor forma de gobierno (LAPOP)",
+    "Satisfacción Democracia"= "Nivel de satisfacción con la forma en que funciona la democracia en el país (LAPOP)"
+    
+  )
+
+  nombre_seleccionado <- NULL
+  
+  if (input$indicador != UP_LEVEL_OPTION_VALUE) {
+    nombre_seleccionado <- input$indicador
+  } else if (input$subdimension != UP_LEVEL_OPTION_VALUE) {
+    nombre_seleccionado <- input$subdimension
+  } else if (input$dimension != UP_LEVEL_OPTION_VALUE) {
+    nombre_seleccionado <- input$dimension
+  } else if (input$indice != UP_LEVEL_OPTION_VALUE) {
+    nombre_seleccionado <- input$indice
+  } else {
+    nombre_seleccionado <- "Cohesión General"
+  }
+
+  texto <- definiciones[[nombre_seleccionado]]
+  
+  if (is.null(texto)) {
+    texto <- "No hay una descripción disponible para esta selección aún."
+  }
+
+  HTML(glue::glue("<p><strong>{nombre_seleccionado}:</strong> {texto}</p>"))
+})
+
+
 ## BIVARIADO ----
 
 noDataMessage <- reactiveVal(FALSE)
@@ -830,5 +880,41 @@ output$plot <- renderPlotly({
   )
   
   return(p)
+})
+
+output$descripcion_bivariado <- renderUI({
+  definiciones <- list(
+    "Cohesión general" = "Partimos de una definición mínima de cohesión social que incluye 'tanto a las interacciones verticales como horizontales entre los miembros de la sociedad, caracterizado por un conjunto de actitudes y normas que incluyen la confianza, el sentido de pertenencia y la voluntad de participar y ayudar, así como sus manifestaciones conductuales' (Chan et al., 2006, p. 290).",
+    "Cohesión horizontal" = "La dimensión horizontal está dirigida hacia la cohesión dentro de la sociedad civil. Incluye indicadores sobre seguridad pública y confianza interpersonal",
+    "Cohesión vertical" = "La dimensión vertical está dirigida hacia la cohesión entre los ciudadanos (o sociedad civil) y el Estado. Incluye indicadores sobre confianza en instituciones, actitudes hacia la democracia y justicia redistributiva.",
+    "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra.",
+    "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.",
+    "Confianza en las Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial.",
+    "Actitud a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
+    "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad.",
+    "Seguridad Objetiva"= "Frecuencia en que las personas han sido víctimas de algún delito en el último año (LAPOP)",
+    "Seguridad Subjetiva"= "Percepción de seguridad en el barrio (LAPOP)", 
+    "Confianza en el Congreso"= "Nivel de confianza en el poder legislativo del país (LAPOP)",
+    "Confianza Partidos Políticos"= "Nivel de confianza en los partidos políticos del país (LAPOP)",
+    "Confianza Poder Judicial"= "Nivel de confianza en las cortes de justicia del país (LAPOP)",
+    "Apoyo Democracia" = "Acuerdo con que la democracia es la mejor forma de gobierno (LAPOP)",
+    "Satisfacción Democracia"= "Nivel de satisfacción con la forma en que funciona la democracia en el país (LAPOP)"
+  )
+  
+   x_var <- input$x_var
+  y_var <- input$y_var
+
+  # Busca las descripciones, si existen
+  x_desc <- definiciones[[x_var]]
+  y_desc <- definiciones[[y_var]]
+
+  # Texto alternativo si no hay descripción
+  if (is.null(x_desc)) x_desc <- "Descripción no disponible para esta variable."
+  if (is.null(y_desc)) y_desc <- "Descripción no disponible para esta variable."
+
+  HTML(glue::glue("
+    <p><strong>{x_var}:</strong> {x_desc}</p>
+    <p><strong>{y_var}:</strong> {y_desc}</p>
+  "))
 })
 ```
