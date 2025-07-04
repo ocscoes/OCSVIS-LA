@@ -250,6 +250,135 @@ uiOutput("descripcion_variable")
  leafletOutput("map", height = "1050px")
 ```
 
+# Ranking
+
+## {.sidebar width="25%"}
+
+```{r}
+sliderInput("Ola", "Selecciona una ola",
+            min = min(world_data$Ola),
+            max = max(world_data$Ola),
+            step = 2,
+            value = max(world_data$Ola))
+```
+
+```{r}
+# CSS Personalizado para los botones
+tags$style(HTML("
+  #variable-buttons .btn {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid #dee2e6;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    white-space: normal;
+    font-weight: 500;
+  }
+
+  #variable-buttons .btn:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+
+  #variable-buttons .btn.active {
+    background-color:  #497abd;
+    color: white;
+    border-color: #00441b;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  #variable-buttons .btn.active img {
+     filter: brightness(0) invert(1);
+  }
+"))
+
+# Contenedor de botones
+div(id = "variable-buttons",
+    style = "display: flex; flex-wrap: wrap; gap: 6px;",
+  
+  lapply(1:8, function(i) {
+    btn_id <- paste0("btn_var", i)
+    btn_label <- c(
+      "Cohesión<br>General", 
+      "Cohesión<br>Horizontal", 
+      "Cohesión<br>Vertical",
+      "Confianza<br>Interpersonal", 
+      "Seguridad<br>Pública", 
+      "Confianza en<br>Instituciones",
+      "Actitud hacia<br>la Democracia", 
+      "Justicia<br>Redistributiva"
+    )[i]
+    
+
+    btn_icon <- c(
+      "cohesion-general.svg",
+      "cohesion-horizontal.svg",
+      "cohesion-vertical.svg",
+      "confianza-interpersonal.svg",       
+      "seguridad-publica.svg",             
+      "confianza-instituciones.svg",       
+      "actitud-democracia.svg",            
+      "justicia-distributiva.svg"          
+    )[i]
+    # --- FIN DE CAMBIOS ---
+    
+    btn_class <- "btn btn-light"
+    if (i == 1) {
+      btn_class <- "btn btn-light active"
+    }
+    
+ div(style = "
+        width: 48%;
+        height: 125px;
+        display: flex;
+        align-items: center;
+        justify-content: center;",
+      actionButton(
+        inputId = btn_id,
+        label = HTML(glue::glue(
+          '<div style="text-align:center; font-size:12px; line-height:1.1;">
+             <img src="www/img/{btn_icon}" width="35"><br>{btn_label}
+           </div>'
+        )),
+        class = "btn btn-light",
+        style = "width: 100%; height: 100%; padding: 5px;"
+      )
+    )
+  })
+)
+
+# JavaScript para gestionar la clase 'active' en los botones
+tags$script(HTML("
+  document.addEventListener('DOMContentLoaded', function() {
+    const buttonContainer = document.getElementById('variable-buttons');
+    if (!buttonContainer) return;
+
+    buttonContainer.addEventListener('click', function(event) {
+        const button = event.target.closest('.action-button');
+        if (!button) return;
+
+        const allButtons = buttonContainer.querySelectorAll('.action-button');
+        allButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    });
+  });
+"))
+```
+
+```{r}
+uiOutput("descripcion_variable")
+```
+
+## Grafico de barras
+
+```{r}
+plotlyOutput("bar_plot")
+```
+
+
+
 # Análisis Longitudinal
 
 
@@ -917,4 +1046,57 @@ output$descripcion_bivariado <- renderUI({
     <p><strong>{y_var}:</strong> {y_desc}</p>
   "))
 })
+
+## Gráfico de barras
+output$bar_plot <- renderPlotly({
+  req(input$Ola, selected_variable())
+  
+  variable <- selected_variable()
+  data_year <- world_data %>%
+    filter(Ola == input$Ola) %>%
+    st_drop_geometry()
+  
+  if (!variable %in% names(data_year)) {
+    showModal(modalDialog(
+      title = "Error", 
+      paste0("La variable '", variable, "' no se encuentra."),
+      easyClose = TRUE
+    ))
+    return(NULL)
+  }
+
+  if (all(is.na(data_year[[variable]]))) {
+    showModal(modalDialog(
+      title = "Sin Datos", 
+      "No hay datos disponibles para esta combinación. Intenta con otra ola.",
+      easyClose = TRUE
+    ))
+    return(NULL)
+  }
+
+  data_plot <- data_year %>%
+    select(País, valor = all_of(variable)) %>%
+    filter(!is.na(valor)) %>%
+    arrange(desc(valor))
+  
+  plot_ly(
+    data = data_plot,
+    x = ~reorder(País, valor),
+    y = ~valor,
+    type = 'bar',
+    marker = list(color = 'rgba(49,130,189,0.7)'),
+    text = ~paste0(País, "<br>", variable, ": ", round(valor, 2)),
+    textposition = "none",
+    hoverinfo = 'text',
+    showlegend = FALSE
+  ) %>%
+    layout(
+      title = variable,
+      xaxis = list(title = "", tickangle = -45),
+      yaxis = list(title = "Valor", zeroline = FALSE),
+      margin = list(b = 150)
+    )
+})
+
+
 ```
