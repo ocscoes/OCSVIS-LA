@@ -593,7 +593,12 @@ grid-auto-rows: minmax(0, 1fr);">
 <option value="Importancia Trabajo Duro">Importancia Trabajo Duro</option>
 <option value="Percepción de Corrupción">Percepción de Corrupción</option>
 <option value="Interés en la Política">Interés en la Política</option>
-<option value="Comportamiento Prosocial">Comportamiento Prosocial</option></select>
+<option value="Comportamiento Prosocial">Comportamiento Prosocial</option>
+<option value="Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)">Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)</option>
+<option value="Gender Inequality Index">Gender Inequality Index</option>
+<option value="Gini index">Gini index</option>
+<option value="Homicidios intencionales (por cada 100.000 habitantes)">Homicidios intencionales (por cada 100.000 habitantes)</option>
+<option value="PIB per cápita (US$ a precios actuales)">PIB per cápita (US$ a precios actuales)</option></select>
 <script type="application/json" data-for="x_var" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
 </div>
 </div>
@@ -615,7 +620,12 @@ grid-auto-rows: minmax(0, 1fr);">
 <option value="Importancia Trabajo Duro">Importancia Trabajo Duro</option>
 <option value="Percepción de Corrupción">Percepción de Corrupción</option>
 <option value="Interés en la Política">Interés en la Política</option>
-<option value="Comportamiento Prosocial">Comportamiento Prosocial</option></select>
+<option value="Comportamiento Prosocial">Comportamiento Prosocial</option>
+<option value="Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)">Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)</option>
+<option value="Gender Inequality Index">Gender Inequality Index</option>
+<option value="Gini index">Gini index</option>
+<option value="Homicidios intencionales (por cada 100.000 habitantes)">Homicidios intencionales (por cada 100.000 habitantes)</option>
+<option value="PIB per cápita (US$ a precios actuales)">PIB per cápita (US$ a precios actuales)</option></select>
 <script type="application/json" data-for="y_var" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
 </div>
 </div>
@@ -694,7 +704,7 @@ step_size <- unique(diff(unique_years))
 
 # Bivariado
 
-load(file = "data/base_shiny_otros.rdata")
+load(file = "data/base_shiny_completa.rdata")
 
 df_bivariado <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname",
                               !is.nan(Valor))
