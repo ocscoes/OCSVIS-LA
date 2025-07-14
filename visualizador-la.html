@@ -63,34 +63,85 @@ ul.task-list li input[type="checkbox"] {
         
       </div>
     </div>
-<div id="dashboard-collapse" class="navbar-collapse collapse"><ul class="navbar-nav navbar-nav-scroll me-auto" role="tablist"><li class="nav-item" role="presentation"><a id="tab-inicio" class="nav-link active" data-bs-toggle="tab" role="tab" data-bs-target="#inicio" data-scrolling="false" href="#inicio" aria-controls="inicio" aria-selected="true"><span class="nav-link-text">Inicio</span></a></li><li class="nav-item" role="presentation"><a id="tab-mapa" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#mapa" data-scrolling="false" href="#mapa" aria-controls="mapa" aria-selected="false"><span class="nav-link-text">Mapa</span></a></li><li class="nav-item" role="presentation"><a id="tab-ranking" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#ranking" data-scrolling="false" href="#ranking" aria-controls="ranking" aria-selected="false"><span class="nav-link-text">Ranking</span></a></li><li class="nav-item" role="presentation"><a id="tab-análisis-longitudinal" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#análisis-longitudinal" data-scrolling="false" href="#análisis-longitudinal" aria-controls="análisis-longitudinal" aria-selected="false"><span class="nav-link-text">Análisis Longitudinal</span></a></li><li class="nav-item" role="presentation"><a id="tab-análisis-bivariado" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#análisis-bivariado" data-scrolling="false" href="#análisis-bivariado" aria-controls="análisis-bivariado" aria-selected="false"><span class="nav-link-text">Análisis Bivariado</span></a></li></ul><div class="quarto-dashboard-links"><a class="quarto-dashboard-link" href="https://github.com/ocscoes/OCSVIS-LA"><i class="bi bi-github"></i></a><a class="quarto-dashboard-link" href="https://ocs-coes.netlify.app"><i class="bi bi-globe"></i></a></div></div></div>
+<div id="dashboard-collapse" class="navbar-collapse collapse"><ul class="navbar-nav navbar-nav-scroll me-auto" role="tablist"><li class="nav-item" role="presentation"><a id="tab-inicio" class="nav-link active" data-bs-toggle="tab" role="tab" data-bs-target="#inicio" data-scrolling="false" href="#inicio" aria-controls="inicio" aria-selected="true"><span class="nav-link-text">Inicio</span></a></li><li class="nav-item" role="presentation"><a id="tab-mapa" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#mapa" data-scrolling="false" href="#mapa" aria-controls="mapa" aria-selected="false"><span class="nav-link-text">Mapa</span></a></li><li class="nav-item" role="presentation"><a id="tab-ranking" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#ranking" data-scrolling="false" href="#ranking" aria-controls="ranking" aria-selected="false"><span class="nav-link-text">Ranking</span></a></li><li class="nav-item" role="presentation"><a id="tab-análisis-longitudinal" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#análisis-longitudinal" data-scrolling="false" href="#análisis-longitudinal" aria-controls="análisis-longitudinal" aria-selected="false"><span class="nav-link-text">Análisis Longitudinal</span></a></li><li class="nav-item" role="presentation"><a id="tab-análisis-bivariado" class="nav-link" data-bs-toggle="tab" role="tab" data-bs-target="#análisis-bivariado" data-scrolling="false" href="#análisis-bivariado" aria-controls="análisis-bivariado" aria-selected="false"><span class="nav-link-text">Análisis Bivariado</span></a></li></ul><div class="quarto-dashboard-links"><a class="quarto-dashboard-link" href="https://github.com/ocscoes/OCSVIS-LA" target="_blank"><i class="bi bi-github"></i></a><a class="quarto-dashboard-link" href="https://ocs-coes.netlify.app" target="_blank"><i class="bi bi-globe"></i></a></div></div></div>
 </nav>
 </header>
 <div class="page-layout-custom quarto-dashboard-content bslib-gap-spacing html-fill-container bslib-page-fill quarto-dashboard-pages">  
 
+
+
+<div class="logo-bloque bslib-grid-item html-fill-item">
+
+<a href="https://ocs-coes.com/" target="_blank">
+  <img src="www/img/OCS-COES-02.png" class="centered-img" width="15%">
+</a>
+
+
+</div>
+
+<style class="bslib-grid-item html-fill-item">
+.centered-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
 <div class="bslib-grid-item html-fill-item tab-content bslib-grid" data-layout="fill" style="display: grid; grid-template-rows: minmax(3em, 1fr); grid-auto-columns: minmax(0, 1fr);">
 <div id="inicio" class="dashboard-page tab-pane show active html-fill-item html-fill-container" data-orientation="rows" aria-labelledby="tab-inicio">
 <div class="html-fill-item html-fill-container bslib-grid" style="display: grid; grid-template-rows: minmax(3em, max-content); grid-auto-columns: minmax(0, 1fr);">
 <div class="card html-fill-item html-fill-container bslib-card" data-fill="false" data-bslib-card-init="" data-require-bs-caller="card()" data-full-screen="false">
 <div class="card-body html-fill-item html-fill-container">
-<ol type="1">
-<li>Elegir una de las pestañas disponibles para realizar el análisis:</li>
-</ol>
+<p><strong>Elige una de las pestañas disponibles para realizar el análisis</strong>:</p>
 <ul>
-<li><strong><em>Mapa</em></strong>: En esta sección se proyectan en el mapa de América latina los promedios de cada país para cada dimensión o subdimensión. Por defecto está seleccionado para el promedio histórico, pero es posible seleccionar un año de interés.</li>
+<li><strong><em>Mapa</em></strong>: En esta sección se proyectan en el mapa de América latina los promedios de cada país para cada dimensión o subdimensión, para cada ola disponible.</li>
+<li><strong><em>Ranking</em></strong>: Sigue la misma lógica que la sección mapa, pero mostrando un ranking ordenado por dimensiones y subdimensiones, para cada ola disponible.</li>
 <li><strong><em>Longitudinal</em></strong>: En este apartado se compara a los países a través de un gráfico de líneas histórico. Debes seleccionar una dimensión o subdimensión a visualizar. Es posible seleccionar qué país o países se presentan.</li>
-<li><strong><em>Bivariado</em></strong>: Aquí se encuentran dos selectores entre los que encontrarás las dimensiones y subdimensiones además de algunas variables de caracterización de los países tales como su PIB o esperanza de vida.</li>
+<li><strong><em>Bivariado</em></strong>: Aquí se encuentran dos selectores entre los que encontrarás las dimensiones y subdimensiones además de algunas variables de caracterización de los países tales como su PIB per cápita e indicadores de igualdad de género.</li>
 </ul>
-<ol start="2" type="1">
-<li>Seleccionar características del gráfico:</li>
-</ol>
-<ol type="a">
-<li>Seleccione el indicador</li>
-<li>Seleccione el País</li>
-<li>Seleccione la Ola o rango de tiempo: Cada una de las Olas representa el periodo en que se realizó el trabajo de campo.</li>
-<li>Si desea generar un nuevo gráfico, repite los pasos anteriores.</li>
-</ol>
+<p>Todas los indicadores, subdimensiones y dimensiones fueron estandarizadas para que distribuyeran en un rango de 0 a 10.</p>
 <p>Más información sobre las fuentes de datos, la selección de indicadores y la construcción de los índices <a href="https://ocscoes.github.io/medicion-cohesion-LA/">aquí</a></p>
+
+<h3 class="logo-title">Instituciones patrocinantes</h3>
+
+<div class="logo-links html-fill-item html-fill-container">
+  <a href="https://anid.cl" target="_blank">
+    <img src="www/img/anid.png" alt="ANID">
+  </a>
+  <a href="https://uchile.cl" target="_blank">
+    <img src="www/img/uch.png" alt="UChile">
+  </a>
+  <a href="https://www.uc.cl" target="_blank">
+    <img src="www/img/puc.png" alt="PUC">
+  </a>
+  <a href="https://www.udp.cl" target="_blank">
+    <img src="www/img/udp.png" alt="UDP">
+  </a>
+  <a href="https://www.uai.cl" target="_blank">
+    <img src="www/img/uai.png" alt="UAI">
+  </a>
+</div>
+
+<style>
+.logo-title {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.5rem; /* controla espacio entre título y logos */
+}
+
+.logo-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem; /* espacio entre logos */
+  flex-wrap: wrap;
+  margin-bottom: 2rem; /* espacio inferior si lo necesitas */
+}
+
+.logo-links img {
+  height: 60px; /* ajusta según necesidad */
+  transition: transform 0.2s ease;
+}
+</style>
 </div>
 <bslib-tooltip placement="auto" bsoptions="[]" data-require-bs-version="5" data-require-bs-caller="tooltip()">
     <template>Expand</template>
@@ -121,9 +172,28 @@ grid-auto-rows: minmax(0, 1fr);">
 </div>
 </div></div><aside id="bslib-sidebar-1" class="sidebar html-fill-container html-fill-item"><div class="html-fill-item html-fill-container">
 <div class="cell-output-display">
+<style>
+
+  .styled-slider .irs-bar {
+    background: transparent !important;
+  }
+
+.styled-slider .irs-handle {
+    background: #497abd !important;
+    border: 1px solid #1c7bbf !important;
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    border: none;
+}
+</style>
+</div>
+<div class="cell-output-display">
+<div class="styled-slider">
 <div class="form-group shiny-input-container no-baseline">
 <label class="control-label" id="Ola-label" for="Ola">Selecciona una ola</label>
 <input class="js-range-slider" id="Ola" data-skin="shiny" data-min="2004" data-max="2022" data-from="2022" data-step="2" data-grid="true" data-grid-num="9" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number">
+</div>
 </div>
 </div>
 <div class="cell-output-display">
@@ -293,14 +363,33 @@ grid-auto-rows: minmax(0, 1fr);">
 </div>
 </div></div><aside id="bslib-sidebar-2" class="sidebar html-fill-container html-fill-item"><div class="html-fill-item html-fill-container">
 <div class="cell-output-display">
+<style>
+
+  .styled-slider .irs-bar {
+    background: transparent !important;
+  }
+
+.styled-slider .irs-handle {
+    background: #497abd !important;
+    border: 1px solid #1c7bbf !important;
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    border: none;
+}
+</style>
+</div>
+<div class="cell-output-display">
+<div class="styled-slider">
 <div class="form-group shiny-input-container no-baseline">
 <label class="control-label" id="Ola-label" for="Ola">Selecciona una ola</label>
 <input class="js-range-slider" id="Ola" data-skin="shiny" data-min="2004" data-max="2022" data-from="2022" data-step="2" data-grid="true" data-grid-num="9" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number">
 </div>
 </div>
+</div>
 <div class="cell-output-display">
 <style>
-  #variable-buttons .btn {
+  #ranking-buttons .btn {
     transition: all 0.2s ease-in-out;
     border: 1px solid #dee2e6;
     height: 100%;
@@ -310,27 +399,27 @@ grid-auto-rows: minmax(0, 1fr);">
     font-weight: 500;
   }
 
-  #variable-buttons .btn:hover {
+  #ranking-buttons .btn:hover {
     background-color: #e9ecef;
     border-color: #adb5bd;
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
 
-  #variable-buttons .btn.active {
+  #ranking-buttons .btn.active {
     background-color:  #497abd;
     color: white;
     border-color: #00441b;
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
   }
 
-  #variable-buttons .btn.active img {
+  #ranking-buttons .btn.active img {
      filter: brightness(0) invert(1);
   }
 </style>
 </div>
 <div class="cell-output-display">
-<div id="variable-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;">
+<div id="ranking-buttons" style="display: flex; flex-wrap: wrap; gap: 6px;">
 <div style="
         width: 48%;
         height: 125px;
@@ -416,7 +505,7 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="cell-output-display">
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const buttonContainer = document.getElementById('variable-buttons');
+    const buttonContainer = document.getElementById('ranking-buttons');
     if (!buttonContainer) return;
 
     buttonContainer.addEventListener('click', function(event) {
@@ -468,29 +557,31 @@ grid-auto-rows: minmax(0, 1fr);">
 <div class="form-group shiny-input-container">
 <label class="control-label" id="pais-label" for="pais">Seleccionar país(es):</label>
 <select data-actions-box="true" data-live-search="true" data-none-selected-text="Seleccione al menos un país" data-selected-text-format="count > 2" data-state-input="true" id="pais" class="selectpicker form-control" autocomplete="off" multiple="multiple"><option value="Argentina">Argentina</option>
-<option value="Belize">Belize</option>
+<option value="Belice">Belice</option>
 <option value="Bolivia">Bolivia</option>
-<option value="Brazil">Brazil</option>
-<option value="Canada">Canada</option>
+<option value="Brasil">Brasil</option>
+<option value="Canadá">Canadá</option>
 <option value="Chile" selected="">Chile</option>
 <option value="Colombia">Colombia</option>
 <option value="Costa Rica">Costa Rica</option>
-<option value="Dominican Republic">Dominican Republic</option>
+<option value="República Dominicana">República Dominicana</option>
 <option value="Ecuador">Ecuador</option>
 <option value="El Salvador">El Salvador</option>
+<option value="Granada">Granada</option>
 <option value="Guatemala">Guatemala</option>
 <option value="Guyana">Guyana</option>
-<option value="Haiti">Haiti</option>
+<option value="Haití">Haití</option>
 <option value="Honduras">Honduras</option>
 <option value="Jamaica">Jamaica</option>
-<option value="Mexico">Mexico</option>
+<option value="México">México</option>
 <option value="Nicaragua">Nicaragua</option>
-<option value="Panama">Panama</option>
+<option value="Panamá">Panamá</option>
 <option value="Paraguay">Paraguay</option>
-<option value="Peru">Peru</option>
+<option value="Perú">Perú</option>
 <option value="Puerto Rico">Puerto Rico</option>
-<option value="Trinidad &amp; Tobago">Trinidad &amp; Tobago</option>
-<option value="United States">United States</option>
+<option value="Surinam">Surinam</option>
+<option value="Trinidad y Tobago">Trinidad y Tobago</option>
+<option value="Estados Unidos">Estados Unidos</option>
 <option value="Uruguay">Uruguay</option>
 <option value="Venezuela">Venezuela</option>
 <option value="Promedio" selected="">Promedio</option></select>
@@ -571,9 +662,28 @@ grid-auto-rows: minmax(0, 1fr);">
 </div>
 </div></div><aside id="bslib-sidebar-4" class="sidebar html-fill-container html-fill-item"><div class="html-fill-item html-fill-container">
 <div class="cell-output-display">
+<style>
+
+  .styled-slider .irs-bar {
+    background: transparent !important;
+  }
+
+.styled-slider .irs-handle {
+    background: #497abd !important;
+    border: 1px solid #1c7bbf !important;
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    border: none;
+}
+</style>
+</div>
+<div class="cell-output-display">
+<div class="styled-slider">
 <div class="form-group shiny-input-container no-baseline">
 <label class="control-label" id="Ola_bi-label" for="Ola_bi">Seleccione la Ola:</label>
 <input class="js-range-slider" id="Ola_bi" data-skin="shiny" data-min="2004" data-max="2022" data-from="2022" data-step="2" data-grid="true" data-grid-num="9" data-grid-snap="false" data-prettify-separator="" data-prettify-enabled="false" data-keyboard="true" data-data-type="number">
+</div>
 </div>
 </div>
 <div class="cell-output-display no-overflow-x">
@@ -594,11 +704,11 @@ grid-auto-rows: minmax(0, 1fr);">
 <option value="Percepción de Corrupción">Percepción de Corrupción</option>
 <option value="Interés en la Política">Interés en la Política</option>
 <option value="Comportamiento Prosocial">Comportamiento Prosocial</option>
-<option value="Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)">Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)</option>
+<option value="Desempleo">Desempleo</option>
 <option value="Gender Inequality Index">Gender Inequality Index</option>
 <option value="Gini index">Gini index</option>
-<option value="Homicidios intencionales (por cada 100.000 habitantes)">Homicidios intencionales (por cada 100.000 habitantes)</option>
-<option value="PIB per cápita (US$ a precios actuales)">PIB per cápita (US$ a precios actuales)</option></select>
+<option value="Homicidios intencionales">Homicidios intencionales</option>
+<option value="PIB per cápita (nominal)">PIB per cápita (nominal)</option></select>
 <script type="application/json" data-for="x_var" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
 </div>
 </div>
@@ -621,11 +731,11 @@ grid-auto-rows: minmax(0, 1fr);">
 <option value="Percepción de Corrupción">Percepción de Corrupción</option>
 <option value="Interés en la Política">Interés en la Política</option>
 <option value="Comportamiento Prosocial">Comportamiento Prosocial</option>
-<option value="Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)">Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)</option>
+<option value="Desempleo">Desempleo</option>
 <option value="Gender Inequality Index">Gender Inequality Index</option>
 <option value="Gini index">Gini index</option>
-<option value="Homicidios intencionales (por cada 100.000 habitantes)">Homicidios intencionales (por cada 100.000 habitantes)</option>
-<option value="PIB per cápita (US$ a precios actuales)">PIB per cápita (US$ a precios actuales)</option></select>
+<option value="Homicidios intencionales">Homicidios intencionales</option>
+<option value="PIB per cápita (nominal)">PIB per cápita (nominal)</option></select>
 <script type="application/json" data-for="y_var" data-nonempty="">{"plugins":["selectize-plugin-a11y"]}</script>
 </div>
 </div>
@@ -684,6 +794,7 @@ library(hrbrthemes)
 library(sjlabelled)
 library(V8)
 library(Cairo)
+library(shinythemes)
 options(shiny.usecairo = TRUE)
 
 shinyWidgets:::html_dependency_picker_bs(
@@ -1061,7 +1172,7 @@ output$descripcion_longitudinal <- renderUI({
     "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra.",
     "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.",
     "Confianza en las Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial.",
-    "Actitud a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
+    "Actitudes a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
     "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad.",
     "Seguridad Objetiva"= "Frecuencia en que las personas han sido víctimas de algún delito en el último año (LAPOP)",
     "Seguridad Subjetiva"= "Percepción de seguridad en el barrio (LAPOP)", 
@@ -1132,7 +1243,6 @@ observe({
 
 # --- Función para obtener la URL de la bandera ---
 # En lugar de devolver un emoji, esta función devuelve la URL de una imagen de la bandera.
-# Usamos el servicio de CDN 'flagcdn.com', que es gratuito y confiable.
 get_flag_url <- function(country_name) {
   # Mapeo de nombres de países a códigos ISO de 2 letras (en minúsculas)
   country_codes <- list(
@@ -1169,7 +1279,7 @@ get_flag_url <- function(country_name) {
     return(NA) # Devolver NA si el país no se encuentra
   }
   
-  # Formatear la URL. Usamos un ancho de 40px como ejemplo.
+  # Formatear la URL. w40 indica un ancho de 40px
   return(paste0("https://flagcdn.com/w40/", code, ".png"))
 }
 
@@ -1293,7 +1403,7 @@ output$descripcion_bivariado <- renderUI({
     "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra.",
     "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.",
     "Confianza en las Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial.",
-    "Actitud a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
+    "Actitudes a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
     "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad.",
     "Seguridad Objetiva"= "Frecuencia en que las personas han sido víctimas de algún delito en el último año (LAPOP)",
     "Seguridad Subjetiva"= "Percepción de seguridad en el barrio (LAPOP)", 
@@ -1301,7 +1411,20 @@ output$descripcion_bivariado <- renderUI({
     "Confianza Partidos Políticos"= "Nivel de confianza en los partidos políticos del país (LAPOP)",
     "Confianza Poder Judicial"= "Nivel de confianza en las cortes de justicia del país (LAPOP)",
     "Apoyo Democracia" = "Acuerdo con que la democracia es la mejor forma de gobierno (LAPOP)",
-    "Satisfacción Democracia"= "Nivel de satisfacción con la forma en que funciona la democracia en el país (LAPOP)"
+    "Satisfacción Democracia"= "Nivel de satisfacción con la forma en que funciona la democracia en el país (LAPOP)",
+    "Orgullo Nacional"= "Nivel se orgullo que siente una persona de pertenecer a su país (WVS)",
+    "Importancia Igualdad de Ingresos" = "Nivel de acuerdo con que el Estado debe tomar acciones para mejorar la distribución de ingresos en el país (LAPOP)",
+    "Importancia del Trabajo Duro" = "Importancia que se le otorga al trabajo duro para surgir en la vida (WVS)",
+    "Percepción de Corrupción" = "Percepción sobre el nivel de funcionarios públicos involucrado en actos de corrupación (LAPOP)",
+    "Interés en la Política" = "Frecuencia con que se habla de política con amigos o familiares (LAPOP)",
+    "Comportamiento Prosocial"= "Índice creado a partir de indicadores sobre acatamiento de normas sociales, como pagar impuestos o pagar en el pasaje en el trasporte público (WVS)",
+    "Desempleo" = "Porcentaje de la fuerza de trabajo que no se encuentra trabajando estando disponible para hacerlo (Banco Mundial)",
+    "Gender Inequality Index"= "Mide las desigualdades de género a nvel nacional en en dimensiones de salud reproductiva, participación política y participación labora. Valores más cercanos a 1 indican mayor desigualdad (PNUD)",
+    "Gini Index" = "Mide la desigualdad en la distribución de los ingresos. 0 representa equidad perfecta, mientras 100 implica desigualdad perfecta (Banco Mundial)",
+    "Homicidios intencionales" = "Número de homicidios intencionales por cada 100.000 habitantes (Banco Mundial)",
+    "PIB per cápita (nominal)" = "Es el producto interno bruto divido por la población a mitad del año. Se encuentra expresado en dólares estadounidenses actuales (Banco Mundial)"
+    
+    
   )
   
    x_var <- input$x_var
@@ -1322,6 +1445,41 @@ output$descripcion_bivariado <- renderUI({
 })
 
 ## Gráfico de barras ----
+
+colores <- c(
+  "Argentina" = "#75AADB",      
+  "Bahamas" = "#00ABC9",          
+  "Belize" = "#002868",           
+  "Bolivia" = "#1E7F2F",    
+  "Brazil" = "#FFCC29",           
+  "Canada" = "#FF0000",   
+  "Chile" = "#D52B1E",    
+  "Colombia" = "#FFD700",         
+  "Costa Rica" = "#CE1126",
+  "Dominican Republic" = "#002D62",
+  "Ecuador" = "#FFD100",          
+  "El Salvador" = "#0047AB",
+  "Grenada" = "#FFCC00",         
+  "Guatemala" = "#4997D0",      
+  "Guyana" = "#FFCD00",           
+  "Haiti" = "#00209F",           
+  "Honduras" = "#0073CF",          
+  "Jamaica" = "#007847",          
+  "Mexico" = "#006341",         
+  "Nicaragua" = "#0077C8",      
+  "Panama" = "#FF0000",   
+  "Paraguay" = "#D52B1E",         
+  "Peru" = "#D91023",             
+  "Puerto Rico" = "#002868",      
+  "Suriname" = "#007847",   
+  "Trinidad & Tobago" = "#EF3340",
+  "United States" = "#3C3B6E",   
+  "Uruguay" = "#5BC0EB",        
+  "Venezuela" = "#810541",       
+  "Promedio" = "#999999"  
+)
+
+
 output$bar_plot <- renderPlotly({
   req(input$Ola, selected_variable())
   
@@ -1352,13 +1510,15 @@ output$bar_plot <- renderPlotly({
     select(País, valor = all_of(variable)) %>%
     filter(!is.na(valor)) %>%
     arrange(desc(valor))
-  
+
+  colores <- colores[data_plot$País]
+
   plot_ly(
     data = data_plot,
     x = ~reorder(País, valor),
     y = ~valor,
     type = 'bar',
-    marker = list(color = 'rgba(49,130,189,0.7)'),
+    marker = list(color = colores),
     text = ~paste0(País, "<br>", variable, ": ", round(valor, 2)),
     textposition = "none",
     hoverinfo = 'text',
@@ -1425,7 +1585,7 @@ ojs_define <- function(..., .session = shiny::getDefaultReactiveDomain()) {
 <!--/html_preserve-->
 <!--html_preserve-->
 <script type="application/shiny-prerendered" data-context="execution_dependencies">
-{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","bslib","cachem","Cairo","class","classInt","cli","compiler","cowplot","crosstalk","curl","data.table","datasets","DBI","digest","dplyr","e1071","evaluate","extrafont","extrafontdb","farver","fastmap","fontawesome","fontBitstreamVera","fontLiberation","fontquiver","forcats","gdtools","generics","ggplot2","ggrepel","ggthemes","glue","graphics","grDevices","grid","gtable","highcharter","hms","hrbrthemes","htmltools","htmlwidgets","httpuv","httr","igraph","insight","jquerylib","jsonlite","KernSmooth","knitr","later","lattice","lazyeval","leaflet","lifecycle","lubridate","magick","magrittr","memoise","methods","mime","pillar","pkgconfig","plotly","promises","proxy","purrr","quantmod","R6","RColorBrewer","Rcpp","readr","rlang","rlist","rmarkdown","rstudioapi","Rttf2pt1","sass","scales","sf","shiny","shinydashboard","shinydashboardPlus","shinyEffects","shinyjs","shinyWidgets","sjlabelled","stats","stringi","stringr","systemfonts","tibble","tidyr","tidyselect","tidyverse","timechange","tools","TTR","tzdb","units","utils","V8","vctrs","viridisLite","withr","xfun","xtable","xts","yaml","zoo"]},{"type":"character","attributes":{},"value":["0.2.1","1.5.0","4.5.0","1.0.8","0.9.0","1.1.0","1.6-2","7.3-23","0.4-11","3.6.5","4.5.0","1.1.3","1.2.1","6.3.0","1.17.6","4.5.0","1.2.3","0.6.37","1.1.4","1.7-16","1.0.4","0.19","1.0","2.1.2","1.2.0","0.5.3","0.1.1","0.1.0","0.2.1","1.0.0","0.4.2","0.1.4","3.5.2","0.9.6","5.1.0","1.8.0","4.5.0","4.5.0","4.5.0","0.3.6","0.9.4","1.1.3","0.8.7","0.5.8.1","1.6.4","1.6.16","1.4.7","2.1.4","1.3.0","0.1.4","2.0.0","2.23-26","1.50","1.4.2","0.22-6","0.2.2","2.2.2","1.0.4","1.9.4","2.8.7","2.0.3","2.0.1","4.5.0","0.13","1.10.2","2.0.3","4.10.4","1.3.3","0.4-27","1.0.4","0.4.27","2.6.1","1.1-3","1.0.14","2.1.5","1.1.6","0.4.6.2","2.29","0.17.1","1.3.12","0.4.10","1.4.0","1.0-21","1.10.0","0.7.3","2.0.5","0.2.0","2.1.0","0.9.0","1.2.0","4.5.0","1.8.7","1.5.1","1.2.3","3.3.0","1.3.1","1.2.1","2.0.0","0.3.0","4.5.0","0.24.4","0.5.0","0.8-7","4.5.0","6.0.4","0.6.5","0.4.2","3.0.2","0.52","1.8-4","0.14.1","2.3.10","1.8-14"]}]}]}
+{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["packages","version"]},"class":{"type":"character","attributes":{},"value":["data.frame"]},"row.names":{"type":"integer","attributes":{},"value":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114]}},"value":[{"type":"character","attributes":{},"value":["assertthat","backports","base","broom","bslib","cachem","Cairo","class","classInt","cli","compiler","cowplot","crosstalk","curl","data.table","datasets","DBI","digest","dplyr","e1071","evaluate","extrafont","extrafontdb","farver","fastmap","fontawesome","fontBitstreamVera","fontLiberation","fontquiver","forcats","gdtools","generics","ggplot2","ggrepel","ggthemes","glue","graphics","grDevices","grid","gtable","highcharter","hms","hrbrthemes","htmltools","htmlwidgets","httpuv","httr","igraph","insight","jquerylib","jsonlite","KernSmooth","knitr","later","lattice","lazyeval","leaflet","lifecycle","lubridate","magick","magrittr","memoise","methods","mime","pillar","pkgconfig","plotly","promises","proxy","purrr","quantmod","R6","RColorBrewer","Rcpp","readr","rlang","rlist","rmarkdown","rstudioapi","Rttf2pt1","sass","scales","sf","shiny","shinydashboard","shinydashboardPlus","shinyEffects","shinyjs","shinythemes","shinyWidgets","sjlabelled","stats","stringi","stringr","systemfonts","tibble","tidyr","tidyselect","tidyverse","timechange","tools","TTR","tzdb","units","utils","V8","vctrs","viridisLite","withr","xfun","xtable","xts","yaml","zoo"]},{"type":"character","attributes":{},"value":["0.2.1","1.5.0","4.5.0","1.0.8","0.9.0","1.1.0","1.6-2","7.3-23","0.4-11","3.6.5","4.5.0","1.1.3","1.2.1","6.3.0","1.17.6","4.5.0","1.2.3","0.6.37","1.1.4","1.7-16","1.0.4","0.19","1.0","2.1.2","1.2.0","0.5.3","0.1.1","0.1.0","0.2.1","1.0.0","0.4.2","0.1.4","3.5.2","0.9.6","5.1.0","1.8.0","4.5.0","4.5.0","4.5.0","0.3.6","0.9.4","1.1.3","0.8.7","0.5.8.1","1.6.4","1.6.16","1.4.7","2.1.4","1.3.0","0.1.4","2.0.0","2.23-26","1.50","1.4.2","0.22-6","0.2.2","2.2.2","1.0.4","1.9.4","2.8.7","2.0.3","2.0.1","4.5.0","0.13","1.10.2","2.0.3","4.10.4","1.3.3","0.4-27","1.0.4","0.4.27","2.6.1","1.1-3","1.0.14","2.1.5","1.1.6","0.4.6.2","2.29","0.17.1","1.3.12","0.4.10","1.4.0","1.0-21","1.10.0","0.7.3","2.0.5","0.2.0","2.1.0","1.2.0","0.9.0","1.2.0","4.5.0","1.8.7","1.5.1","1.2.3","3.3.0","1.3.1","1.2.1","2.0.0","0.3.0","4.5.0","0.24.4","0.5.0","0.8-7","4.5.0","6.0.4","0.6.5","0.4.2","3.0.2","0.52","1.8-4","0.14.1","2.3.10","1.8-14"]}]}]}
 </script>
 <!--/html_preserve-->
 

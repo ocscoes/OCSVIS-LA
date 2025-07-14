@@ -5,8 +5,10 @@ format:
    nav-buttons:
      - icon: github
        href: https://github.com/ocscoes/OCSVIS-LA
+       target: _blank
      - icon: globe
        href: https://ocs-coes.netlify.app
+       target: _blank
 logo: "www/images/ocs-negro.png"
 server: shiny
 resources: 
@@ -45,6 +47,7 @@ library(hrbrthemes)
 library(sjlabelled)
 library(V8)
 library(Cairo)
+library(shinythemes)
 options(shiny.usecairo = TRUE)
 
 shinyWidgets:::html_dependency_picker_bs(
@@ -104,34 +107,116 @@ UP_LEVEL_OPTION_VALUE <- "__VOLVER__" # Nuevo valor único para la opción "subi
 
 ```
 
+```{=HTML}
+
+
+<div class="logo-bloque">
+
+<a href="https://ocs-coes.com/" target="_blank">
+  <img src="www/img/OCS-COES-02.png" class="centered-img" width="15%">
+</a>
+
+
+</div>
+
+<style>
+.centered-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+```
+
 # Inicio
 
-1.  Elegir una de las pestañas disponibles para realizar el análisis:
+**Elige una de las pestañas disponibles para realizar el análisis**:
 
-  -   **_Mapa_**: En esta sección se proyectan en el mapa de América latina los promedios de cada país para cada dimensión o subdimensión. Por defecto está seleccionado para el promedio histórico, pero es posible seleccionar un año de interés.
+  -   **_Mapa_**: En esta sección se proyectan en el mapa de América latina los promedios de cada país para cada dimensión o subdimensión, para cada ola disponible.
+  -   **_Ranking_**: Sigue la misma lógica que la sección mapa, pero mostrando un ranking ordenado por dimensiones y subdimensiones, para cada ola disponible. 
   -   **_Longitudinal_**: En este apartado se compara a los países a través de un gráfico de líneas histórico. Debes seleccionar una dimensión o subdimensión a visualizar. Es posible seleccionar qué país o países se presentan.
-  -   **_Bivariado_**: Aquí se encuentran dos selectores entre los que encontrarás las dimensiones y subdimensiones además de algunas variables de caracterización de los países tales como su PIB o esperanza de vida.
-
-2.  Seleccionar características del gráfico:
-
-  a.  Seleccione el indicador
-  b.  Seleccione el País
-  c.  Seleccione la Ola o rango de tiempo: Cada una de las Olas representa el periodo en que se realizó el trabajo de campo.
-  d.  Si desea generar un nuevo gráfico, repite los pasos anteriores.
+  -   **_Bivariado_**: Aquí se encuentran dos selectores entre los que encontrarás las dimensiones y subdimensiones además de algunas variables de caracterización de los países tales como su PIB per cápita e indicadores de igualdad de género.
   
+Todas los indicadores, subdimensiones y dimensiones fueron estandarizadas para que distribuyeran en un rango de 0 a 10.
   
 Más información sobre las fuentes de datos, la selección de indicadores y la construcción de los índices [aquí](https://ocscoes.github.io/medicion-cohesion-LA/)
+
+```{=HTML}
+
+<h3 class="logo-title">Instituciones patrocinantes</h3>
+
+<div class="logo-links">
+  <a href="https://anid.cl" target="_blank">
+    <img src="www/img/anid.png" alt="ANID">
+  </a>
+  <a href="https://uchile.cl" target="_blank">
+    <img src="www/img/uch.png" alt="UChile">
+  </a>
+  <a href="https://www.uc.cl" target="_blank">
+    <img src="www/img/puc.png" alt="PUC">
+  </a>
+  <a href="https://www.udp.cl" target="_blank">
+    <img src="www/img/udp.png" alt="UDP">
+  </a>
+  <a href="https://www.uai.cl" target="_blank">
+    <img src="www/img/uai.png" alt="UAI">
+  </a>
+</div>
+
+<style>
+.logo-title {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.5rem; /* controla espacio entre título y logos */
+}
+
+.logo-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem; /* espacio entre logos */
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.logo-links img {
+  height: 60px;
+  transition: transform 0.2s ease;
+}
+</style>
+```
+
 
 # Mapa
 
 ## {.sidebar width="25%"}
 
 ```{r}
-sliderInput("Ola", "Selecciona una ola",
-            min = min(world_data$Ola),
-            max = max(world_data$Ola),
-            step = 2,
-            value = max(world_data$Ola))
+tags$style(HTML("
+
+  .styled-slider .irs-bar {
+    background: transparent !important;
+  }
+
+.styled-slider .irs-handle {
+    background: #497abd !important;
+    border: 1px solid #1c7bbf !important;
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    border: none;
+}
+"))
+
+tags$div(class = "styled-slider",
+  sliderInput("Ola", "Selecciona una ola",
+              min = min(world_data$Ola),
+              max = max(world_data$Ola),
+              step = 2,
+              value = max(world_data$Ola))
+)
+
+
 ```
 
 ```{r}
@@ -255,17 +340,35 @@ uiOutput("descripcion_variable")
 ## {.sidebar width="25%"}
 
 ```{r}
+
+tags$style(HTML("
+
+  .styled-slider .irs-bar {
+    background: transparent !important;
+  }
+
+.styled-slider .irs-handle {
+    background: #497abd !important;
+    border: 1px solid #1c7bbf !important;
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    border: none;
+}
+"))
+
+tags$div(class = "styled-slider",
 sliderInput("Ola", "Selecciona una ola",
             min = min(world_data$Ola),
             max = max(world_data$Ola),
             step = 2,
-            value = max(world_data$Ola))
+            value = max(world_data$Ola)))
 ```
 
 ```{r}
 # CSS Personalizado para los botones
 tags$style(HTML("
-  #variable-buttons .btn {
+  #ranking-buttons .btn {
     transition: all 0.2s ease-in-out;
     border: 1px solid #dee2e6;
     height: 100%;
@@ -275,27 +378,27 @@ tags$style(HTML("
     font-weight: 500;
   }
 
-  #variable-buttons .btn:hover {
+  #ranking-buttons .btn:hover {
     background-color: #e9ecef;
     border-color: #adb5bd;
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
 
-  #variable-buttons .btn.active {
+  #ranking-buttons .btn.active {
     background-color:  #497abd;
     color: white;
     border-color: #00441b;
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
   }
 
-  #variable-buttons .btn.active img {
+  #ranking-buttons .btn.active img {
      filter: brightness(0) invert(1);
   }
 "))
 
 # Contenedor de botones
-div(id = "variable-buttons",
+div(id = "ranking-buttons",
     style = "display: flex; flex-wrap: wrap; gap: 6px;",
   
   lapply(1:8, function(i) {
@@ -352,7 +455,7 @@ div(id = "variable-buttons",
 # JavaScript para gestionar la clase 'active' en los botones
 tags$script(HTML("
   document.addEventListener('DOMContentLoaded', function() {
-    const buttonContainer = document.getElementById('variable-buttons');
+    const buttonContainer = document.getElementById('ranking-buttons');
     if (!buttonContainer) return;
 
     buttonContainer.addEventListener('click', function(event) {
@@ -441,13 +544,30 @@ uiOutput("descripcion_longitudinal")
 
 ```{r}
 
+tags$style(HTML("
+
+  .styled-slider .irs-bar {
+    background: transparent !important;
+  }
+
+.styled-slider .irs-handle {
+    background: #497abd !important;
+    border: 1px solid #1c7bbf !important;
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+    border: none;
+}
+"))
+
 # Control deslizante para seleccionar la "Ola" (año)
+tags$div(class = "styled-slider",
 sliderInput("Ola_bi", "Seleccione la Ola:",
             min = min(unique_years_bi),
             max = max(unique_years_bi),
             value = max(unique_years_bi), # Por defecto, la última Ola
             step = 2, # Pasos de 2 años
-            sep = "") # Sin separador de miles en los años
+            sep = "")) # Sin separador de miles en los años
 
             selectInput("x_var", "Variable para el eje X:", choices = unique(df_bivariado$Variable), selected = "Cohesión horizontal")
             selectInput("y_var", "Variable para el eje Y:", choices = unique(df_bivariado$Variable), selected = "Cohesión vertical")
@@ -787,7 +907,7 @@ output$descripcion_longitudinal <- renderUI({
     "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra.",
     "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.",
     "Confianza en las Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial.",
-    "Actitud a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
+    "Actitudes a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
     "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad.",
     "Seguridad Objetiva"= "Frecuencia en que las personas han sido víctimas de algún delito en el último año (LAPOP)",
     "Seguridad Subjetiva"= "Percepción de seguridad en el barrio (LAPOP)", 
@@ -858,7 +978,6 @@ observe({
 
 # --- Función para obtener la URL de la bandera ---
 # En lugar de devolver un emoji, esta función devuelve la URL de una imagen de la bandera.
-# Usamos el servicio de CDN 'flagcdn.com', que es gratuito y confiable.
 get_flag_url <- function(country_name) {
   # Mapeo de nombres de países a códigos ISO de 2 letras (en minúsculas)
   country_codes <- list(
@@ -895,7 +1014,7 @@ get_flag_url <- function(country_name) {
     return(NA) # Devolver NA si el país no se encuentra
   }
   
-  # Formatear la URL. Usamos un ancho de 40px como ejemplo.
+  # Formatear la URL. w40 indica un ancho de 40px
   return(paste0("https://flagcdn.com/w40/", code, ".png"))
 }
 
@@ -1019,7 +1138,7 @@ output$descripcion_bivariado <- renderUI({
     "Confianza Interpersonal" = "Es el nivel de confianza que las personas tienen en otras personas, es decir, las expectativas positivas que una persona tiene sobre las intenciones o comportamientos de otra.",
     "Seguridad Pública" = "Incluye indicadores tanto objetivos como subjetivos de seguridad urbana.",
     "Confianza en las Instituciones" = "El grado de confianza en entidades como el gobierno, policía o sistema judicial.",
-    "Actitud a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
+    "Actitudes a la Democracia" = "La valoración y apoyo que se le da al sistema democrático.",
     "Justicia Redistributiva" = "La percepción sobre qué tan justo es el reparto de recursos y oportunidades en la sociedad.",
     "Seguridad Objetiva"= "Frecuencia en que las personas han sido víctimas de algún delito en el último año (LAPOP)",
     "Seguridad Subjetiva"= "Percepción de seguridad en el barrio (LAPOP)", 
@@ -1027,7 +1146,20 @@ output$descripcion_bivariado <- renderUI({
     "Confianza Partidos Políticos"= "Nivel de confianza en los partidos políticos del país (LAPOP)",
     "Confianza Poder Judicial"= "Nivel de confianza en las cortes de justicia del país (LAPOP)",
     "Apoyo Democracia" = "Acuerdo con que la democracia es la mejor forma de gobierno (LAPOP)",
-    "Satisfacción Democracia"= "Nivel de satisfacción con la forma en que funciona la democracia en el país (LAPOP)"
+    "Satisfacción Democracia"= "Nivel de satisfacción con la forma en que funciona la democracia en el país (LAPOP)",
+    "Orgullo Nacional"= "Nivel se orgullo que siente una persona de pertenecer a su país (WVS)",
+    "Importancia Igualdad de Ingresos" = "Nivel de acuerdo con que el Estado debe tomar acciones para mejorar la distribución de ingresos en el país (LAPOP)",
+    "Importancia del Trabajo Duro" = "Importancia que se le otorga al trabajo duro para surgir en la vida (WVS)",
+    "Percepción de Corrupción" = "Percepción sobre el nivel de funcionarios públicos involucrado en actos de corrupación (LAPOP)",
+    "Interés en la Política" = "Frecuencia con que se habla de política con amigos o familiares (LAPOP)",
+    "Comportamiento Prosocial"= "Índice creado a partir de indicadores sobre acatamiento de normas sociales, como pagar impuestos o pagar en el pasaje en el trasporte público (WVS)",
+    "Desempleo" = "Porcentaje de la fuerza de trabajo que no se encuentra trabajando estando disponible para hacerlo (Banco Mundial)",
+    "Gender Inequality Index"= "Mide las desigualdades de género a nvel nacional en en dimensiones de salud reproductiva, participación política y participación labora. Valores más cercanos a 1 indican mayor desigualdad (PNUD)",
+    "Gini Index" = "Mide la desigualdad en la distribución de los ingresos. 0 representa equidad perfecta, mientras 100 implica desigualdad perfecta (Banco Mundial)",
+    "Homicidios intencionales" = "Número de homicidios intencionales por cada 100.000 habitantes (Banco Mundial)",
+    "PIB per cápita (nominal)" = "Es el producto interno bruto divido por la población a mitad del año. Se encuentra expresado en dólares estadounidenses actuales (Banco Mundial)"
+    
+    
   )
   
    x_var <- input$x_var
@@ -1048,6 +1180,41 @@ output$descripcion_bivariado <- renderUI({
 })
 
 ## Gráfico de barras ----
+
+colores <- c(
+  "Argentina" = "#75AADB",      
+  "Bahamas" = "#00ABC9",          
+  "Belize" = "#002868",           
+  "Bolivia" = "#1E7F2F",    
+  "Brazil" = "#FFCC29",           
+  "Canada" = "#FF0000",   
+  "Chile" = "#D52B1E",    
+  "Colombia" = "#FFD700",         
+  "Costa Rica" = "#CE1126",
+  "Dominican Republic" = "#002D62",
+  "Ecuador" = "#FFD100",          
+  "El Salvador" = "#0047AB",
+  "Grenada" = "#FFCC00",         
+  "Guatemala" = "#4997D0",      
+  "Guyana" = "#FFCD00",           
+  "Haiti" = "#00209F",           
+  "Honduras" = "#0073CF",          
+  "Jamaica" = "#007847",          
+  "Mexico" = "#006341",         
+  "Nicaragua" = "#0077C8",      
+  "Panama" = "#FF0000",   
+  "Paraguay" = "#D52B1E",         
+  "Peru" = "#D91023",             
+  "Puerto Rico" = "#002868",      
+  "Suriname" = "#007847",   
+  "Trinidad & Tobago" = "#EF3340",
+  "United States" = "#3C3B6E",   
+  "Uruguay" = "#5BC0EB",        
+  "Venezuela" = "#810541",       
+  "Promedio" = "#999999"  
+)
+
+
 output$bar_plot <- renderPlotly({
   req(input$Ola, selected_variable())
   
@@ -1078,13 +1245,15 @@ output$bar_plot <- renderPlotly({
     select(País, valor = all_of(variable)) %>%
     filter(!is.na(valor)) %>%
     arrange(desc(valor))
-  
+
+  colores <- colores[data_plot$País]
+
   plot_ly(
     data = data_plot,
     x = ~reorder(País, valor),
     y = ~valor,
     type = 'bar',
-    marker = list(color = 'rgba(49,130,189,0.7)'),
+    marker = list(color = colores),
     text = ~paste0(País, "<br>", variable, ": ", round(valor, 2)),
     textposition = "none",
     hoverinfo = 'text',

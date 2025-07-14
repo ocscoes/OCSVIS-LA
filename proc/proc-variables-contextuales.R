@@ -61,10 +61,15 @@ nombres <- unique(df$País)
 recod <- setNames(nombres, codigos)
 
 datos_imputados <- datos_imputados |>
-  mutate(País= recod[id_pais]) |>
+  mutate(País= recod[id_pais],
+         Variable= case_when(
+           indicador == "Desempleo, total (% de la fuerza laboral total) (estimación modelada de la OIT)" ~ "Desempleo",
+           indicador == "Homicidios intencionales (por cada 100.000 habitantes)" ~ "Homicidios intencionales",
+           indicador == "PIB per cápita (US$ a precios actuales)" ~ "PIB per cápita (nominal)",
+           .default = indicador)) |>
   select(Ola=año,
          País,
-         Variable=indicador,
+         Variable,
          Valor=valor)
 
 # Bind
