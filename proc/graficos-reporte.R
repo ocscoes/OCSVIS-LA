@@ -2,7 +2,8 @@ library(pacman)
 p_load(tidyverse,
        janitor,
        plotly,
-       ggimage)
+       ggimage,
+       RColorBrewer)
 
 load(file = "data/base_shiny_completa.rdata")
 
@@ -151,43 +152,63 @@ datos_wide <- df_bivariado %>%
  # # Calcular promedios
  # mean_h <- mean(df_2022$cohesion_horizontal, na.rm = TRUE)
  # mean_v <- mean(df_2022$cohesion_vertical, na.rm = TRUE)
+
+ cor.test(df_2022$gini_index, df_2022$cohesion_vertical)
+ cor.test(df_2022$pib_per_capita_nominal, df_2022$cohesion_horizontal)
+ 
+ 
+ dat_text <- data.frame(
+   label = c("r = -0.33"),
+   gini_index = c(52.5),
+   cohesion_vertical = c(5.5)) 
  
  # Graficar
  gini <- ggplot(df_2022, aes(x = gini_index, y = cohesion_vertical)) +
    geom_smooth(method = "loess", se = FALSE, color = "black", linetype = "dashed") +
-   geom_image(aes(image = flag_url), size = 0.05, asp = 1.5) +
+   geom_image(aes(image = flag_url), size = 0.07, asp = 1.5) +
+   scale_y_continuous(n.breaks = 6) + 
+   scale_x_continuous(breaks = seq(35,55,5)) +
    labs(
-     x = "Gini Index",
+     x = "Índice Gini",
      y = "Cohesión vertical"
    ) +
+   geom_text(data = dat_text,
+             mapping = aes(x = gini_index, y = cohesion_vertical, label = label),
+             size = rel(20)) +
   theme_minimal() +
-   theme(
-     axis.title= element_text(size=36),
-     axis.text= element_text(size=30)
+   theme(axis.title = element_text(size = 50),
+     axis.text = element_text(size = 36)
    )
  
  gini
  
-
  
+ dat_text <- data.frame(
+   label = c("r = 0.29"),
+   pib_per_capita_nominal = c(20000),
+   cohesion_horizontal = c(7.5)) 
+
  
  pib <- ggplot(df_2022, aes(x = pib_per_capita_nominal, y = cohesion_horizontal)) +
    geom_smooth(method = "loess", se = FALSE, color = "black", linetype = "dashed") +
-   geom_image(aes(image = flag_url), size = 0.05, asp = 1.5) +
+   geom_image(aes(image = flag_url), size = 0.07, asp = 1.5) +
+   scale_y_continuous(n.breaks = 6) + 
+   scale_x_continuous(n.breaks = 6) +
    labs(
      x = "PIB per cápita",
      y = "Cohesión horizontal"
    ) +
+   geom_text(data = dat_text,
+             mapping = aes(x = pib_per_capita_nominal, y = cohesion_horizontal, label = label),
+             size = rel(20)) +
    theme_minimal() +
    theme(
-     axis.title= element_text(size=36),
-     axis.text= element_text(size=30)
+     axis.title = element_text(size = 50),
+     axis.text= element_text(size=36)
    )
  
 pib
 
-cor.test(df_2022$gini_index, df_2022$cohesion_vertical)
-cor.test(df_2022$pib_per_capita_nominal, df_2022$cohesion_horizontal)
 
 
 ## Longitudinal
@@ -195,46 +216,78 @@ load(file = "data/base_shiny_indicadores.rdata")
 
 paises_interes <- c("Argentina", "Brasil", "Chile", "Colombia", "El Salvador", "México", "Uruguay")
 
-df <- df_indicadores %>% filter(País %in% paises_interes)
+df <- df_indicadores %>% filter(País %in% paises_interes) %>% janitor::clean_names()
 
-df_horizontal<- df |>
-  filter(Dimension=="Cohesión horizontal") |>
-  group_by(Ola, País) |>
-  summarise(valor_promedio = mean(Valor, na.rm=T), .groups = "drop") |>
-  ggplot(aes(x = Ola, y = valor_promedio, color = País, group = País)) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 3) +
-  labs(x = "Ola",
-    y = "Valor promedio"
-  ) +
+df_horizontal <- df |>
+  filter(dimension == "Cohesión horizontal") |>
+  group_by(ola, pais) |>
+  summarise(valor_promedio = mean(valor, na.rm = T), .groups = "drop") |>
+  ggplot(aes(x = ola, y = valor_promedio, color = pais, group = pais)) +
+  geom_line(linewidth = 1.5) +
+  geom_point(aes(shape = pais, color = pais), size = 5) +
+  scale_y_continuous(n.breaks = 6) +
+  scale_shape_manual(values = c("Argentina" = 15, 
+                                "Brasil" = 16, 
+                                "Chile" = 17,
+                                "Colombia" = 18,
+                                "El Salvador" = 4,
+                                "México" = 3,
+                                "Uruguay"= 8)) +
+  scale_color_brewer(palette = "Dark2") + 
+  labs(x = "Ola", y = "Valor promedio") +
   theme_minimal() +
-  theme(axis.title = element_text(size = 45),
+  theme(
+    axis.title = element_text(size = 50),
     axis.text = element_text(size = 36),
     legend.title = element_blank(),
-    legend.text = element_text(size = 36),
-    legend.position = "bottom"
+    legend.text = element_text(size = 40),
+    legend.position = "bottom",
+    legend.key.size = unit(2.5, "lines"),
+    legend.key.height = unit(2.5, "lines"),
+    legend.key.width = unit(2.5, "lines")
+  ) +
+  guides(
+    color = guide_legend(override.aes = list(size = 2.5)),  # para líneas
+    shape = guide_legend(override.aes = list(size = 5))     # para shapes
   )
+
 
 df_horizontal
 
 
 df_vertical<- df |>
-  filter(Dimension=="Cohesión vertical") |>
-  group_by(Ola, País) |>
-  summarise(valor_promedio = mean(Valor, na.rm=T), .groups = "drop") |>
-  ggplot(aes(x = Ola, y = valor_promedio, color = País, group = País)) +
-  geom_line(linewidth = 1.2) +
-  geom_point(size = 3) +
-  labs(x = "Ola",
-       y = "Valor promedio"
-  ) +
+  filter(dimension == "Cohesión vertical") |>
+  group_by(ola, pais) |>
+  summarise(valor_promedio = mean(valor, na.rm = T), .groups = "drop") |>
+  ggplot(aes(x = ola, y = valor_promedio, color = pais, group = pais)) +
+  geom_line(linewidth = 1.5) +
+  geom_point(aes(shape = pais, color = pais), size = 5) +
+  scale_y_continuous(n.breaks = 6) +
+  scale_shape_manual(values = c("Argentina" = 15, 
+                                "Brasil" = 16, 
+                                "Chile" = 17,
+                                "Colombia" = 18,
+                                "El Salvador" = 4,
+                                "México" = 3,
+                                "Uruguay"= 8)) +
+  scale_color_brewer(palette = "Dark2") + 
+  labs(x = "Ola", y = "Valor promedio") +
   theme_minimal() +
-  theme(axis.title = element_text(size = 45),
-        axis.text = element_text(size = 36),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 36),
-        legend.position = "bottom"
+  theme(
+    axis.title = element_text(size = 50),
+    axis.text = element_text(size = 36),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 40),
+    legend.position = "bottom",
+    legend.key.size = unit(2.5, "lines"),
+    legend.key.height = unit(2.5, "lines"),
+    legend.key.width = unit(2.5, "lines")
+  ) +
+  guides(
+    color = guide_legend(override.aes = list(size = 2.5)),  # para líneas
+    shape = guide_legend(override.aes = list(size = 5))     # para shapes
   )
+
 
 df_vertical
 
