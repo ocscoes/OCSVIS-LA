@@ -139,7 +139,7 @@ UP_LEVEL_OPTION_VALUE <- "__VOLVER__" # Nuevo valor único para la opción "subi
   
 Todas los indicadores, subdimensiones y dimensiones fueron estandarizadas para que distribuyeran en un rango de 0 a 10.
   
-Más información sobre las fuentes de datos, la selección de indicadores y la construcción de los índices [aquí](https://ocscoes.github.io/medicion-cohesion-LA/)
+Más información sobre las fuentes de datos, la selección de indicadores y la construcción de los índices <a href="https://ocscoes.github.io/medicion-cohesion-LA/" target="_blank">aquí</a>.
 
 ```{=HTML}
 
