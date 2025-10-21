@@ -2,13 +2,20 @@
 title: "Cohesión Social en América Latina"
 format:
   dashboard:
-   nav-buttons:
-     - icon: github
-       href: https://github.com/ocscoes/OCSVIS-LA
-       target: _blank
-     - icon: globe
-       href: https://ocs-coes.netlify.app
-       target: _blank
+    css: www/css/custom-a.css
+    nav-buttons:
+      - text: "VISELSOC  |"
+        href: https://ocs-coes.shinyapps.io/ocs-viselsoc/
+        target: _blank     
+      - text: "Documento Metodológico  |"
+        href: https://ocscoes.github.io/medicion-cohesion-LA/
+        target: _blank   
+      - icon: github
+        href: https://github.com/ocscoes/OCSVIS-LA
+        target: _blank
+      - icon: globe
+        href: https://ocs-coes.netlify.app
+        target: _blank
 logo: "www/images/ocs-negro.png"
 server: shiny
 resources: 
@@ -26,29 +33,36 @@ resources:
 # url_ocs   <- "https://ocs-coes.netlify.app/"
 
 ## Cargar librerías
-library(tidyverse)
-library(sf)
-library(leaflet)
-library(plotly)
-library(shinyjs)
-library(shinyWidgets)
-library(shinyEffects)
-library(shinydashboardPlus)
-library(shinydashboard)
-library(ggrepel)
-library(cowplot)
-library(magick)
-library(highcharter)
-library(fontawesome)
-library(scales)
-library(ggthemes)
-library(RColorBrewer)
-library(hrbrthemes)
-library(sjlabelled)
-library(V8)
-library(Cairo)
-library(shinythemes)
+# Instalar y cargar todos los paquetes necesarios
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  tidyverse,
+  sf,
+  leaflet,
+  plotly,
+  shinyjs,
+  shinyWidgets,
+  shinyEffects,
+  shinydashboardPlus,
+  shinydashboard,
+  ggrepel,
+  cowplot,
+  magick,
+  highcharter,
+  fontawesome,
+  scales,
+  ggthemes,
+  RColorBrewer,
+  hrbrthemes,
+  sjlabelled,
+  V8,
+  Cairo,
+  shinythemes
+)
+
+# Opciones
 options(shiny.usecairo = TRUE)
+
 
 shinyWidgets:::html_dependency_picker_bs(
   theme = bslib::bs_theme(version = 5)
@@ -108,15 +122,9 @@ UP_LEVEL_OPTION_VALUE <- "__VOLVER__" # Nuevo valor único para la opción "subi
 ```
 
 ```{=HTML}
-
-
 <div class="logo-bloque">
-
-<a href="https://ocs-coes.com/" target="_blank">
-  <img src="www/img/OCS-COES-02.png" class="centered-img" width="15%">
-</a>
-
-
+    <img src="www/img/vislatam-logo.png" class="centered-img" width="20%">
+  </a>
 </div>
 
 <style>
@@ -125,66 +133,51 @@ UP_LEVEL_OPTION_VALUE <- "__VOLVER__" # Nuevo valor único para la opción "subi
   margin-left: auto;
   margin-right: auto;
 }
+
+.logo-bloque {
+  margin-top: 0px;
+  margin-bottom: 25px;
+}
 </style>
 ```
 
 # Inicio
 
-**Elige una de las pestañas disponibles para realizar el análisis**:
+En esta página se encuentra el **Visualizador Longitudinal de Cohesión Social en América Latina VISLATAM**. Esta herramienta le permitirá realizar análisis de manera interactiva con datos entre 2004 y 2022 de 25 países latinoamericanos. El modelo conceptual utilizado como base para las visualizaciones considera dos grandes áreas de cohesión social: **horizontal**, la que aborda las relaciones entre individuos y grupos sociales, y **vertical**, la cual captura las interacciones entre los sujetos y las instituciones de la sociedad. Estas áreas se organizan en dimensiones, subdimensiones e indicadores (ver esquemas abajo).
 
-  -   **_Mapa_**: En esta sección se proyectan en el mapa de América latina los promedios de cada país para cada dimensión o subdimensión, para cada ola disponible.
-  -   **_Ranking_**: Sigue la misma lógica que la sección mapa, pero mostrando un ranking ordenado por dimensiones y subdimensiones, para cada ola disponible. 
-  -   **_Longitudinal_**: En este apartado se compara a los países a través de un gráfico de líneas histórico. Debes seleccionar una dimensión o subdimensión a visualizar. Es posible seleccionar qué país o países se presentan.
-  -   **_Bivariado_**: Aquí se encuentran dos selectores entre los que encontrarás las dimensiones y subdimensiones además de algunas variables de caracterización de los países tales como su PIB per cápita e indicadores de igualdad de género.
-  
+El visualizador ofrece cuatro posibilidades, a las que se puede acceder desde el menú superior: 
+
+  -   **_Mapa_**: Proyecta en el mapa de América latina los promedios de cada país para cada dimensión o subdimensión, para cada ola disponible.
+
+  -   **_Longitudinal_**: Compara subdimensiones de cohesión social a través del tiempo.
+
+  -   **_Ranking_**: Compara indicadores de una misma subdimension en el tiempo.
+
+  -   **_Bivariado_**: Cruces de subdimensiones de la cohesión social con otras variables de interés.
+
+Para el proceso de operacionalización de la cohesión social se utilizan datos provenientes de distintas fuentes, principalmente de  [LAPOP](https://www.vanderbilt.edu/lapop/chile.php). La encuesta tiene por objetivo recolectar datos la opinión pública sobre democracia y gobernanza en el continente americano. El diseño de la encuesta es probalístico y representativo de la población adulta de cada país [@lapoplab_americasbarometer_2023].
+
+La encuesta se ha realizado de manera regular desde el año 2004. A la fecha, se han realizado 9 olas que han incluido entre 11 a 23 países, sumando un total sobre 400.000 entrevistas en dos décadas. El cuestionario se administra a través de encuestas cara  a cara, con la excepción de Canadá y Estados Unidos. 
+
+Además, de manera complementaría se utilizaron datos de [Latinobarómetro](https://www.latinobarometro.org/lat.jsp) y la [Encuesta Mundial de valores](https://www.worldvaluessurvey.org/wvs.jsp)-
+
 Todas los indicadores, subdimensiones y dimensiones fueron estandarizadas para que distribuyeran en un rango de 0 a 10.
-  
-Más información sobre las fuentes de datos, la selección de indicadores y la construcción de los índices <a href="https://ocscoes.github.io/medicion-cohesion-LA/" target="_blank">aquí</a>.
 
-```{=HTML}
+Para más información sobre la selección de variables, validación de los datos y construcción de los índices, revisar el [**Documento Metodológico**](https://ocscoes.github.io/medicion-cohesion-LA/)
 
-<h3 class="logo-title">Instituciones patrocinantes</h3>
+Los graficos producidos con este visualizador se pueden descargar y **citar de la siguiente manera**: **Iturra, J., Cortés, G., Urzúa, T., Carrasco, K., Laffert, A. & Castillo, JC.  (2025). Visualizador de Cohesión Social para América Latina. Observatorio de Cohesión Social (ocs-coes.cl), [https://doi.org/10.5281/zenodo.17405945](https://doi.org/10.5281/zenodo.17405945).**
 
-<div class="logo-links">
-  <a href="https://anid.cl" target="_blank">
-    <img src="www/img/anid.png" alt="ANID">
-  </a>
-  <a href="https://uchile.cl" target="_blank">
-    <img src="www/img/uch.png" alt="UChile">
-  </a>
-  <a href="https://www.uc.cl" target="_blank">
-    <img src="www/img/puc.png" alt="PUC">
-  </a>
-  <a href="https://www.udp.cl" target="_blank">
-    <img src="www/img/udp.png" alt="UDP">
-  </a>
-  <a href="https://www.uai.cl" target="_blank">
-    <img src="www/img/uai.png" alt="UAI">
-  </a>
-</div>
+**Esquemas de cohesión social**
 
-<style>
-.logo-title {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 1.5rem; /* controla espacio entre título y logos */
-}
+Los indicadores de cohesión social disponibles en el visualizador son los que se presentan en los siguientes esquemas, organizados en subdimensiones, dimensiones y áreas (vertical y horizontal):
 
-.logo-links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem; /* espacio entre logos */
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
+<p align="center">
+  <img src="https://ocscoes.github.io/presentaciones/presentaciones-ocs/primer-foro/images/horizontal.png" width="60%">
+</p>
 
-.logo-links img {
-  height: 60px;
-  transition: transform 0.2s ease;
-}
-</style>
-```
+<p align="center">
+  <img src="https://ocscoes.github.io/presentaciones/presentaciones-ocs/primer-foro/images/vertical.png" width="60%">
+</p>
 
 
 # Mapa
@@ -482,7 +475,7 @@ plotlyOutput("bar_plot")
 
 
 
-# Análisis Longitudinal
+# Longitudinal
 
 
 ## {.sidebar width="20%"}
@@ -538,7 +531,7 @@ uiOutput("descripcion_longitudinal")
 ```
 
 
-# Análisis Bivariado
+# Bivariado
 
 ## {.sidebar width="20%"}
 
