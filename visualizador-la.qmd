@@ -82,7 +82,7 @@ step_size <- unique(diff(unique_years))
 
 # Bivariado
 
-load(file = "data/base_shiny_completa.rdata")
+load(file = "data/base_shiny_completa_b.rdata")
 
 df_bivariado <- df %>% filter(País!="Bahamas" & País !="Grenada" & País != "Suriname",
                               !is.nan(Valor))

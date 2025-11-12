@@ -3,7 +3,8 @@ p_load(tidyverse,
        janitor,
        plotly,
        ggimage,
-       RColorBrewer)
+       RColorBrewer,
+       ggbreak)
 
 load(file = "data/base_shiny_completa.rdata")
 
@@ -213,6 +214,27 @@ pib
 
 ## Longitudinal
 load(file = "data/base_shiny_indicadores.rdata")
+
+p  <- df_indicadores |> 
+  clean_names() |>
+  group_by(ola, dimension) |>
+  summarise(promedio = mean(valor, na.rm=T)) |>
+  ggplot(aes(x = ola, y = promedio, color = dimension, group = dimension)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    x = "Ola",
+    y = "Promedio",
+    color = NULL
+  ) +
+  scale_y_continuous(limits = c(0,7)) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+
+p
+
+p + scale_y_cut(breaks=c(3.5), which=c(1, 2), scales=c(3, 0.5))
+
 
 paises_interes <- c("Argentina", "Brasil", "Chile", "Colombia", "El Salvador", "México", "Uruguay")
 
