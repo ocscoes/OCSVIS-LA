@@ -1,0 +1,13 @@
+name: visualizador-la
+title:
+username: ocs-coes
+account: ocs-coes
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16092215
+bundleId: 11191654
+url: https://ocs-coes.shinyapps.io/visualizador-la/
+version: 1
+quarto_version: 1.8.25
+quarto_engines: knitr
+serverRender: FALSE

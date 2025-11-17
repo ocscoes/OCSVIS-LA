@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+/* Reducir tamaño del texto en la barra de navegación */
+.navbar-nav li a,
+.navbar-brand,
+.navbar .nav-item .nav-link{
+  font-size: 16px !important; /* ajusta a gusto (ej. 12px o 11px) */
+}
+
+
+
+.navbar-title-text a {
+  font-size: 18px !important;
+}
+
+.d-inline-block{
+  height: 40px !important;
+  width: auto !important;
+}
+
+.quarto-dashboard-link-text{
+  font-size: 16px !important;
+}
+
+/* Reducir espacio entre ítems del navbar */
+.nav-link-text{
+  margin-right: 4px !important;   /* antes suele ser ~15px */
+}
+
+
