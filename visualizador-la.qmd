@@ -155,11 +155,11 @@ El visualizador ofrece cuatro posibilidades, a las que se puede acceder desde el
 
   -   **_Bivariado_**: Cruces de subdimensiones de la cohesión social con otras variables de interés.
 
-Para el proceso de operacionalización de la cohesión social se utilizan datos provenientes de distintas fuentes, principalmente de  [LAPOP](https://www.vanderbilt.edu/lapop/chile.php). La encuesta tiene por objetivo recolectar datos la opinión pública sobre democracia y gobernanza en el continente americano. El diseño de la encuesta es probalístico y representativo de la población adulta de cada país [@lapoplab_americasbarometer_2023].
+Para el proceso de operacionalización de la cohesión social se utilizan datos provenientes de distintas fuentes, principalmente de  [LAPOP](https://www.vanderbilt.edu/lapop/chile.php). La encuesta tiene por objetivo recolectar datos la opinión pública sobre democracia y gobernanza en el continente americano. El diseño de la encuesta es probalístico y representativo de la población adulta de cada país. 
 
 La encuesta se ha realizado de manera regular desde el año 2004. A la fecha, se han realizado 9 olas que han incluido entre 11 a 23 países, sumando un total sobre 400.000 entrevistas en dos décadas. El cuestionario se administra a través de encuestas cara  a cara, con la excepción de Canadá y Estados Unidos. 
 
-Además, de manera complementaría se utilizaron datos de [Latinobarómetro](https://www.latinobarometro.org/lat.jsp) y la [Encuesta Mundial de valores](https://www.worldvaluessurvey.org/wvs.jsp)-
+Además, de manera complementaria se utilizaron datos de [Latinobarómetro](https://www.latinobarometro.org/lat.jsp) y la [Encuesta Mundial de valores](https://www.worldvaluessurvey.org/wvs.jsp)-
 
 Todas los indicadores, subdimensiones y dimensiones fueron estandarizadas para que distribuyeran en un rango de 0 a 10.
 
